@@ -19,7 +19,7 @@ class Order(models.Model):
     order_id = models.UUIDField("ID", default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     #retailer_id = models.ForeignKey(Retailer, on_delete=models.CASCADE, verbose_name="Retailer")
     order_date = models.DateField("Ordering Date", auto_now_add=True)
-    total_amount = models.DecimalField("Total", max_digits=5, decimal_places=2)
+    total_price = models.DecimalField("Total", max_digits=5, decimal_places=2)
     payment_method = models.CharField(choices=PAYMENT_METHOD_CHOICES, max_length=20)
     order_status = models.CharField(choices=ORDER_STATUS_CHOICES, max_length=20)
     shipping_address = models.CharField(max_length=200)

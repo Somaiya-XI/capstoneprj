@@ -12,7 +12,7 @@ class Product(models.Model):
     quantity = models.IntegerField("Quantity")
     expiry_date = models.DateField("Expiry Date")
     product_img = models.ImageField("Product Image",upload_to='productimgs/' ,blank=True, null=True)
-
+    brand = models.CharField("Name", max_length=50)
     class Meta:
         abstract = True
 
@@ -43,9 +43,8 @@ class SupermarketProduct(Product):
 
 
 class ProductBulks(Product):
-    #retailer = models.ForeignKey(Retailer, on_delete=models.CASCADE, verbose_name="Retailer")
     bulk_id = models.IntegerField("Bulk ID")
-    #brand_name = models.ForeignKey(Supplier, on_delete=models.CASCADE, verbose_name="Brand")
+    #supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, verbose_name="Brand")
 
     def __str__(self):
         return self.product_name

@@ -11,7 +11,8 @@ class User(AbstractUser):
     #email = models.EmailField(max_length=250, unique=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
-    #commercial_reg = models.ImageField("reg img")
+    commercial_reg = models.ImageField("commercial register", upload_to='comm_reg_imgs/', blank=True, null=True)
+    profile_picture = models.ImageField("profile picture", upload_to='profile_imgs/', blank=True, null=True)
 
     class Role(models.TextChoices):
         ADMIN = "ADMIN", "Admin"
