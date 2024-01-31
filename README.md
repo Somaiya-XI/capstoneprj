@@ -16,12 +16,6 @@ cd capstoneprj
 ```bash
 pip install pipenv
 ```
-
-### Install the required packages/dependencies using pipenv
-
-```bash
-pipenv sync
-```
 ## Usage
 
 ### Activate the virtual environment
@@ -30,7 +24,13 @@ pipenv sync
 pipenv shell
 ```
 
-### Start the Django development server
+### Run the following command to installl the required packages/dependencies
+
+```bash
+pipenv sync
+```
+
+### Start the Django server
 
 ```bash
 cd WiseR
@@ -39,7 +39,5 @@ cd WiseR
 python manage.py runserver
 ```
 
-Open your web browser and visit http://localhost:8000 and login using the admin credentials
-    
-
+Open your web browser and visit http://localhost:8000 and create a new superuser or login using the admin credentials
 
