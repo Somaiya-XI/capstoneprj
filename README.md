@@ -33,16 +33,26 @@ pipenv sync
 ### Start the Django server
 
 ```bash
-cd WiseR
+cd Backend
 ```
 ```bash
 python manage.py runserver
 ```
 
-### Trial
+### To run the frontend app, navigate to the Frontend directory that is in the main project directory 
 
 ```bash
-Ola this is Berryy!
+cd Frontend
+```
+### Install Node Package Manager
+
+```bash
+npm install 
+```
+### Intiate the development mode
+
+```bash
+npm run dev 
 ```
 
 Open your web browser and visit http://localhost:8000 and create a new superuser or login using the admin credentials
