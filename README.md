@@ -39,5 +39,11 @@ cd WiseR
 python manage.py runserver
 ```
 
+### Trial
+
+```bash
+Ola this is Berryy!
+```
+
 Open your web browser and visit http://localhost:8000 and create a new superuser or login using the admin credentials
 
