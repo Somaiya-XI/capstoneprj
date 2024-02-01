@@ -12,7 +12,7 @@ class Product(models.Model):
     quantity = models.IntegerField("Quantity")
     expiry_date = models.DateField("Expiry Date")
     product_img = models.ImageField("Product Image",upload_to='productimgs/' ,blank=True, null=True)
-    brand = models.CharField("Name", max_length=50)
+    brand = models.CharField("Name", max_length=50, blank=True, null=True)
     class Meta:
         abstract = True
 
