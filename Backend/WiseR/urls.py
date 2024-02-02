@@ -23,21 +23,15 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     
-    #will be removed later - included for first use convenience
-    path('', admin.site.urls),
-
-
     #rest api urls handled by:
     path('api-auth/', include('rest_framework.urls')),
     path('api/',  include('api.urls')),
 
     #custom apps urls:
-    path('marketprod/',  include('product.marketurls')),
-    path('catalogprod/',  include('product.catalogurls')),
+    path('product/',  include('product.urls')),
     path('category/',  include('category.urls')),
     path('order/',  include('order.urls')),
-    path('automateorderconfig/',  include('configuration.autorderurls')),
-    path('notificationconfig/',  include('configuration.notificationurls')),
+    path('config/',  include('configuration.urls')),
 
 ]
 
