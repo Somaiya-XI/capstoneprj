@@ -7,26 +7,29 @@ import uuid
 
 # Create your models here.
 class User(AbstractUser):
-    company_name  = models.CharField(max_length=20)
-    #email = models.EmailField(max_length=250, unique=True)
+    username = None
+    company_name  = models.CharField(max_length=20, blank=False, null=False)
+    email = models.EmailField(max_length=250, unique=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
-    commercial_reg = models.ImageField("commercial register", upload_to='comm_reg_imgs/', blank=True, null=True)
+    commercial_reg = models.ImageField("commercial register", upload_to='comm_reg_imgs/', blank=False, null=False, default='000')
     profile_picture = models.ImageField("profile picture", upload_to='profile_imgs/', blank=True, null=True)
-
+    session_token = models.CharField(max_length=10, default=0)
+    
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+    
     class Role(models.TextChoices):
         ADMIN = "ADMIN", "Admin"
         SUPPLIER = "SUPPLIER", "Supplier"
         RETAILER = "RETAILER", "Retailer"
 
-    base_role = Role.ADMIN
-
-    role = models.CharField(max_length=50, choices=Role.choices)
+    role = models.CharField(max_length=50, choices=Role.choices, blank=False, null=False)
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            self.role = self.base_role
-            return super().save(*args, **kwargs)
+            self.role = self.role
+        return super().save(*args, **kwargs)
 
 
 class SupplierUserGetter(BaseUserManager):

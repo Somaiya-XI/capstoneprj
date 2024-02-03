@@ -1,12 +1,51 @@
-#TODO
-#Implement serializer, password hash, token generator, permessions...
-#send all data as jason
 
 from rest_framework import serializers
+from django.contrib.auth.hashers import make_password
+from rest_framework.exceptions import ValidationError
+
 from .models import User
 
 
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+
+    def validate_password(self, value):
+        errors = []
+        if len(value) < 8:
+            errors.append('Password must be at least 8 characters long.')
+        if not any(char.isupper() for char in value):
+            errors.append('Password must contain at least one uppercase letter.')
+        if not any(char.islower() for char in value):
+            errors.append('Password must contain at least one lowercase letter.')
+        if not any(char.isdigit() for char in value):
+            errors.append('Password must contain at least one digit.')
+        if errors:
+            raise ValidationError(errors)
+        return value
+
+    def create(self, validated_data):
+        password = validated_data.pop('password', None)
+        
+        if password is not None:
+
+            validated_data['password'] = self.validate_password(password)
+            instance = self.Meta.model(**validated_data)
+            instance.set_password(password)
+
+        instance.save()
+        return instance
+    
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            if attr == 'password':
+                instance.set_password(value)
+            else:
+                setattr(instance, attr, value)
+        instance.save()
+        return instance
+    
+
     class Meta:
         model = User
-        fields = '__all__'
+        extra_kwargs = {'password':{ 'write_only':True}}
+        fields = ('company_name','email', 'password', 'phone', 'address', 'commercial_reg', 'role', 'profile_picture', 'session_token')

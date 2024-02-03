@@ -32,6 +32,7 @@ urlpatterns = [
     path('category/',  include('category.urls')),
     path('order/',  include('order.urls')),
     path('config/',  include('configuration.urls')),
+    path('user/',  include('user.urls'))
 
 ]
 
