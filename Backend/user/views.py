@@ -41,6 +41,9 @@ def signin(request):
             usr_dict = UserModel.objects.filter(email=email).values().first()
             usr_dict.pop('password')
             
+            if not user.is_active:
+                return JsonResponse({'error': 'your account has not been activated'})
+            
             if user.session_token != "0":
                 user.session_token = "0"
                 user.save()
@@ -84,6 +87,37 @@ def is_valid_session(id, token):
     except UserModel.DoesNotExist:
         return False
     
+@csrf_exempt
+def activate_user_account(request, id): 
+    
+    UserModel = get_user_model()
+
+    try:
+        user = UserModel.objects.get(pk=id)
+    except UserModel.DoesNotExist:
+        return JsonResponse({'error': 'User does not exist'})
+
+    if not user.role == 'ADMIN':
+        return JsonResponse({'error': 'cannot perform this action'})
+    
+    if request.method == "POST":
+        user_id = request.POST['user_id']
+        activation_status = request.POST['activation_status']
+        
+        try:
+            user_account = UserModel.objects.get(pk=user_id)
+        except UserModel.DoesNotExist:
+            return JsonResponse({'error': 'User does not exist'})
+
+        if user_account.role == 'ADMIN':
+            return JsonResponse({'error': 'you cannot modify the admin account'})
+
+        user_account.is_active = activation_status.capitalize()
+        user_account.save()
+        return JsonResponse({'success': 'User account activated successfully'})
+
+    return JsonResponse({'error': 'Invalid request method'})
+
 
 # Create your views here.
 class UserViewSet(viewsets.ModelViewSet) :
