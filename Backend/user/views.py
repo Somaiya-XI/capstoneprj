@@ -71,6 +71,19 @@ def signout(request, id):
     
     return JsonResponse({'success': 'Logged out successfully'})
     
+def is_valid_session(id, token):
+    #method to be used for checking the incoming requests from clients 
+    #e.g: if is_valid_session(): return JsonResponse..
+
+    UserModel = get_user_model()
+    try:
+        user = UserModel.objects.get(pk=id)
+        if user.session_token == token:
+            return True
+        return False
+    except UserModel.DoesNotExist:
+        return False
+    
 
 # Create your views here.
 class UserViewSet(viewsets.ModelViewSet) :
