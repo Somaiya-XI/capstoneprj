@@ -5,6 +5,7 @@ from .models import User
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model, login, logout
 from django.views.decorators.csrf import csrf_exempt
+from .decorators import unauthenticated_user, allowed_users
 
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
@@ -88,6 +89,7 @@ def is_valid_session(id, token):
         return False
     
 @csrf_exempt
+
 def activate_user_account(request, id): 
     
     UserModel = get_user_model()
@@ -126,6 +128,8 @@ class UserViewSet(viewsets.ModelViewSet) :
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    # @unauthenticated_user
+    # @allowed_users(allowed_roles=['admin'])
     def get_permissions(self):
         try:
             return [permission () for permission in self.permission_classes_by_action[self.action]]
