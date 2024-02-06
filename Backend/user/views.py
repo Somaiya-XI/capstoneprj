@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.models import Group
 from django.views.decorators.csrf import csrf_exempt
-from .decorators import unauthenticated_user, allowed_users,admin_only 
+# from .decorators import unauthenticated_user, allowed_users,admin_only 
 from rest_framework.permissions import IsAuthenticated
 
 from rest_framework.decorators import action
