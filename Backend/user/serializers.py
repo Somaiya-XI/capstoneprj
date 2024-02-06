@@ -1,10 +1,8 @@
-
 from rest_framework import serializers
-from django.contrib.auth.hashers import make_password
 from rest_framework.exceptions import ValidationError
 
 from .models import User
-
+import re
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -25,7 +23,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     def create(self, validated_data):
         password = validated_data.pop('password', None)
-        
+        email = validated_data.get("email")
+
+        if not re.match('^[\w\.\+\-]+@[\w]+\.[a-z]{2,3}$', email):
+            raise ValidationError('Please enter a valid email address')
+
         if password is not None:
 
             validated_data['password'] = self.validate_password(password)
@@ -34,7 +36,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
         instance.save()
         return instance
-    
+
     def update(self, instance, validated_data):
         for attr, value in validated_data.items():
             if attr == 'password':
@@ -43,9 +45,18 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
                 setattr(instance, attr, value)
         instance.save()
         return instance
-    
 
     class Meta:
         model = User
-        extra_kwargs = {'password':{ 'write_only':True}}
-        fields = ('company_name','email', 'password', 'phone', 'address', 'commercial_reg', 'role', 'profile_picture', 'session_token')
+        extra_kwargs = {'password': {'write_only': True}}
+        fields = (
+            'company_name',
+            'email',
+            'password',
+            'phone',
+            'address',
+            'commercial_reg',
+            'role',
+            'profile_picture',
+            'session_token',
+        )

@@ -16,11 +16,9 @@ import random
 import re
 
 
-
 def generate_token(length=10):
     token = ''.join(random.SystemRandom().choice([chr(i) for i in range(97, 123)]+ [str(i) for i in range(10)]) for _ in range(length))
     return token
-
 
 
 @csrf_exempt
@@ -29,41 +27,54 @@ def generate_token(length=10):
 # @allowed_users(allowed_roles=['admin'])
 def signin(request):
     if not request.method == 'POST':
-        return JsonResponse({'error': 'Please send a POST request with valid parameter'})
-    
+        return JsonResponse(
+            {'error': 'Please send a POST request with valid parameter'}
+        )
+
     email = request.POST['email']
     password = request.POST['password']
 
-    if not re.match('^[\w\.\+\-]+@[\w]+\.[a-z]{2,}$', email):
+    if not email and not password:
+        return JsonResponse({'error': 'please fill all the required feilds'})
+
+    if not email:
+        return JsonResponse({'error': 'Email field is required'})
+
+    if not password:
+        return JsonResponse({'error': 'Password field is required'})
+
+    if not re.match('^[\w\.\+\-]+@[\w]+\.[a-z]{2,3}$', email):
         return JsonResponse({'error': 'Please enter a valid email address'})
-        
+
     UserModel = get_user_model()
 
     try:
         user = UserModel.objects.get(email=email)
-        
+
         if user.check_password(password):
             usr_dict = UserModel.objects.filter(email=email).values().first()
             usr_dict.pop('password')
-            
+
             if not user.is_active:
                 return JsonResponse({'error': 'your account has not been activated'})
-            
+
             if user.session_token != "0":
                 user.session_token = "0"
                 user.save()
-                return JsonResponse({'error': 'Leaving an ongoing session...\nPlease try again!'})
-            
+                return JsonResponse(
+                    {'error': 'Leaving an ongoing session...\nPlease try again!'}
+                )
+
             token = generate_token()
             user.session_token = token
             user.save()
             login(request, user)
             return JsonResponse({'token': token, 'user': usr_dict})
         else:
-            return JsonResponse({'error': 'Invalid password'} )
+            return JsonResponse({'error': 'Invalid password'})
     except UserModel.DoesNotExist:
-        return JsonResponse({'error': 'Invalid email address'})
-    
+        return JsonResponse({'error': 'This email address does not exist'})
+
 
 def signout(request, id):
     logout(request)
@@ -76,12 +87,13 @@ def signout(request, id):
         user.save()
     except UserModel.DoesNotExist:
         return JsonResponse({'error': 'Invalid user id'})
-    
+
     return JsonResponse({'success': 'Logged out successfully'})
-    
+
+
 def is_valid_session(id, token):
-    #method to be used for checking the incoming requests from clients 
-    #e.g: if is_valid_session(): return JsonResponse..
+    # method to be used for checking the incoming requests from clients
+    # e.g: if is_valid_session(): return JsonResponse..
 
     UserModel = get_user_model()
     try:
@@ -91,12 +103,11 @@ def is_valid_session(id, token):
         return False
     except UserModel.DoesNotExist:
         return False
-    
-@csrf_exempt
 
-@allowed_users(allowed_roles=['admin'])
-def activate_user_account(request, id): 
-    
+
+@csrf_exempt
+def activate_user_account(request, id):
+
     UserModel = get_user_model()
 
     try:
@@ -106,11 +117,11 @@ def activate_user_account(request, id):
 
     if not user.role == 'ADMIN':
         return JsonResponse({'error': 'cannot perform this action'})
-    
+
     if request.method == "POST":
         user_id = request.POST['user_id']
         activation_status = request.POST['activation_status']
-        
+
         try:
             user_account = UserModel.objects.get(pk=user_id)
         except UserModel.DoesNotExist:
@@ -127,7 +138,7 @@ def activate_user_account(request, id):
 
 
 # Create your views here.
-class UserViewSet(viewsets.ModelViewSet) :
+class UserViewSet(viewsets.ModelViewSet):
     permission_classes_by_action = {'create': [AllowAny]}
 
     queryset = User.objects.all()
@@ -137,6 +148,9 @@ class UserViewSet(viewsets.ModelViewSet) :
    
     def get_permissions(self):
         try:
-            return [permission () for permission in self.permission_classes_by_action[self.action]]
+            return [
+                permission()
+                for permission in self.permission_classes_by_action[self.action]
+            ]
         except KeyError:
             return [permission() for permission in self.permission_classes]
