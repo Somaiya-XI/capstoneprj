@@ -4,8 +4,10 @@ from .serializers import UserSerializer
 from .models import User
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model, login, logout
+from django.contrib.auth.models import Group
 from django.views.decorators.csrf import csrf_exempt
-from .decorators import unauthenticated_user, allowed_users
+from .decorators import unauthenticated_user, allowed_users,admin_only 
+from rest_framework.permissions import IsAuthenticated
 
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
@@ -23,6 +25,8 @@ def generate_token(length=10):
 
 @csrf_exempt
 @action(detail=False)
+# @unauthenticated_user
+# @allowed_users(allowed_roles=['admin'])
 def signin(request):
     if not request.method == 'POST':
         return JsonResponse({'error': 'Please send a POST request with valid parameter'})
@@ -90,6 +94,7 @@ def is_valid_session(id, token):
     
 @csrf_exempt
 
+@allowed_users(allowed_roles=['admin'])
 def activate_user_account(request, id): 
     
     UserModel = get_user_model()
@@ -127,9 +132,9 @@ class UserViewSet(viewsets.ModelViewSet) :
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    
 
-    # @unauthenticated_user
-    # @allowed_users(allowed_roles=['admin'])
+   
     def get_permissions(self):
         try:
             return [permission () for permission in self.permission_classes_by_action[self.action]]

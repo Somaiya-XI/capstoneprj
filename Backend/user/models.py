@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import Permission, User, Group
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 import uuid
@@ -30,6 +31,8 @@ class User(AbstractUser):
         if not self.pk:
             self.role = self.role
         return super().save(*args, **kwargs)
+    # # group = Group.objects.get(username='')
+    # user.groups.add()
 
 
 class SupplierUserGetter(BaseUserManager):
@@ -101,3 +104,27 @@ class RetailerProfile(models.Model):
 def create_user_profile(sender, instance, created, **kwargs):
     if created and instance.role == "RETAILER":
         RetailerProfile.objects.create(user=instance)
+
+# @receiver(models.signals.post_migrate)
+# class CustomUserPermissions:
+#     class Meta:
+#         permissions = (
+#             ("view_all_users", "Can view all users"),
+#             ("edit_all_users", "Can edit all users"),
+#             ("delete_users", "Can delete users"),
+
+#         )
+#         user = User.objects.get(username='admin')
+#         view_all_users_permission = Permission.objects.get(codename='view_all_users')
+#         edit_all_users_permission = Permission.objects.get(codename='edit_all_users')
+#         delete_users_permission = Permission.objects.get(codename='delete_users')
+
+#         user.user_permissions.add(view_all_users_permission)
+#         user.user_permissions.add(edit_all_users_permission)
+#         user.user_permissions.add(delete_users_permission)
+#         user.save()
+        
+# user = User.objects.get(username='Admin')
+# print(user.get_all_permissions())
+
+
