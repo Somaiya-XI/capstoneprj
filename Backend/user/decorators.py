@@ -3,15 +3,19 @@ from django.shortcuts import redirect
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
 
+
 error_message = ('Error: You do not have permission to access this page.')
 # Registerd/Unregisterd users privilges for both sign up or login
 def unauthenticated_user(view_func):
     def wrapper_func(request, *args, **kwargs):
-        if request.IsAuthenticated:
-            redirect('Landing Page')
+        if request.user.is_authenticated:
+            return JsonResponse({'redirect_url': 'http://localhost:5173'})
         else:
             return view_func(request, *args, **kwargs)
+    # return wrapper_func
     return wrapper_func
+
+
 
 
 def allowed_privileges(allowed_roles=[]):
@@ -32,12 +36,6 @@ def allowed_privileges(allowed_roles=[]):
                 return HttpResponse(error_message)
         return wrapper_func
     return decorator
-
-# Usage example
-# @admin_only = dashboard_privileges('Admin')
-# @retailer_only = dashboard_privileges('Retailer')
-# @supplier_only = dashboard_privileges('Supplier')
-
 
 # # Admin Dashborad Priviliges
 # def admin_only(view_func):

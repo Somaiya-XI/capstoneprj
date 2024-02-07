@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, generics, status
 from rest_framework.permissions import AllowAny
 from .serializers import UserSerializer
 from .models import User
@@ -6,11 +6,13 @@ from django.http import JsonResponse
 from django.contrib.auth import get_user_model, login, logout
 from django.contrib.auth.models import Group
 from django.views.decorators.csrf import csrf_exempt
-# from .decorators import unauthenticated_user, allowed_users,admin_only 
+from .decorators import unauthenticated_user
 from rest_framework.permissions import IsAuthenticated
 
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response 
+
 
 import random
 import re
@@ -23,7 +25,7 @@ def generate_token(length=10):
 
 @csrf_exempt
 @action(detail=False)
-# @unauthenticated_user
+@unauthenticated_user
 # @allowed_users(allowed_roles=['admin'])
 def signin(request):
     if not request.method == 'POST':
@@ -143,10 +145,24 @@ class UserViewSet(viewsets.ModelViewSet):
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+# @api_view(['GET', 'POST'])
+# @permission_classes([IsAuthenticated])
+# def dashboard(request):
+#     if request.method == "GET":
+#         response = f"Hey {request.user}, you are screenig a GET"
+#     elif request.method == "POST":
+#         text = request.POST.get("text")
+#         response = f"Hey {request.user}, your text is {text}"
+#         return Response({'response':response}, status=status.HTTP_200_OK)
+
+#     return Response({}, status=status.HTTP_400_BAD_REQUEST)
+        
+
     
 
    
-    def get_permissions(self):
+def get_permissions(self):
         try:
             return [
                 permission()

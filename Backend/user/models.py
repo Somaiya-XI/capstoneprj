@@ -41,8 +41,7 @@ class User(AbstractUser):
         if not self.pk:
             self.role = self.role
         return super().save(*args, **kwargs)
-    # # group = Group.objects.get(username='')
-    # user.groups.add()
+
 
 
 class SupplierUserGetter(BaseUserManager):

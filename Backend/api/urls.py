@@ -6,7 +6,7 @@ from .views import homepage
 
 #handle the views of the api/
 urlpatterns = [
-    path('', homepage, name='api.homepage'),
+    path('http://localhost:5173/', homepage, name='api.homepage'),
 
 
 ]
