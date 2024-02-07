@@ -26,6 +26,7 @@ urlpatterns = [
     #rest api urls handled by:
     path('api-auth/', include('rest_framework.urls')),
     path('api/',  include('api.urls')),
+     path('api2/',  include('user.urls')),
 
     #custom apps urls:
     path('product/',  include('product.urls')),
