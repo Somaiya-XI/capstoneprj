@@ -1,0 +1,22 @@
+.image-container {
+  background-color: #ffffff;
+  border: 1px solid rgb(194, 193, 193);
+  border-radius: 4px;
+  display: inline-block;
+  text-align: right;
+  display: block;
+  margin-bottom: 4%;
+}
+
+.image {
+  width: 300px;
+  height: 300px;
+  margin-top: 8%;
+}
+
+.bt {
+  margin-right: 5.4%;
+  margin-top: 5%;
+  margin-bottom: 2%;
+  background-color: #2c742f;
+}
