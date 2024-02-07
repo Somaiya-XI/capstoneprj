@@ -1,9 +1,19 @@
-import React, { useState } from 'react';
-import { Link, redirect } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import useAuth from '../hooks/useAuth';
+import { Link, redirect, useNavigate, useLocation } from 'react-router-dom';
 import '../assets/form.css';
 import { signin, authenticate, isAuthenticated } from '../auth';
 
+
 const Signin = () => {
+  const {setAuth} = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from.pathname || "/";
+
+  
+
+
   const [values, setValues] = useState({
     email: '',
     password: '',
@@ -33,6 +43,7 @@ const Signin = () => {
           let sessionToken = data.token;
           authenticate(sessionToken, () => {
             console.log('Token Added');
+            
             setValues({
               ...values,
               email: '',
@@ -40,8 +51,8 @@ const Signin = () => {
               error: '',
               success: true,
               didRedirect: true,
-            });
-          });
+            }); 
+          }); navigate(from, {replace: true});
         } else {
           setValues({ ...values, error: data.error, success: false });
         }
