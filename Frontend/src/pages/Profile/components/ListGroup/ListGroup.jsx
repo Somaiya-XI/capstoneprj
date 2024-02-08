@@ -109,10 +109,23 @@ class ListGroup extends React.Component {
                   <Labels
                     label1={"Company Name"}
                     label2={output.company_name}
+                    ltype={"text"}
                   />
-                  <Labels label1={"Email"} label2={output.email} />
-                  <Labels label1={"Phone Number"} label2={output.phone} />
-                  <Labels label1={"Address"} label2={output.address} />
+                  <Labels
+                    label1={"Email"}
+                    label2={output.email}
+                    ltype={"email"}
+                  />
+                  <Labels
+                    label1={"Phone Number"}
+                    label2={output.phone}
+                    ltype={"tel"}
+                  />
+                  <Labels
+                    label1={"Address"}
+                    label2={output.address}
+                    ltype={"text"}
+                  />
                 </div>
               ) : null
             )
