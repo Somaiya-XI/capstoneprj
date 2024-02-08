@@ -107,10 +107,7 @@ class ListGroup extends React.Component {
                     label2={output.company_name}
                   />
                   <Labels label1={"Email"} label2={output.email} />
-                  <Labels
-                    label1={"Phone Number"}
-                    label2={"+966 " + output.phone}
-                  />
+                  <Labels label1={"Phone Number"} label2={output.phone} />
                   <Labels label1={"Address"} label2={output.address} />
                 </div>
               ) : null

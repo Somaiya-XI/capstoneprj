@@ -32,7 +32,7 @@
 .list-item:hover {
   color: #2c742f;
   cursor: pointer;
-  border-left: 2px solid #2c742f;
+  border-left: 3px solid #023c07;
 }
 
 .info-container {
