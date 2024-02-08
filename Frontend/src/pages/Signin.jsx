@@ -3,15 +3,22 @@ import useAuth from '../hooks/useAuth';
 import { Link, redirect, useNavigate, useLocation } from 'react-router-dom';
 import '../assets/form.css';
 import { signin, authenticate, isAuthenticated } from '../auth';
+import Home from './Home';
+
+
 
 
 const Signin = () => {
-  const {setAuth} = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from.pathname || "/";
 
-  
+ const RedirectUser = () => {
+    if (isAuthenticated()) {
+      return <redirect to="/signup" />;
+    } 
+    
+  };  
 
 
   const [values, setValues] = useState({
@@ -43,7 +50,7 @@ const Signin = () => {
           let sessionToken = data.token;
           authenticate(sessionToken, () => {
             console.log('Token Added');
-            
+            <redirect to={Home} />;
             setValues({
               ...values,
               email: '',
@@ -52,7 +59,7 @@ const Signin = () => {
               success: true,
               didRedirect: true,
             }); 
-          }); navigate(from, {replace: true});
+          }); 
         } else {
           setValues({ ...values, error: data.error, success: false });
         }
@@ -61,11 +68,8 @@ const Signin = () => {
       .catch((e) => console.log(e));
   };
 
-  // const RedirectUser = () => {
-  //   if (isAuthenticated()) {
-  //     return <redirect to='/signup' />;
-  //   }
-  // };
+ 
+  
 
   const successMsg = () => {
     return (
@@ -139,6 +143,7 @@ const Signin = () => {
                   type='button'
                   value='Login'
                   onClick={onSubmit}
+                  
                 />
               </form>
               {/* <Link to='' className='forgot-password-link'>
