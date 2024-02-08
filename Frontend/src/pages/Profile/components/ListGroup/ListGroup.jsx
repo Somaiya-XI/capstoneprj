@@ -76,7 +76,9 @@ class ListGroup extends React.Component {
           <div className="list-container">
             <ul className="list">
               <li
-                className="list-item"
+                className={
+                  this.state.flag === 1 ? "list-item list-item2" : "list-item"
+                }
                 onClick={() => {
                   this.setState({
                     flag: 1,
@@ -86,7 +88,9 @@ class ListGroup extends React.Component {
                 Profile
               </li>
               <li
-                className="list-item"
+                className={
+                  this.state.flag === 2 ? "list-item list-item2" : "list-item"
+                }
                 onClick={() => {
                   this.setState({
                     flag: 2,

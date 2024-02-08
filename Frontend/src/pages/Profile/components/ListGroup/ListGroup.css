@@ -30,9 +30,12 @@
 }
 
 .list-item:hover {
-  color: #2c742f;
   cursor: pointer;
-  border-left: 3px solid #023c07;
+}
+
+.list-item2 {
+  color: #2c742f;
+  border-left: 4px solid #023c07;
 }
 
 .info-container {
