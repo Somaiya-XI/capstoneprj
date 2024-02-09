@@ -12,14 +12,15 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path='/user-activation' element={<UserActivation />} />
         <Route path='/profile' element={<Profile />} />
         <Route path='/' element={<Home />} />
         <Route path='/signup' element={<Signup />} />
         <Route path='/signin' element={<Signin />} />
-        <Route path='/unauth' element={<Unauthorized />} />
-        <Route element={<RequireAuth />}></Route>
+      
+        {/* <Route element={<RequireAuth />}></Route> */}
 
-        <Route path='/user-activation' element={<UserActivation />} />
+        
       </Routes>
     </Router>
   );
