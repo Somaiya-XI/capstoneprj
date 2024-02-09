@@ -6,8 +6,7 @@ import Signin from './pages/Signin';
 import Profile from './pages/Profile/Profile.jsx';
 import Unauthorized from './pages/Unauthorized';
 import RequireAuth from './auth/RequireAuth';
-
-
+import UserActivation from './pages/ActivateUsers.jsx';
 
 function App() {
   return (
@@ -18,10 +17,8 @@ function App() {
         <Route path='/' element={<Home />} />
         <Route path='/signup' element={<Signup />} />
         <Route path='/signin' element={<Signin />} />
-      
-        {/* <Route element={<RequireAuth />}></Route> */}
 
-        
+        {/* <Route element={<RequireAuth />}></Route> */}
       </Routes>
     </Router>
   );

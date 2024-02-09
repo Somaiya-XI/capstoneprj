@@ -11,8 +11,6 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .serializers import UserSerializer
 from .models import User
-from .decorators import unauthenticated_user
-from rest_framework.decorators import action
 
 import random
 import re
@@ -33,8 +31,6 @@ def generate_token(length=10):
 
 @csrf_exempt
 @action(detail=False)
-@unauthenticated_user
-# @allowed_users(allowed_roles=['admin'])
 def signin(request):
     if not request.method == 'POST':
         return JsonResponse(
@@ -115,38 +111,6 @@ def is_valid_session(id, token):
         return False
 
 
-@csrf_exempt
-def activate_user_account(request, id):
-
-    UserModel = get_user_model()
-
-    try:
-        user = UserModel.objects.get(pk=id)
-    except UserModel.DoesNotExist:
-        return JsonResponse({'error': 'User does not exist'})
-
-    if not user.role == 'ADMIN':
-        return JsonResponse({'error': 'cannot perform this action'})
-
-    if request.method == "POST":
-        user_id = request.POST['user_id']
-        activation_status = request.POST['activation_status']
-
-        try:
-            user_account = UserModel.objects.get(pk=user_id)
-        except UserModel.DoesNotExist:
-            return JsonResponse({'error': 'User does not exist'})
-
-        if user_account.role == 'ADMIN':
-            return JsonResponse({'error': 'you cannot modify the admin account'})
-
-        user_account.is_active = activation_status.capitalize()
-        user_account.save()
-        return JsonResponse({'success': 'User account activated successfully'})
-
-    return JsonResponse({'error': 'Invalid request method'})
-
-
 def users_api(request):
 
     UserModel = get_user_model()
@@ -221,32 +185,29 @@ def activate_user_account(request):
     return JsonResponse({'error': 'Invalid request method'})
 
 
-# Create your views here.
 class UserViewSet(viewsets.ModelViewSet):
     permission_classes_by_action = {'create': [AllowAny]}
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    # @api_view(['GET', 'POST'])
+    # @permission_classes([IsAuthenticated])
+    # def dashboard(request):
+    #     if request.method == "GET":
+    #         response = f"Hey {request.user}, you are screenig a GET"
+    #     elif request.method == "POST":
+    #         text = request.POST.get("text")
+    #         response = f"Hey {request.user}, your text is {text}"
+    #         return Response({'response':response}, status=status.HTTP_200_OK)
 
-# @api_view(['GET', 'POST'])
-# @permission_classes([IsAuthenticated])
-# def dashboard(request):
-#     if request.method == "GET":
-#         response = f"Hey {request.user}, you are screenig a GET"
-#     elif request.method == "POST":
-#         text = request.POST.get("text")
-#         response = f"Hey {request.user}, your text is {text}"
-#         return Response({'response':response}, status=status.HTTP_200_OK)
+    #     return Response({}, status=status.HTTP_400_BAD_REQUEST)
 
-#     return Response({}, status=status.HTTP_400_BAD_REQUEST)
-
-
-def get_permissions(self):
-    try:
-        return [
-            permission()
-            for permission in self.permission_classes_by_action[self.action]
-        ]
-    except KeyError:
-        return [permission() for permission in self.permission_classes]
+    def get_permissions(self):
+        try:
+            return [
+                permission()
+                for permission in self.permission_classes_by_action[self.action]
+            ]
+        except KeyError:
+            return [permission() for permission in self.permission_classes]

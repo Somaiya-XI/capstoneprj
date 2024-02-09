@@ -5,20 +5,15 @@ import '../assets/form.css';
 import { signin, authenticate, isAuthenticated } from '../auth';
 import Home from './Home';
 
-
-
-
 const Signin = () => {
   const location = useLocation();
-  const from = location.state?.from.pathname || "/";
+  const from = location.state?.from.pathname || '/';
 
- const RedirectUser = () => {
+  const RedirectUser = () => {
     if (isAuthenticated()) {
-      return <redirect to="/signup" />;
-    } 
-    
-  };  
-
+      return <redirect to='/signup' />;
+    }
+  };
 
   const [values, setValues] = useState({
     email: '',
@@ -50,8 +45,6 @@ const Signin = () => {
           authenticate(sessionToken, () => {
             console.log('Token Added');
             // replace the signin in their navigation history to their location they came from
-            
-            
 
             setValues({
               ...values,
@@ -60,19 +53,15 @@ const Signin = () => {
               error: '',
               success: true,
               didRedirect: true,
-            }
-            ); 
-          }); 
+            });
+          });
         } else {
           setValues({ ...values, error: data.error, success: false });
         }
       })
 
       .catch((e) => console.log(e));
-  }; 
-
- 
-  
+  };
 
   const successMsg = () => {
     return (
@@ -82,15 +71,13 @@ const Signin = () => {
             <div
               className='alert alert-success'
               style={{ display: success ? '' : 'none' }}
-              
             >
               You Logged in Successfully
-              
             </div>
           </div>
         </div>
       </div>
-    ); 
+    );
   };
 
   const errorMsg = () => {
@@ -99,7 +86,6 @@ const Signin = () => {
         <div className=''>
           <div className=''>
             {error && <div className='alert alert-danger'>{error}</div>}
-            
           </div>
         </div>
       </div>
@@ -149,7 +135,6 @@ const Signin = () => {
                   type='button'
                   value='Login'
                   onClick={onSubmit}
-                  
                 />
               </form>
               {/* <Link to='' className='forgot-password-link'>
@@ -178,7 +163,7 @@ const Signin = () => {
   return (
     <div>
       {signInForm()}
-      
+
       <p></p>
     </div>
   );

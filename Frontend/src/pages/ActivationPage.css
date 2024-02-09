@@ -10,7 +10,10 @@
   display: grid;
   grid-template-rows: auto 1fr auto;
   place-items: center;
-  min-width: 320px;
+}
+
+.tbody table {
+  width: 100%;
 }
 
 body {
@@ -63,6 +66,7 @@ h2 {
 
 .table-rounded td {
   padding: 10px;
+  table-layout: fixed;
 }
 
 .table-rounded tr:nth-child(even) td {
@@ -74,6 +78,7 @@ h2 {
 }
 
 .thead-green th {
+  table-layout: fixed;
   font-weight: 600;
   color: #ffffff;
   background-color: #617f62;
