@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import useAuth from '../hooks/useAuth';
-import { Link, redirect, useNavigate, useLocation } from 'react-router-dom';
+import { Link, Navigate, useLocation } from 'react-router-dom';
 import '../assets/form.css';
 import { signin, authenticate, isAuthenticated } from '../auth';
 import Home from './Home';
@@ -9,7 +9,6 @@ import Home from './Home';
 
 
 const Signin = () => {
-  const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from.pathname || "/";
 
@@ -50,7 +49,10 @@ const Signin = () => {
           let sessionToken = data.token;
           authenticate(sessionToken, () => {
             console.log('Token Added');
-            <redirect to={Home} />;
+            // replace the signin in their navigation history to their location they came from
+            
+            
+
             setValues({
               ...values,
               email: '',
@@ -58,7 +60,8 @@ const Signin = () => {
               error: '',
               success: true,
               didRedirect: true,
-            }); 
+            }
+            ); 
           }); 
         } else {
           setValues({ ...values, error: data.error, success: false });
@@ -66,7 +69,7 @@ const Signin = () => {
       })
 
       .catch((e) => console.log(e));
-  };
+  }; 
 
  
   
@@ -79,13 +82,15 @@ const Signin = () => {
             <div
               className='alert alert-success'
               style={{ display: success ? '' : 'none' }}
+              
             >
               You Logged in Successfully
+              
             </div>
           </div>
         </div>
       </div>
-    );
+    ); 
   };
 
   const errorMsg = () => {
@@ -94,6 +99,7 @@ const Signin = () => {
         <div className=''>
           <div className=''>
             {error && <div className='alert alert-danger'>{error}</div>}
+            
           </div>
         </div>
       </div>
@@ -172,6 +178,7 @@ const Signin = () => {
   return (
     <div>
       {signInForm()}
+      
       <p></p>
     </div>
   );
