@@ -29,11 +29,26 @@ const Signup = () => {
   } = values;
 
   const handleChange = (name) => (event) => {
-    setValues({
-      ...values,
-      error: [],
-      [name]: event.target.value,
-    });
+    if (name === 'commercial_reg') {
+      const img = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        setValues({
+          ...values,
+          commercial_reg: reader.result,
+        });
+      };
+
+      if (img) {
+        reader.readAsDataURL(img);
+      }
+    } else {
+      setValues({
+        ...values,
+        error: [],
+        [name]: event.target.value,
+      });
+    }
   };
 
   const onSubmit = (event) => {
@@ -59,7 +74,7 @@ const Signup = () => {
         } else if (data.hasOwnProperty('role')) {
           const roleError = ['Please select a role'];
           setValues({ ...values, error: roleError, success: false });
-        } else if (data.hasOwnProperty('password')) {
+        } else if (data.hasOwnProperty('commercial_reg')) {
           setValues({ ...values, error: data.commercial_reg, success: false });
         } else {
           setValues({
@@ -205,7 +220,7 @@ const Signup = () => {
                     className='form-control'
                     id='commercial_register'
                     accept='image/*'
-                    onChange={handleChange('commercial_register')}
+                    onChange={handleChange('commercial_reg')}
                   />
                 </div>
                 <div className='form-group mb-3'>

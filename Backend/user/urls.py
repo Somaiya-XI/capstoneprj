@@ -10,6 +10,8 @@ router.register(r'', views.UserViewSet)
 urlpatterns = [
     path('login/', views.signin, name='signin'),
     path('logout/<int:id>/', views.signout, name='signout'),
-    path('activation/<int:id>/', views.activate_user_account, name='activate.user'),
+    path('activation/', views.activate_user_account, name='activate.user'),
+    path('users/', views.users_api, name='users'),
+    path('images/<path:image_path>', views.fetch_image, name='fetch.img'),
     path('', include(router.urls)),
 ]

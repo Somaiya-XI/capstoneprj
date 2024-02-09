@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap');
+
+.page-container {
+  line-height: 1.5;
+  color-scheme: light dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  place-items: center;
+  min-width: 320px;
+}
+
+body {
+  font-family: 'Poppins', 'Karla', sans-serif;
+}
+
+h2 {
+  font-weight: 600;
+}
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-inner {
+  position: relative;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background-color: none;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.close-button {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: #000000;
+  cursor: pointer;
+}
+
+.table-rounded {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 0.5px solid #dee2e6;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.table-rounded td {
+  padding: 10px;
+}
+
+.table-rounded tr:nth-child(even) td {
+  background-color: #eeeeee;
+}
+
+.table-rounded tr:nth-child(odd) td {
+  background-color: #f7f6f9;
+}
+
+.thead-green th {
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #617f62;
+}
+
+td {
+  text-transform: lowercase;
+}
+
+td:first-letter {
+  text-transform: capitalize;
+}
+
+.activate-btn {
+  background-color: #2b572e;
+  color: white;
+  border-radius: 10px;
+}
+.activate-btn:hover {
+  background-color: #1f3d20;
+  color: white;
+  border-radius: 10px;
+}
+.deactivate-btn {
+  background-color: #666666;
+  color: white;
+  border-radius: 10px;
+}
+.deactivate-btn:hover {
+  background-color: #4d4d4d;
+  color: white;
+  border-radius: 10px;
+}
+
+.dark-green-link {
+  color: #012a05;
+}
+
+.badge-active {
+  background-color: #2b572e;
+  color: white;
+}
+
+.badge-inactive {
+  background-color: #666666;
+  color: white;
+}

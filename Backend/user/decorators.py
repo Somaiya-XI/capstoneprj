@@ -4,7 +4,9 @@ from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
 
 
-error_message = ('Error: You do not have permission to access this page.')
+error_message = 'Error: You do not have permission to access this page.'
+
+
 # Registerd/Unregisterd users privilges for both sign up or login
 def unauthenticated_user(view_func):
     def wrapper_func(request, *args, **kwargs):
@@ -12,10 +14,9 @@ def unauthenticated_user(view_func):
             return JsonResponse({'redirect_url': 'http://localhost:5173'})
         else:
             return view_func(request, *args, **kwargs)
+
     # return wrapper_func
     return wrapper_func
-
-
 
 
 def allowed_privileges(allowed_roles=[]):
@@ -23,19 +24,22 @@ def allowed_privileges(allowed_roles=[]):
         def wrapper_func(request, *args, **kwargs):
             group = None
             if request.user.groups.exists():
-               group = request.user.groups.all()[0].name
+                group = request.user.groups.all()[0].name
 
             if group == 'Admin' in allowed_roles:
                 return redirect('Admin Dashboard')
-            
+
             elif group == 'Retailer' in allowed_roles:
                 return view_func(request, *args, **kwargs)
             elif group == 'Supplier' in allowed_roles:
                 return view_func(request, *args, **kwargs)
             else:
                 return HttpResponse(error_message)
+
         return wrapper_func
+
     return decorator
+
 
 # # Admin Dashborad Priviliges
 # def admin_only(view_func):
@@ -46,15 +50,15 @@ def allowed_privileges(allowed_roles=[]):
 
 #             if group == 'Retailer':
 #                 return redirect('Retailer Dashboard')
-            
+
 #             if group == 'Supplier':
 #                 return redirect('Supplier Dashboard')
-            
+
 #             if group == 'Admin':
 #                 return view_func(request, *args, **kwargs)
 #             else:
 #                 return HttpResponse(error_message)
-#         return wrapper_func 
+#         return wrapper_func
 
 # # Supplier Dashborad Priviliges
 # def supplier_only(view_func):
@@ -65,15 +69,15 @@ def allowed_privileges(allowed_roles=[]):
 
 #             if group == 'Admin':
 #                 return redirect('Admin Dashboard')
-            
+
 #             if group == 'Retailer':
 #                 return redirect('Retailer Dashboard')
-            
+
 #             if group == 'Supplier':
 #                 return view_func(request, *args, **kwargs)
 #             else:
 #                 return HttpResponse(error_message)
-#         return wrapper_func 
+#         return wrapper_func
 
 # # Retailer Dashborad Priviliges
 # def supplier_only(view_func):
@@ -84,18 +88,18 @@ def allowed_privileges(allowed_roles=[]):
 
 #             if group == 'Admin':
 #                 return redirect('Admin Dashboard')
-            
+
 #             if group == 'Supplier':
 #                 return redirect('Supplier Dashboard')
-            
+
 #             if group == 'Retailer':
 #                 return view_func(request, *args, **kwargs)
 #             else:
 #                 return HttpResponse(error_message)
-#         return wrapper_func 
+#         return wrapper_func
 
 # Solely Allowed Group of users to view these pages
-# def allowed_users (allowed_roles=[]): 
+# def allowed_users (allowed_roles=[]):
 #     def decorator (view_func):
 #         def wrapper_func(request, *args, **kwargs):
 #             group = None

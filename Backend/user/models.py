@@ -43,7 +43,6 @@ class User(AbstractUser):
         return super().save(*args, **kwargs)
 
 
-
 class SupplierUserGetter(BaseUserManager):
     def get_queryset(self, *args, **kwargs):
         results = super().get_queryset(*args, **kwargs)
@@ -119,6 +118,7 @@ def create_user_profile(sender, instance, created, **kwargs):
     if created and instance.role == "RETAILER":
         RetailerProfile.objects.create(user=instance)
 
+
 # @receiver(models.signals.post_migrate)
 # class CustomUserPermissions:
 #     class Meta:
@@ -137,8 +137,6 @@ def create_user_profile(sender, instance, created, **kwargs):
 #         user.user_permissions.add(edit_all_users_permission)
 #         user.user_permissions.add(delete_users_permission)
 #         user.save()
-        
+
 # user = User.objects.get(username='Admin')
 # print(user.get_all_permissions())
-
-

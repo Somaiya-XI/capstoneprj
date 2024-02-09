@@ -1,11 +1,13 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+from drf_extra_fields.fields import Base64ImageField
 from .models import User
 import re
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    commercial_reg = Base64ImageField()
 
     def validate_password(self, value):
         errors = []
@@ -33,6 +35,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             validated_data['password'] = self.validate_password(password)
             instance = self.Meta.model(**validated_data)
             instance.set_password(password)
+            instance.is_active = False
 
         instance.save()
         return instance
