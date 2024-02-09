@@ -21,7 +21,7 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path='/user-activation' element={<UserActivation />} />
           <Route element={<RequireAuth/>}>
-          
+          {/* Simply after you're done place the pages that requires authentication here */}
           </Route>
 
 
