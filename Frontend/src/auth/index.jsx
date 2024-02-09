@@ -1,13 +1,13 @@
 import { API } from '../backend';
 
 export const signup = (user) => {
+  const formData = new FormData();
+  for (const name in user) {
+    formData.append(name, user[name]);
+  }
   return fetch(`${API}user/`, {
     method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(user),
+    body: formData,
   })
     .then((response) => {
       return response.json();

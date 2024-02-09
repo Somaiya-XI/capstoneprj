@@ -8,6 +8,9 @@ django = "==5.0.1"
 django-cors-headers = "*"
 djangorestframework = "*"
 pillow = "*"
+drf-extra-fields = "*"
+pytest-django = "*"
+requests = "*"
 
 [dev-packages]
 

@@ -1,25 +1,33 @@
-from rest_framework import viewsets, generics, status
+from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
+from rest_framework.decorators import action
+
+from django.http import JsonResponse, Http404
+from django.contrib.auth import get_user_model, login, logout
+from django.core.serializers import serialize
+from django.conf import settings
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+
 from .serializers import UserSerializer
 from .models import User
-from django.http import JsonResponse
-from django.contrib.auth import get_user_model, login, logout
-from django.contrib.auth.models import Group
-from django.views.decorators.csrf import csrf_exempt
 from .decorators import unauthenticated_user
-from rest_framework.permissions import IsAuthenticated
-
-from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.exceptions import ValidationError
-from rest_framework.response import Response 
-
+from rest_framework.decorators import action
 
 import random
 import re
+import json
+
+import mimetypes
 
 
 def generate_token(length=10):
-    token = ''.join(random.SystemRandom().choice([chr(i) for i in range(97, 123)]+ [str(i) for i in range(10)]) for _ in range(length))
+    token = ''.join(
+        random.SystemRandom().choice(
+            [chr(i) for i in range(97, 123)] + [str(i) for i in range(10)]
+        )
+        for _ in range(length)
+    )
     return token
 
 
@@ -139,12 +147,87 @@ def activate_user_account(request, id):
     return JsonResponse({'error': 'Invalid request method'})
 
 
+def users_api(request):
+
+    UserModel = get_user_model()
+
+    inactive_users = UserModel.objects.filter(role__in=['SUPPLIER', 'RETAILER'])
+
+    users_data = serialize(
+        'json',
+        inactive_users,
+        fields=(
+            'email',
+            'commercial_reg',
+            'role',
+            "profile_picture",
+            'is_active',
+        ),
+    )
+
+    users_data = json.loads(users_data)
+    for user_data in users_data:
+        user_data['fields']['commercial_reg'] = user_data['fields']['commercial_reg']
+
+    return JsonResponse(users_data, safe=False)
+
+
+def fetch_image(request, image_path):
+    UserModel = get_user_model()
+
+    full_path = f"{settings.MEDIA_ROOT}/{image_path}"
+
+    users = UserModel.objects.filter(profile_picture=image_path)
+
+    if not users.exists():
+        users = UserModel.objects.filter(commercial_reg=image_path)
+        if not users.exists():
+            raise Http404("User not found")
+
+    # specify type based on the requested image
+    content_type, _ = mimetypes.guess_type(full_path)
+    if not content_type:
+        content_type = "application/octet-stream"
+
+    with open(full_path, "rb") as image_file:
+        image_data = image_file.read()
+
+    return HttpResponse(image_data, content_type=content_type)
+
+
+@csrf_exempt
+def activate_user_account(request):
+
+    UserModel = get_user_model()
+
+    if request.method == "POST":
+
+        data = json.loads(request.body)
+        user_email = data['user_email']
+        activation_status = data['activation_status']
+
+        try:
+            user_account = UserModel.objects.get(email=user_email)
+        except UserModel.DoesNotExist:
+            return JsonResponse({'error': 'User does not exist'})
+
+        if user_account.role == 'ADMIN':
+            return JsonResponse({'error': 'you cannot modify the admin account'})
+
+        user_account.is_active = activation_status.capitalize()
+        user_account.save()
+        return JsonResponse({'success': 'User account activated successfully'})
+
+    return JsonResponse({'error': 'Invalid request method'})
+
+
 # Create your views here.
 class UserViewSet(viewsets.ModelViewSet):
     permission_classes_by_action = {'create': [AllowAny]}
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
 
 # @api_view(['GET', 'POST'])
 # @permission_classes([IsAuthenticated])
@@ -157,16 +240,13 @@ class UserViewSet(viewsets.ModelViewSet):
 #         return Response({'response':response}, status=status.HTTP_200_OK)
 
 #     return Response({}, status=status.HTTP_400_BAD_REQUEST)
-        
 
-    
 
-   
 def get_permissions(self):
-        try:
-            return [
-                permission()
-                for permission in self.permission_classes_by_action[self.action]
-            ]
-        except KeyError:
-            return [permission() for permission in self.permission_classes]
+    try:
+        return [
+            permission()
+            for permission in self.permission_classes_by_action[self.action]
+        ]
+    except KeyError:
+        return [permission() for permission in self.permission_classes]
