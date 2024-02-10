@@ -1,19 +1,10 @@
-import React, { useState, useContext } from 'react';
-import useAuth from '../hooks/useAuth';
-import { Link, Navigate, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import '../assets/form.css';
 import { signin, authenticate, isAuthenticated } from '../auth';
-import Home from './Home';
 
 const Signin = () => {
-  const location = useLocation();
-  const from = location.state?.from.pathname || '/';
-
-  const RedirectUser = () => {
-    if (isAuthenticated()) {
-      return <redirect to='/signup' />;
-    }
-  };
+  const navigate = useNavigate();
 
   const [values, setValues] = useState({
     email: '',
@@ -44,8 +35,6 @@ const Signin = () => {
           let sessionToken = data.token;
           authenticate(sessionToken, () => {
             console.log('Token Added');
-            // replace the signin in their navigation history to their location they came from
-
             setValues({
               ...values,
               email: '',
@@ -54,6 +43,7 @@ const Signin = () => {
               success: true,
               didRedirect: true,
             });
+            navigate('/');
           });
         } else {
           setValues({ ...values, error: data.error, success: false });
