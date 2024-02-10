@@ -6,7 +6,7 @@ import Signin from './pages/Signin';
 import Profile from './pages/Profile/Profile.jsx';
 import Unauthorized from './pages/Unauthorized';
 import RequireAuth from './auth/RequireAuth';
-import UserActivation from './pages/ActivateUsers.jsx';
+import UserActivation from './pages/Admin/ActivateUsers.jsx';
 
 function App() {
   return (
