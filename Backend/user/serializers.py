@@ -26,6 +26,10 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         password = validated_data.pop('password', None)
         email = validated_data.get("email")
+        commercial_reg = validated_data.get('commercial_reg')
+
+        if commercial_reg is None:
+            raise ValidationError('Commercial Register is required')
 
         if not re.match('^[\w\.\+\-]+@[\w]+\.[a-z]{2,3}$', email):
             raise ValidationError('Please enter a valid email address')

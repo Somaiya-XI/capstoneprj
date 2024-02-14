@@ -25,37 +25,36 @@ SECRET_KEY = 'django-insecure-fy+9%rogiu5g_5i5ge&q)nq6l0zxj8v)4&r!!ari9bwtyz3=k=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-  
-    #Apps to handle react
-    'corsheaders',
+    # Apps to handle react
     'rest_framework',
     'rest_framework.authtoken',
-    #Custom Apps
+    # Custom Apps
     'api',
     'product',
     'order',
     'configuration',
     'category',
-    "user"
+    "user",
 ]
 
 MIDDLEWARE = [
+    # Custom Middleware -for react intigration-
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    #Custom Middleware -for react intigration-
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -64,6 +63,24 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'WiseR.urls'
+
+# CSRF settings
+
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = True
+CSRF_TRUSTED_ORIGINS = ['http://localhost:5173']
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]
+CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = True
+
 
 TEMPLATES = [
     {
@@ -125,13 +142,22 @@ USE_I18N = True
 
 USE_TZ = True
 
+# E-MAIL settings
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'WiseR'
+EMAIL_HOST_USER = 'Wiser.application@gmail.com'  # shall be hidden in production
+EMAIL_HOST_PASSWORD = 'ihufkweeamirusvl'  # shall be hidden in production
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
 
-#Configure Media Dir for project's mediaFiles
+# Configure Media Dir for project's mediaFiles
 MEDIA_URL = 'media/'
 
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -144,21 +170,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "user.User"
 
 
-#corsheader config
-CORS_ALLOW_ALL_ORIGINS = True
+# corsheader config
+# CORS_ALLOW_ALL_ORIGINS = True
 
-#Custom users config
+# Custom users config
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
+        # Session
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ],
-    
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
-
+        #'rest_framework.permissions.IsAuthenticated'
+    ],
 }

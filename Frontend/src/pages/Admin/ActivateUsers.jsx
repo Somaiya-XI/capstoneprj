@@ -85,7 +85,7 @@ const UserActivation = () => {
 
   const handleFilterChange = (status) => {
     let updatedFilteredUsers;
-    const currentUsers = [...users]; // Use a copy of the current users state
+    const currentUsers = [...users];
 
     switch (status) {
       case 'active':
@@ -99,7 +99,7 @@ const UserActivation = () => {
         );
         break;
       default:
-        updatedFilteredUsers = currentUsers; // 'all' or any other value will default to showing all users
+        updatedFilteredUsers = currentUsers;
     }
 
     setValues({

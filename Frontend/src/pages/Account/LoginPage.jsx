@@ -1,0 +1,224 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import './form.css';
+
+const Login = () => {
+  const [csrf, setCSRF] = useState('');
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    getSession();
+  }, []);
+
+  const getCSRF = () => {
+    return axios
+      .get('http://localhost:8000/user/csrf/', { withCredentials: true })
+      .then((response) => {
+        let csrfToken = response.headers['x-csrftoken'];
+        console.log('getcsrf: ', csrfToken);
+        setCSRF(csrfToken);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const getSession = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/user/session/', {
+        withCredentials: true,
+      });
+      const data = response.data;
+      console.log(data);
+      if (data.isAuthenticated) {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+        await getCSRF();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getUser = () => {
+    fetch('http://localhost:8000/user/get-user/', {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Logged in as: ' + data.email);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleChange = (name) => (event) => {
+    if (name === 'email') {
+      setEmail(event.target.value);
+    } else if (name === 'password') {
+      setPassword(event.target.value);
+    }
+  };
+
+  const isResponseOK = (response) => {
+    if (response.status >= 200 && response.status <= 299) {
+      return response;
+    } else {
+      throw Error(response.statusText);
+    }
+  };
+
+  const login = (event) => {
+    event.preventDefault();
+
+    axios
+      .post(
+        'http://localhost:8000/user/login/',
+        {
+          email,
+          password,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrf,
+          },
+          withCredentials: true,
+        }
+      )
+      .then((data) => {
+        console.log('DATA: ' + data);
+        setIsAuthenticated(true);
+        setEmail('');
+        setPassword('');
+        setError('');
+      })
+      .catch((error) => {
+        console.log('error occured', error.response.data.error);
+        if ('password' in error) {
+          error;
+        } else {
+          setError(error.response.data.error);
+        }
+      });
+  };
+
+  const logout = () => {
+    axios
+      .get('http://localhost:8000/user/logout', {
+        withCredentials: true,
+      })
+      .then(isResponseOK)
+      .then((data) => {
+        console.log(data);
+        setIsAuthenticated(false);
+        getCSRF();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className='container-fluid'>
+        <div className='row'>
+          <div className='col-sm-6 login-section-wrapper'>
+            <div className='brand-wrapper'>
+              {error && (
+                <div className='alert alert-danger'>
+                  {error.includes('password') ? (
+                    <div>
+                      Password is incorrect,{' '}
+                      <Link to='/signup' className='text-reset'>
+                        Forgot your password?
+                      </Link>
+                    </div>
+                  ) : (
+                    error
+                  )}
+                </div>
+              )}
+              {/* {error && <div className='alert alert-danger'>{error}</div>} */}
+              {/* {error && <small className='text-danger'>{error}</small>} */}
+            </div>
+
+            <div className='login-wrapper my-auto'>
+              <h1 className='login-title'>Log In</h1>
+              <form onSubmit={login}>
+                <div className='form-group mb-3'>
+                  <label htmlFor='email'>Email</label>
+                  <input
+                    type='text'
+                    value={email}
+                    className='form-control'
+                    placeholder='enter your email'
+                    id='email'
+                    required
+                    autofocus
+                    onChange={handleChange('email')}
+                  />
+                </div>
+                <div className='form-group mb-3'>
+                  <label htmlFor='password'>Password</label>
+                  <input
+                    type='password'
+                    value={password}
+                    className='form-control'
+                    placeholder='enter your password'
+                    id='password'
+                    required
+                    autofocus
+                    onChange={handleChange('password')}
+                  />
+                </div>
+                <button className='btn btn-block login-btn' type='submit'>
+                  Log In
+                </button>
+              </form>
+              <Link to='/forgot-password' className='forgot-password-link'>
+                Forgot password?
+              </Link>
+              <p className='login-wrapper-footer-text'>
+                Don't have an account?{' '}
+                <Link to='/register' className='text-reset'>
+                  Register
+                </Link>
+              </p>
+            </div>
+          </div>
+          <div className='col-sm-6 px-0 d-none d-sm-block'>
+            <img
+              src='https://images.unsplash.com/photo-1617957718645-7680362d6312?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA=='
+              alt='login image'
+              className='login-img'
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className='container-mt-3 p-4'>
+      <h1>Authenticated</h1>
+      <p> Logged in</p>
+      <button className='btn login-btn' onClick={getUser}>
+        Get The User
+      </button>
+      <button className='btn login-btn' onClick={logout}>
+        Log out
+      </button>
+    </div>
+  );
+};
+
+export default Login;

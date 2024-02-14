@@ -1,114 +1,117 @@
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
-from rest_framework.decorators import action
 
-from django.http import JsonResponse, Http404
-from django.contrib.auth import get_user_model, login, logout
+from django.http import JsonResponse, Http404, HttpResponse
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.core.serializers import serialize
 from django.conf import settings
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie, csrf_protect
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import smart_bytes, smart_str
+from django.core.mail import send_mail
+from rest_framework.exceptions import ValidationError
 
 from .serializers import UserSerializer
 from .models import User
-
-import random
+from json.decoder import JSONDecodeError
 import re
 import json
 
 import mimetypes
+from django.shortcuts import redirect
+
+from django.views.decorators.http import require_POST
+from django.middleware.csrf import get_token
 
 
-def generate_token(length=10):
-    token = ''.join(
-        random.SystemRandom().choice(
-            [chr(i) for i in range(97, 123)] + [str(i) for i in range(10)]
-        )
-        for _ in range(length)
-    )
-    return token
+def get_csrf(request):
+    response = JsonResponse({'detail': 'CSRF cookie set'})
+    response['X-CSRFToken'] = get_token(request)
+    print(response['X-CSRFToken'])
+    return response
 
 
-@csrf_exempt
-@action(detail=False)
-def signin(request):
-    if not request.method == 'POST':
-        return JsonResponse(
-            {'error': 'Please send a POST request with valid parameter'}
-        )
+@csrf_protect
+@require_POST
+def login_view(request):
 
-    email = request.POST['email']
-    password = request.POST['password']
+    data = json.loads(request.body)
+    headers = request.META
+
+    print(data)
+    email = data.get('email')
+    password = data.pop('password')
+    csrf_token = headers.get('HTTP_X_CSRFTOKEN')
+
+    print(request.user, 'trying to logg in')
+    UserModel = get_user_model()
 
     if not email and not password:
-        return JsonResponse({'error': 'please fill all the required feilds'})
-
+        return JsonResponse(
+            {'error': 'please fill all the required feilds'}, status=400
+        )
     if not email:
-        return JsonResponse({'error': 'Email field is required'})
+        return JsonResponse({'error': 'Email field is required'}, status=400)
 
     if not password:
-        return JsonResponse({'error': 'Password field is required'})
+        return JsonResponse({'error': 'Password field is required'}, status=400)
 
     if not re.match('^[\w\.\+\-]+@[\w]+\.[a-z]{2,3}$', email):
-        return JsonResponse({'error': 'Please enter a valid email address'})
-
-    UserModel = get_user_model()
-
+        return JsonResponse({'error': 'Please enter a valid email address'}, status=400)
     try:
         user = UserModel.objects.get(email=email)
+        print(user)
 
-        if user.check_password(password):
-            usr_dict = UserModel.objects.filter(email=email).values().first()
-            usr_dict.pop('password')
+        if not user.is_active:
+            return JsonResponse(
+                {'error': 'your account has not been activated'}, status=400
+            )
 
-            if not user.is_active:
-                return JsonResponse({'error': 'your account has not been activated'})
-
-            if user.session_token != "0":
-                user.session_token = "0"
-                user.save()
-                return JsonResponse(
-                    {'error': 'Leaving an ongoing session...\nPlease try again!'}
-                )
-
-            token = generate_token()
-            user.session_token = token
-            user.save()
-            login(request, user)
-            return JsonResponse({'token': token, 'user': usr_dict})
-        else:
-            return JsonResponse({'error': 'Invalid password'})
     except UserModel.DoesNotExist:
-        return JsonResponse({'error': 'This email address does not exist'})
+        return JsonResponse({'error': 'This email address does not exist'}, status=400)
 
+    account = authenticate(email=email, password=password)
 
-def signout(request, id):
-    logout(request)
-
-    UserModel = get_user_model()
-
-    try:
-        user = UserModel.objects.get(pk=id)
-        user.session_token = '0'
+    if account:
+        user = UserModel.objects.get(email=account)
+        user.session_token = csrf_token
         user.save()
-    except UserModel.DoesNotExist:
-        return JsonResponse({'error': 'Invalid user id'})
+        login(request, user)
+        return JsonResponse({'message': 'Successfully logged in.'}, status=200)
+    return JsonResponse({'error': 'The password you entered is incorrect'}, status=400)
 
-    return JsonResponse({'success': 'Logged out successfully'})
+
+def logout_view(request):
+
+    # print("user", request.user)
+    # print('session before: ', request.user.session_token)
+    if request.user:
+        request.user.session_token = 0
+        request.user.save()
+        # print('session after: ', request.user.session_token)
+
+    if not request.user.is_authenticated:
+        return JsonResponse({'message': 'You\'re not logged in.'}, status=400)
+
+    logout(request)
+    return JsonResponse({'message': 'Successfully logged out.'})
 
 
-def is_valid_session(id, token):
-    # method to be used for checking the incoming requests from clients
-    # e.g: if is_valid_session(): return JsonResponse..
+@ensure_csrf_cookie
+def session_view(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'isAuthenticated': False})
 
-    UserModel = get_user_model()
-    try:
-        user = UserModel.objects.get(pk=id)
-        if user.session_token == token:
-            return True
-        return False
-    except UserModel.DoesNotExist:
-        return False
+    return JsonResponse({'isAuthenticated': True})
+
+
+def get_user(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'isAuthenticated': False})
+
+    return JsonResponse({'email': request.user.email})
 
 
 def users_api(request):
@@ -183,6 +186,115 @@ def activate_user_account(request):
         return JsonResponse({'success': 'User account activated successfully'})
 
     return JsonResponse({'error': 'Invalid request method'})
+
+
+@csrf_exempt
+def reset_password(request):
+
+    UserModel = get_user_model()
+
+    print('before request')
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        email = data.get('email')
+        print(email)
+
+        try:
+            user = UserModel.objects.get(email=email)
+            if user:
+                token = PasswordResetTokenGenerator().make_token(user)
+                uid = urlsafe_base64_encode(smart_bytes(user.pk))
+                reset_link = f'http://localhost:8000/user/reset-password/{uid}/{token}/'
+                send_mail(
+                    'Password Reset New',
+                    f'Click the following link to reset your password: {reset_link}',
+                    'wiser.application@gmail.com',
+                    [email],
+                    fail_silently=False,
+                )
+                print('email sent')
+                return JsonResponse(
+                    {'message': 'Password reset link sent to your email'}
+                )
+        except UserModel.DoesNotExist:
+            return JsonResponse({'error': 'User with this email does not exist'})
+    else:
+        return JsonResponse(
+            {'error': 'Please send a POST request with valid parameters'}
+        )
+
+
+@csrf_exempt
+def authorize_password_reset(request, uidb64, token):
+
+    UserModel = get_user_model()
+
+    try:
+        uid = smart_str(urlsafe_base64_decode(uidb64))
+        user = UserModel.objects.get(pk=uid)
+        print(uid)
+        print(user)
+        if PasswordResetTokenGenerator().check_token(user, token):
+            # return JsonResponse({'success': 'you can reset your password'})
+            return redirect(
+                f"http://localhost:5173/reset-password/form/{uidb64}/{token}/"
+            )
+        else:
+            return JsonResponse({'error': 'Invalid or expired token'})
+            # redirect(f"http://localhost:5173/reset-password/expired-token/")
+    except (TypeError, ValueError, OverflowError, UserModel.DoesNotExist):
+        return JsonResponse({'error': 'Invalid user ID'}, status=400)
+
+
+@csrf_exempt
+def set_new_password(request):
+    UserModel = get_user_model()
+    serializer = UserSerializer()
+
+    try:
+
+        if request.method == 'POST':
+            data = json.loads(request.body)
+            print("data", data)
+
+            uidb64 = data.get('uidb64')
+            token = data.get('token')
+            new_password = data.get('new_password')
+            print(uidb64, token, new_password)
+            if uidb64 and token and new_password:
+                try:
+                    uid = smart_str(urlsafe_base64_decode(uidb64))
+                    print(uid)
+                    user = UserModel.objects.get(pk=uid)
+                    print(user)
+                    if PasswordResetTokenGenerator().check_token(user, token):
+                        try:
+                            validated_password = serializer.validate_password(
+                                new_password
+                            )
+                        except ValidationError as e:
+                            errors = e.detail
+                            return JsonResponse({'error': errors})
+
+                        user.set_password(validated_password)
+                        user.save()
+                        return JsonResponse({'message': 'Password reset successfully'})
+                    else:
+                        return JsonResponse(
+                            {'error': 'Invalid or expired token'}, status=400
+                        )
+                except UserModel.DoesNotExist:
+                    return JsonResponse({'error': 'Invalid user ID'}, status=400)
+            else:
+                return JsonResponse({'error': 'please enter a password!'})
+
+        else:
+            return JsonResponse(
+                {'error': 'Please send a POST request with valid parameters'},
+                status=400,
+            )
+    except JSONDecodeError:
+        return JsonResponse({'error': 'pleas send a valid request'})
 
 
 class UserViewSet(viewsets.ModelViewSet):
