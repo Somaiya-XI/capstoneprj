@@ -36,9 +36,8 @@ function SupplierDashboard() {
             onSearch={value => console.log(value)} />
 
         </Header>
-
-
         <Layout>
+          
           <Products />
         </Layout>
       </Layout>
