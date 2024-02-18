@@ -64,7 +64,8 @@ def login_view(request):
     try:
         user = UserModel.objects.get(email=email)
         print(user)
-
+        user_role = user.role
+        print(user_role)
         if not user.is_active:
             return JsonResponse(
                 {'error': 'your account has not been activated'}, status=400
@@ -80,7 +81,10 @@ def login_view(request):
         user.session_token = csrf_token
         user.save()
         login(request, user)
-        return JsonResponse({'message': 'Successfully logged in.'}, status=200)
+        return JsonResponse(
+            {'message': 'Successfully logged in.', 'role': user_role},
+            status=200,
+        )
     return JsonResponse({'error': 'The password you entered is incorrect'}, status=400)
 
 

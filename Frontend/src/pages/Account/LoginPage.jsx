@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import UserContext from '../../hooks/UserContext';
 import axios from 'axios';
 import './form.css';
 
 const Login = () => {
-  const [csrf, setCSRF] = useState('');
+  const { role, setRole, csrf, setCSRF, isAuthenticated, setIsAuthenticated } =
+    useContext(UserContext);
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     getSession();
@@ -94,12 +96,13 @@ const Login = () => {
           withCredentials: true,
         }
       )
-      .then((data) => {
-        console.log('DATA: ' + data);
+      .then((response) => {
+        console.log('DATA: ', response.data);
         setIsAuthenticated(true);
         setEmail('');
         setPassword('');
         setError('');
+        setRole(response.data.role);
       })
       .catch((error) => {
         console.log('error occured', error.response.data.error);
@@ -125,6 +128,10 @@ const Login = () => {
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  const handleButton = (event) => {
+    navigate('/user-activation');
   };
 
   if (!isAuthenticated) {
@@ -216,6 +223,9 @@ const Login = () => {
       </button>
       <button className='btn login-btn' onClick={logout}>
         Log out
+      </button>
+      <button className='btn login-btn' onClick={handleButton}>
+        Go to admin
       </button>
     </div>
   );
