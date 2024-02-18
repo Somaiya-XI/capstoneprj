@@ -1,5 +1,5 @@
 import * as React from "react";
-import "./Supplier.css";
+import "./Supplier.css"
 const Logo = (props) => (
   <svg className="WiserLogo"
     viewBox="0 0 183 67"
