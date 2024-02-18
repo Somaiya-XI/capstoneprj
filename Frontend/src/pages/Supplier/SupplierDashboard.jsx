@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Button, Layout, Input } from 'antd';
+
 const { Header, Sider } = Layout;
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
+  SearchOutlined,
   
 }
   from '@ant-design/icons'
@@ -30,10 +32,10 @@ function SupplierDashboard() {
             className='toggle'
             onClick={() => setCollapsed(!collapsed)}
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} />
-          <Input className="Search-box"
-            placeholder="Search .."
-            style={{ width: 200 }}
-            onSearch={value => console.log(value)} />
+          <SearchOutlined
+            
+            style={{ width: 100 }}
+            onClick={value => console.log(value)} />
 
         </Header>
         <Layout>

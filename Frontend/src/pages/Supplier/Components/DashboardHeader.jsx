@@ -3,7 +3,7 @@ import { Card, InputAdornment, OutlinedInput, SvgIcon } from '@mui/material';
 
 const DashboardHeader = () => {
   return (
-    <Card sx={{ p: 2 }}>
+    <Card sx={{ p: 3 }}>
     <OutlinedInput
       defaultValue=""
       fullWidth
@@ -18,7 +18,7 @@ const DashboardHeader = () => {
           </SvgIcon>
         </InputAdornment>
       )}
-      sx={{ maxWidth: 500 }}
+      sx={{ maxWidth: 400 }}
     />
   </Card>
     

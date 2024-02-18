@@ -1,7 +1,10 @@
 import React from 'react'
 import "./Supplier.css";
-import SupplierDashboard from '../SupplierDashboard';
 import DashboardHeader from './DashboardHeader';
+import { Space, Table, Tag } from 'antd';
+import { TableProps } from 'antd';
+
+
 
 const Products = () => {
   return (

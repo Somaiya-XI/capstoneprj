@@ -77,4 +77,19 @@
   font-weight: bolder;
   font-size: 2rem;
 }
+.css-ctcgil-MuiPaper-root-MuiCard-root {
+  background-color: #fff;
+  color: rgba(255, 255, 255, 0.87);
+  border-radius: 10px !important;
+  overflow: hidden;
+  padding: 10px 20px 100px !important;
+  box-shadow: none !important; 
+
+}
+.css-8po0d6-MuiInputBase-root-MuiOutlinedInput-root {
+  width: 100%;
+  border-radius: 35px !important;
+  padding-left: 100px;
+  max-width: 1000px !important;
+}
 
