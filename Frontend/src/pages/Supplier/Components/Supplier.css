@@ -116,9 +116,9 @@
     display:flex;
     align-items: center;
     justify-content: center;
-    padding: 10px;
-    width:200px;
-    height:100px;
+    padding: 25px;
+    width:auto; 
+    height: auto;
 }
 .ant-layout-sider-children{
     background:#002603;
@@ -148,3 +148,15 @@
     color:#f9f9f9 !important;
     
 }
+.Fold {
+  background:rgb(255, 255, 255);
+  color:#002603 !important;
+  border-radius: 4px;
+}
+:where(.css-dev-only-do-not-override-1xg9z9n).ant-btn-text:not(:disabled):not(.ant-btn-disabled){
+  color: #888888;
+}
+:where(.css-dev-only-do-not-override-1xg9z9n).ant-btn-text:not(:disabled):not(.ant-btn-disabled):hover{
+  color: #002603;
+}
+
