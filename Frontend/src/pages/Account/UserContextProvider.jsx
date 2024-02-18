@@ -1,6 +1,5 @@
 import UserContext from '../../hooks/UserContext';
 import { Outlet } from 'react-router-dom';
-
 import { useState } from 'react';
 
 const UserContextProvider = ({ children }) => {

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import UserContext from '../../hooks/UserContext';
 import axios from 'axios';
 import './form.css';
+import { API } from '../../backend';
 
 const Login = () => {
   const { role, setRole, csrf, setCSRF, isAuthenticated, setIsAuthenticated } =
@@ -19,7 +20,7 @@ const Login = () => {
 
   const getCSRF = () => {
     return axios
-      .get('http://localhost:8000/user/csrf/', { withCredentials: true })
+      .get(`${API}user/csrf/`, { withCredentials: true })
       .then((response) => {
         let csrfToken = response.headers['x-csrftoken'];
         console.log('getcsrf: ', csrfToken);
@@ -30,7 +31,7 @@ const Login = () => {
 
   const getSession = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/user/session/', {
+      const response = await axios.get(`${API}user/session/`, {
         withCredentials: true,
       });
       const data = response.data;
@@ -47,7 +48,7 @@ const Login = () => {
   };
 
   const getUser = () => {
-    fetch('http://localhost:8000/user/get-user/', {
+    fetch(`${API}user/get-user/`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -83,7 +84,7 @@ const Login = () => {
 
     axios
       .post(
-        'http://localhost:8000/user/login/',
+        `${API}user/login/`,
         {
           email,
           password,
@@ -116,7 +117,7 @@ const Login = () => {
 
   const logout = () => {
     axios
-      .get('http://localhost:8000/user/logout', {
+      .get(`${API}user/logout`, {
         withCredentials: true,
       })
       .then(isResponseOK)
@@ -154,8 +155,6 @@ const Login = () => {
                   )}
                 </div>
               )}
-              {/* {error && <div className='alert alert-danger'>{error}</div>} */}
-              {/* {error && <small className='text-danger'>{error}</small>} */}
             </div>
 
             <div className='login-wrapper my-auto'>
