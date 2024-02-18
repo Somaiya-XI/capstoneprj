@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 
 from django.http import JsonResponse, Http404, HttpResponse
@@ -323,3 +324,24 @@ class UserViewSet(viewsets.ModelViewSet):
             ]
         except KeyError:
             return [permission() for permission in self.permission_classes]
+        
+class UpdateProfile(APIView):
+    permission_classes = (AllowAny,)
+
+    @csrf_exempt
+    def put(self, request, id, format=None):
+        data = self.request.data
+
+        UserModel = get_user_model()
+        try:
+            user = UserModel.objects.get(id=id)
+            serializer = UserSerializer(user, data=data, partial=True)
+
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data)
+            return JsonResponse(serializer.errors)
+        except UserModel.DoesNotExist:
+            return JsonResponse(
+                {'error': 'Update failed, make sure you entered vaild information'}
+            )

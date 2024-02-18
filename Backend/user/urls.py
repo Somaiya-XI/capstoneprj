@@ -15,6 +15,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('session/', views.session_view, name='session'),
     path('get-user/', views.get_user, name='get-user'),
+    path('update/<int:id>/', views.UpdateProfile.as_view(), name='update'),
     path('images/<path:image_path>', views.fetch_image, name='fetch.img'),
     path(
         'reset-password/',

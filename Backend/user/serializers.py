@@ -8,6 +8,7 @@ import re
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     commercial_reg = Base64ImageField()
+    profile_picture = Base64ImageField()
 
     def validate_password(self, value):
         errors = []
