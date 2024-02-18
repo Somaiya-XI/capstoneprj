@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './form.css';
+import { API } from '../../backend';
 
 const NewPasswordForm = () => {
   const [password, setPassword] = useState('');
@@ -25,20 +26,17 @@ const NewPasswordForm = () => {
       return;
     }
     try {
-      const response = await fetch(
-        'http://localhost:8000/user/set-new-password/',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            uidb64,
-            token,
-            new_password: password,
-          }),
-        }
-      );
+      const response = await fetch(`${API}user/set-new-password/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          uidb64,
+          token,
+          new_password: password,
+        }),
+      });
 
       if (response.ok) {
         const data = await response.json();

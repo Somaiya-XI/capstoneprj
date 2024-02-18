@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import UserContext from '../../hooks/UserContext';
 import axios from 'axios';
 import './form.css';
+import { API } from '../../backend';
 
 const Login = () => {
-  const [csrf, setCSRF] = useState('');
+  const { role, setRole, csrf, setCSRF, isAuthenticated, setIsAuthenticated } =
+    useContext(UserContext);
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     getSession();
@@ -17,7 +20,7 @@ const Login = () => {
 
   const getCSRF = () => {
     return axios
-      .get('http://localhost:8000/user/csrf/', { withCredentials: true })
+      .get(`${API}user/csrf/`, { withCredentials: true })
       .then((response) => {
         let csrfToken = response.headers['x-csrftoken'];
         console.log('getcsrf: ', csrfToken);
@@ -28,7 +31,7 @@ const Login = () => {
 
   const getSession = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/user/session/', {
+      const response = await axios.get(`${API}user/session/`, {
         withCredentials: true,
       });
       const data = response.data;
@@ -45,7 +48,7 @@ const Login = () => {
   };
 
   const getUser = () => {
-    fetch('http://localhost:8000/user/get-user/', {
+    fetch(`${API}user/get-user/`, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -81,7 +84,7 @@ const Login = () => {
 
     axios
       .post(
-        'http://localhost:8000/user/login/',
+        `${API}user/login/`,
         {
           email,
           password,
@@ -94,12 +97,13 @@ const Login = () => {
           withCredentials: true,
         }
       )
-      .then((data) => {
-        console.log('DATA: ' + data);
+      .then((response) => {
+        console.log('DATA: ', response.data);
         setIsAuthenticated(true);
         setEmail('');
         setPassword('');
         setError('');
+        setRole(response.data.role);
       })
       .catch((error) => {
         console.log('error occured', error.response.data.error);
@@ -113,7 +117,7 @@ const Login = () => {
 
   const logout = () => {
     axios
-      .get('http://localhost:8000/user/logout', {
+      .get(`${API}user/logout`, {
         withCredentials: true,
       })
       .then(isResponseOK)
@@ -125,6 +129,10 @@ const Login = () => {
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  const handleButton = (event) => {
+    navigate('/user-activation');
   };
 
   if (!isAuthenticated) {
@@ -147,8 +155,6 @@ const Login = () => {
                   )}
                 </div>
               )}
-              {/* {error && <div className='alert alert-danger'>{error}</div>} */}
-              {/* {error && <small className='text-danger'>{error}</small>} */}
             </div>
 
             <div className='login-wrapper my-auto'>
@@ -216,6 +222,9 @@ const Login = () => {
       </button>
       <button className='btn login-btn' onClick={logout}>
         Log out
+      </button>
+      <button className='btn login-btn' onClick={handleButton}>
+        Go to admin
       </button>
     </div>
   );

@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 
 from django.http import JsonResponse, Http404, HttpResponse
@@ -63,7 +64,8 @@ def login_view(request):
     try:
         user = UserModel.objects.get(email=email)
         print(user)
-
+        user_role = user.role
+        print(user_role)
         if not user.is_active:
             return JsonResponse(
                 {'error': 'your account has not been activated'}, status=400
@@ -79,7 +81,10 @@ def login_view(request):
         user.session_token = csrf_token
         user.save()
         login(request, user)
-        return JsonResponse({'message': 'Successfully logged in.'}, status=200)
+        return JsonResponse(
+            {'message': 'Successfully logged in.', 'role': user_role},
+            status=200,
+        )
     return JsonResponse({'error': 'The password you entered is incorrect'}, status=400)
 
 
@@ -323,3 +328,24 @@ class UserViewSet(viewsets.ModelViewSet):
             ]
         except KeyError:
             return [permission() for permission in self.permission_classes]
+        
+class UpdateProfile(APIView):
+    permission_classes = (AllowAny,)
+
+    @csrf_exempt
+    def put(self, request, id, format=None):
+        data = self.request.data
+
+        UserModel = get_user_model()
+        try:
+            user = UserModel.objects.get(id=id)
+            serializer = UserSerializer(user, data=data, partial=True)
+
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data)
+            return JsonResponse(serializer.errors)
+        except UserModel.DoesNotExist:
+            return JsonResponse(
+                {'error': 'Update failed, make sure you entered vaild information'}
+            )
