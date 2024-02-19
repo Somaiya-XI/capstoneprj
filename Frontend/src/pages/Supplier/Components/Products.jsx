@@ -1,8 +1,8 @@
 import React from 'react'
 import "./Supplier.css";
 import DashboardHeader from './DashboardHeader';
-import { Space, Table, Tag } from 'antd';
-import { TableProps } from 'antd';
+import ProductTable from './ProductTable';
+
 
 
 
@@ -15,6 +15,9 @@ const Products = () => {
       </div>
       <div>
         <DashboardHeader/>
+      </div>
+      <div className="Table">
+        <ProductTable/>
       </div>
     </div>
   )

@@ -32,10 +32,10 @@ function SupplierDashboard() {
             className='toggle'
             onClick={() => setCollapsed(!collapsed)}
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} />
-          <SearchOutlined
+          {/* <SearchOutlined
             
             style={{ width: 100 }}
-            onClick={value => console.log(value)} />
+            onClick={value => console.log(value)} /> */}
 
         </Header>
         <Layout>

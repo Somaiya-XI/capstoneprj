@@ -6,13 +6,14 @@ import {
     ProductOutlined,
     LogoutOutlined
 } from '@ant-design/icons'
+import Products from './Products';
 
 function MenuList() {
     return (
         <div>
             <Menu theme="dark" mode="inline" className="menu-bar">
                 <Menu.Item key="Home" icon={<HomeOutlined />}>
-                    Home
+                    Dashboard
                 </Menu.Item>
                 <Menu.Item key="Products" icon={<ProductOutlined />}>
                     Products

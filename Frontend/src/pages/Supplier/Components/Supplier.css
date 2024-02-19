@@ -76,14 +76,16 @@
 .HeaderTitle{
   font-weight: bolder;
   font-size: 2rem;
+  color:#002603;
 }
 .css-ctcgil-MuiPaper-root-MuiCard-root {
   background-color: #fff;
   color: rgba(255, 255, 255, 0.87);
   border-radius: 10px !important;
   overflow: hidden;
-  padding: 10px 20px 100px !important;
+  padding: 5px !important;
   box-shadow: none !important; 
+  margin-left: 1%;
 
 }
 .css-8po0d6-MuiInputBase-root-MuiOutlinedInput-root {
@@ -91,5 +93,18 @@
   border-radius: 35px !important;
   padding-left: 100px;
   max-width: 1000px !important;
+}
+:where(.css-dev-only-do-not-override-1xg9z9n).ant-spin-nested-loading .ant-spin-container {
+  padding: 25px;
+  position: relative;
+  transition: opacity 0.3s;
+  bottom: 0;
+  right: 0;
+  top: 100%;
+}
+.editable-row .ant-form-item-explain {
+  position: absolute;
+  
+  font-size: 12px;
 }
 
