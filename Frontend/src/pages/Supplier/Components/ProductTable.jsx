@@ -296,12 +296,28 @@ const ProductTable = ({}) => {
     }
     return {
       ...col,
-      onCell: (record) => ({
+      onCell: (record) => ({  
         record,
-        inputType: col.dataIndex === 'Price' ? 'number' : 'text',
+        inputType: col.dataIndex === 'ProductImage' ? 'image' : 'text',
+        inputType: col.dataIndex === 'ProductName' ? 'text' : 'text',
+        inputType: col.dataIndex === 'BrandName' ? 'text' : 'text',
+        inputType: col.dataIndex === 'Description' ? 'text' : 'text',
+        inputType: col.dataIndex === 'Price' ? 'number' : 'text', 
+        inputType: col.dataIndex === 'Quantity' ? 'number' : 'text', 
+        inputType: col.dataIndex === 'StockLevel' ? 'number' : 'text',
+        inputType: col.dataIndex === 'ProductionDate' ? 'date' : 'text',
+        inputType: col.dataIndex === 'ExpiryDate' ? 'date' : 'text',
+        inputType: col.dataIndex === 'DiscountPercentage' ? 'number' : 'text',
+
+
         dataIndex: col.dataIndex,
         title: col.title,
-        editing: isEditing(record),
+        editing: isEditing(record),                   
+        
+        
+        
+        
+        
       }),
     };
   });
