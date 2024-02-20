@@ -99,7 +99,7 @@
 //     address: 'Sydney No. 1 Lake Park',
 //     tags: ['cool', 'teacher'],
 //   },
-  
+
 
 // ];
 // const ProductTable = () => <Table columns={columns} dataSource={data} />;
@@ -107,15 +107,18 @@
 
 import React, { useState } from 'react';
 import { Form, Input, InputNumber, Popconfirm, Table, Typography } from 'antd';
+import PropTypes from 'prop-types'; 
+
 const originData = [];
 for (let i = 0; i < 100; i++) {
   originData.push({
     key: i.toString(),
-    name: `Edward ${i}`,
+    ProductName: `Edward ${i}`,
     age: 32,
     address: `London Park no. ${i}`,
   });
 }
+
 const EditableCell = ({
   editing,
   dataIndex,
@@ -150,16 +153,24 @@ const EditableCell = ({
     </td>
   );
 };
-const ProductTable = () => {
+
+const ProductTable = ({}) => {
   const [form] = Form.useForm();
   const [data, setData] = useState(originData);
   const [editingKey, setEditingKey] = useState('');
   const isEditing = (record) => record.key === editingKey;
   const edit = (record) => {
     form.setFieldsValue({
-      name: '',
-      age: '',
-      address: '',
+      ProductName: '',
+      ProductImage: '',
+      Description: '',
+      Price: '',
+      Quantity: '',
+      Stock: '',
+      ProductionDate: '',
+      ExpiryDate: '',
+      DiscountPercentage: '',
+      BrandName: '',
       ...record,
     });
     setEditingKey(record.key);
@@ -191,45 +202,70 @@ const ProductTable = () => {
   };
   const columns = [
     {
-      title: 'Item',
-      dataIndex: 'item',
-      width: '15%',
+      title: 'Product Image',
+      dataIndex: 'ProductImage', 
+
       editable: true,
     },
     {
-      title: 'Category',
-      dataIndex: 'Category',
-      width: '20%',
+      title: 'Product Name',
+      dataIndex: 'ProductName', 
+
       editable: true,
     },
     {
-      title: 'Manufacturing Date',
-      dataIndex: 'Manufacturing Date',
-      width: '20%',
+      title: 'Description',
+      dataIndex: 'Description',
+
       editable: true,
     },
     {
-      title: 'Expiration Date',
-      dataIndex: 'Expiration Date',
-      width: '20%',
+      title: 'Price',
+      dataIndex: 'Price',
+
       editable: true,
     },
     {
       title: 'Quantity',
       dataIndex: 'Quantity',
-      width: '15%',
+
       editable: true,
     },
     {
       title: 'Stock Level',
-      dataIndex: 'Stock Level',
-      width: '40%',
+      dataIndex: 'StockLevel', 
+
       editable: true,
     },
-    
+    {
+      title: 'Production Date',
+      dataIndex: 'ProductionDate',
+      width: "10%",
+      editable: true,
+    },
+    {
+      title: 'Expiry date',
+      dataIndex: 'ExpiryDate',
+
+      editable: true,
+    },
+    {
+      title: 'Discount Percentage',
+      dataIndex: 'DiscountPercentage',
+      width: "5%",
+      editable: true,
+    },
+    {
+      title: 'Brand Name',
+      dataIndex: 'BrandName',
+
+      editable: true,
+    },
+
     {
       title: 'operation',
       dataIndex: 'operation',
+      width: "10%",
       render: (_, record) => {
         const editable = isEditing(record);
         return editable ? (
@@ -262,7 +298,7 @@ const ProductTable = () => {
       ...col,
       onCell: (record) => ({
         record,
-        inputType: col.dataIndex === 'age' ? 'number' : 'text',
+        inputType: col.dataIndex === 'item' ? 'number' : 'text',
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
@@ -288,4 +324,18 @@ const ProductTable = () => {
     </Form>
   );
 };
+
+ProductTable.propTypes = {
+  ProductName: PropTypes.string,
+  ProductImage: PropTypes.string,
+  Description: PropTypes.string,
+  Price: PropTypes.number,
+  Quantity: PropTypes.number,
+  StockLevel: PropTypes.number,
+  ProductionDate: PropTypes.string,
+  ExpiryDate: PropTypes.string,
+  DiscountPercentage: PropTypes.number,
+  BrandName: PropTypes.string,
+};
+
 export default ProductTable;

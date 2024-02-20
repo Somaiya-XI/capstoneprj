@@ -10,7 +10,6 @@ import ProductTable from './ProductTable';
 const Products = () => {
   return (
     <div className="SupplierDashboard">
-      
       <div className="DashboardContent">
       <h3 className="HeaderTitle">Products</h3>
       <Button className="AddButton" type="primary" >
@@ -18,7 +17,6 @@ const Products = () => {
           </Button>
       </div>
         <DashboardHeader/>
-      
         <ProductTable/>
       
     </div>
