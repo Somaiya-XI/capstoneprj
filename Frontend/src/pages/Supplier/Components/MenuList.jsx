@@ -12,9 +12,9 @@ function MenuList() {
     return (
         <div>
             <Menu theme="dark" mode="inline" className="menu-bar">
-                <Menu.Item key="Home" icon={<HomeOutlined />}>
+                {/* <Menu.Item key="Home" icon={<HomeOutlined />}>
                     Dashboard
-                </Menu.Item>
+                </Menu.Item> */}
                 <Menu.Item key="Products" icon={<ProductOutlined />}>
                     Products
                 </Menu.Item>
