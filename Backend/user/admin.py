@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 
-from .models import SupplierProfile
+from .models import Supplier
 
 # Register your models here.
 admin.site.register(get_user_model())
-admin.site.register(SupplierProfile)
+admin.site.register(Supplier)

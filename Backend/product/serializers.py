@@ -1,15 +1,24 @@
 from rest_framework import serializers
 from .models import ProductCatalog, SupermarketProduct
+from drf_extra_fields.fields import Base64ImageField
+from user.models import Supplier
+from category.models import Category
 
-#send all data as jason
+
 class ProductCatalogSerializer(serializers.HyperlinkedModelSerializer):
-    product_img = serializers.ImageField(max_length=None, allow_empty_file=False, allow_null=True, required=False)
+    product_img = Base64ImageField(required=True)
+    supplier = serializers.PrimaryKeyRelatedField(queryset=Supplier.objects.all())
+    category = serializers.SlugRelatedField(
+        slug_field='name', queryset=Category.objects.all()
+    )
+
     class Meta:
         model = ProductCatalog
-        fields = ('product_name', 'price', 'quantity', 'expiry_date', 'description', 'discount_percentage', 'min_order_quantity', 'production_date', 'product_img')
+        fields = '__all__'
 
-#send all data as jason
+
+# send all data as jason
 class SupermarketProductSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = SupermarketProduct
-        fields = '__all__' 
+        fields = '__all__'

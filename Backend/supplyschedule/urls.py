@@ -4,9 +4,8 @@ from . import views
 
 
 router = routers.DefaultRouter()
-router.register(r'', views.CategoryViewSet)
+router.register(r'', views.ScheduleViewSet)
 
 urlpatterns = [
-    path('get/', views.get_categories, name='categories'),
     path('', include(router.urls)),
 ]

@@ -328,7 +328,8 @@ class UserViewSet(viewsets.ModelViewSet):
             ]
         except KeyError:
             return [permission() for permission in self.permission_classes]
-        
+
+
 class UpdateProfile(APIView):
     permission_classes = (AllowAny,)
 

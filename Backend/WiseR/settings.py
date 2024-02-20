@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'order',
     'configuration',
     'category',
-    "user",
+    'user',
+    'supplyschedule',
 ]
 
 MIDDLEWARE = [
