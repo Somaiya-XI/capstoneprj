@@ -110,12 +110,12 @@ import { Form, Input, InputNumber, Popconfirm, Table, Typography } from 'antd';
 import PropTypes from 'prop-types'; 
 
 const originData = [];
-for (let i = 0; i < 100; i++) {
+for (let i = 1; i < 100; i++) {
   originData.push({
     key: i.toString(),
-    ProductName: `Edward ${i}`,
-    age: 32,
-    address: `London Park no. ${i}`,
+    ProductName: `Canderial Chocolate ${i}`,
+    Price: `${i} Riyals`,
+    Quantity: `${i} Bulks`,
   });
 }
 
@@ -298,7 +298,7 @@ const ProductTable = ({}) => {
       ...col,
       onCell: (record) => ({
         record,
-        inputType: col.dataIndex === 'item' ? 'number' : 'text',
+        inputType: col.dataIndex === 'Price' ? 'number' : 'text',
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
