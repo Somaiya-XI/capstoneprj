@@ -5,8 +5,15 @@ from . import views
 
 router = routers.DefaultRouter()
 
-router.register (r'SupermarketProduct',views.SupermarketViewSet)
-router.register (r'CatalogProduct',views.CatalogViewSet)
+router.register(r'supermarket-product', views.SupermarketViewSet)
+router.register(r'catalog-product', views.CatalogViewSet)
 
 urlpatterns = [
-    path('', include(router.urls))]
+    path('catalog-product/create/', views.create_product, name='create_product'),
+    path(
+        'catalog-product/update/',
+        views.update_product,
+        name='update-product',
+    ),
+    path('', include(router.urls)),
+]

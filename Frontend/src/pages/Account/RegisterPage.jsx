@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { register } from './reg';
+import { register } from './AuthHelpers';
 import './form.css';
 
 const Register = () => {

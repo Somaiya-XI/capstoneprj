@@ -4,6 +4,7 @@ import UserContext from '../../hooks/UserContext';
 import axios from 'axios';
 import './form.css';
 import { API } from '../../backend';
+import { logout, login, getUser } from './AuthHelpers';
 
 const Login = () => {
   const { role, setRole, csrf, setCSRF, isAuthenticated, setIsAuthenticated } =
@@ -47,22 +48,6 @@ const Login = () => {
     }
   };
 
-  const getUser = () => {
-    fetch(`${API}user/get-user/`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Logged in as: ' + data.email);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
   const handleChange = (name) => (event) => {
     if (name === 'email') {
       setEmail(event.target.value);
@@ -71,32 +56,10 @@ const Login = () => {
     }
   };
 
-  const isResponseOK = (response) => {
-    if (response.status >= 200 && response.status <= 299) {
-      return response;
-    } else {
-      throw Error(response.statusText);
-    }
-  };
-
-  const login = (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
 
-    axios
-      .post(
-        `${API}user/login/`,
-        {
-          email,
-          password,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrf,
-          },
-          withCredentials: true,
-        }
-      )
+    login({ email, password }, csrf)
       .then((response) => {
         console.log('DATA: ', response.data);
         setIsAuthenticated(true);
@@ -112,22 +75,6 @@ const Login = () => {
         } else {
           setError(error.response.data.error);
         }
-      });
-  };
-
-  const logout = () => {
-    axios
-      .get(`${API}user/logout`, {
-        withCredentials: true,
-      })
-      .then(isResponseOK)
-      .then((data) => {
-        console.log(data);
-        setIsAuthenticated(false);
-        getCSRF();
-      })
-      .catch((err) => {
-        console.log(err);
       });
   };
 
@@ -159,7 +106,7 @@ const Login = () => {
 
             <div className='login-wrapper my-auto'>
               <h1 className='login-title'>Log In</h1>
-              <form onSubmit={login}>
+              <form onSubmit={handleSubmit}>
                 <div className='form-group mb-3'>
                   <label htmlFor='email'>Email</label>
                   <input
@@ -169,7 +116,7 @@ const Login = () => {
                     placeholder='enter your email'
                     id='email'
                     required
-                    autofocus
+                    autoFocus
                     onChange={handleChange('email')}
                   />
                 </div>
@@ -182,7 +129,7 @@ const Login = () => {
                     placeholder='enter your password'
                     id='password'
                     required
-                    autofocus
+                    autoFocus
                     onChange={handleChange('password')}
                   />
                 </div>
@@ -220,7 +167,14 @@ const Login = () => {
       <button className='btn login-btn' onClick={getUser}>
         Get The User
       </button>
-      <button className='btn login-btn' onClick={logout}>
+      <button
+        className='btn login-btn'
+        onClick={() => {
+          logout;
+          setIsAuthenticated(false);
+          getCSRF();
+        }}
+      >
         Log out
       </button>
       <button className='btn login-btn' onClick={handleButton}>
