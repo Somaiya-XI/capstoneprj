@@ -1,0 +1,22 @@
+.input_group {
+  border: 2px solid #bce3c9;
+  border-radius: 50px;
+  max-width: 700px;
+  background-color: #fff;
+  width: 100%;
+}
+.divider {
+  position: relative;
+}
+.divider::after {
+  content: "";
+  position: absolute;
+  height: 100%;
+  width: 2px;
+  color: #bce3c9;
+  background-color: #023c07;
+}
+#logoSearch {
+  display: inline-flex;
+  margin-right: 10px;
+}

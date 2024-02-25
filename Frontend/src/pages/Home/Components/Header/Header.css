@@ -1,0 +1,33 @@
+#header {
+  background-color: #023c07;
+  height: 45px;
+  padding-top: 9px;
+  padding-left: 50px;
+}
+#f-section {
+  text-align: center;
+  display: inline;
+}
+#link {
+  color: gray !important;
+}
+#link:hover {
+  color: #3bb77e !important;
+  cursor: pointer;
+}
+#customDivider {
+  color: gray;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+#s-section {
+  display: inline;
+  margin-left: 72%;
+}
+#iimg {
+  display: inline;
+}
+#para {
+  margin-left: 7px;
+  display: inline;
+}

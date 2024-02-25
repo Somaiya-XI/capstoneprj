@@ -1,0 +1,27 @@
+.nav-tabs {
+  border: 0 !important;
+}
+.nav-tabs.links .nav-link {
+  padding: 0 10px;
+  background: none;
+  font-size: 16px;
+  color: #253d4e !important;
+  border: none !important;
+}
+.nav-tabs.links .nav-link:hover,
+.nav-tabs.links .nav-link.active {
+  color: #3bb77e !important;
+}
+@media screen and (max-width: 500px) {
+  #title {
+    display: block !important;
+  }
+}
+#c {
+  background-color: white;
+  margin-top: 0px !important;
+}
+.mr-5 {
+  text-decoration: underline #3bb77e;
+  text-underline-offset: 12px;
+}

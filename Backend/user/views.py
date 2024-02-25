@@ -302,6 +302,17 @@ def set_new_password(request):
         return JsonResponse({'error': 'pleas send a valid request'})
 
 
+@csrf_exempt
+def change_password(request):
+    UserModel = get_user_model()
+    serializer = UserSerializer()
+
+    data = json.loads(request.body)
+    old_password = data.get('old_password')
+    new_password = data.get('new_password')
+    confirm_password = data.get('confirm_password')
+
+
 class UserViewSet(viewsets.ModelViewSet):
     permission_classes_by_action = {'create': [AllowAny]}
 
@@ -335,7 +346,7 @@ class UpdateProfile(APIView):
 
     @csrf_exempt
     def put(self, request, id, format=None):
-        data = self.request.data
+        data = request.data
 
         UserModel = get_user_model()
         try:

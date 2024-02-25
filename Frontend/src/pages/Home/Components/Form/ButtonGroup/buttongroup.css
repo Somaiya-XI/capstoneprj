@@ -1,0 +1,26 @@
+.btn_row a {
+  position: relative;
+}
+.btn_row a img {
+  max-width: 25px;
+}
+.btn_row .bgd {
+  position: absolute;
+  right: -11px;
+  top: -5px;
+  color: #ffffff;
+  height: 20px;
+  width: 20px;
+  border-radius: 100%;
+  font-weight: 500;
+  font-size: 12px;
+  text-align: center;
+  background-color: #3bb77e;
+  line-height: 20px;
+}
+.text-sm {
+  color: #023c07;
+}
+.text-sm:hover {
+  color: #3bb77e;
+}

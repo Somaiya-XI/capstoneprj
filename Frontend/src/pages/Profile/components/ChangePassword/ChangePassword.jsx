@@ -1,6 +1,6 @@
 import "./ChangePassword.css";
 
-function ChangePassword() {
+const ChangePassword = () => {
   return (
     <>
       <div className="change-password-container">
@@ -10,19 +10,19 @@ function ChangePassword() {
           <label htmlFor="password" className="label">
             Old Password
           </label>
-          <input type="password" className="input" />
+          <input type="password" id="input" />
         </div>
         <div className="password-cotainer">
           <label htmlFor="password" className="label">
             New Password
           </label>
-          <input type="password" className="input" />
+          <input type="password" id="input" />
         </div>
         <div className="password-cotainer">
           <label htmlFor="password" className="label">
             Confirm Password
           </label>
-          <input type="password" className="input" />
+          <input type="password" id="input" />
         </div>
         <div className="bt2-container">
           <button type="button" className="btn btn-success bt2">
@@ -32,6 +32,6 @@ function ChangePassword() {
       </div>
     </>
   );
-}
+};
 
 export default ChangePassword;
