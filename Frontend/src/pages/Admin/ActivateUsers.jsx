@@ -1,16 +1,12 @@
-import { API } from '../../backend';
-import React, { useState, useEffect, useContext } from 'react';
+import {API} from '../../backend';
+import React, {useState, useEffect, useContext} from 'react';
 import axios from 'axios';
 import './ActivationPage.css';
-import { Avatar } from '@boringer-avatars/react';
+import {Avatar} from '@boringer-avatars/react';
 import UserContext from '../../hooks/UserContext';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 
 const UserActivation = () => {
-  const { role, isAuthenticated } = useContext(UserContext);
-
-  console.log('auth: ', isAuthenticated);
-  console.log('role is: ', role);
   const navigate = useNavigate();
   const [values, setValues] = useState({
     users: [],
@@ -20,8 +16,7 @@ const UserActivation = () => {
     showImagePopup: false,
   });
 
-  const { users, filteredUsers, imageURL, errorMessage, showImagePopup } =
-    values;
+  const {users, filteredUsers, imageURL, errorMessage, showImagePopup} = values;
 
   useEffect(() => {
     fetchUsers();
@@ -62,7 +57,7 @@ const UserActivation = () => {
       .then(() => {
         const updatedUsers = users.map((user) =>
           user.fields.email === userEmail
-            ? { ...user, fields: { ...user.fields, is_active: shouldBeActive } }
+            ? {...user, fields: {...user.fields, is_active: shouldBeActive}}
             : user
         );
         setValues({
@@ -71,9 +66,7 @@ const UserActivation = () => {
           filteredUsers: updatedUsers.filter((user) => {
             if (document.getElementById('filterSelect').value === 'active') {
               return user.fields.is_active === true;
-            } else if (
-              document.getElementById('filterSelect').value === 'inactive'
-            ) {
+            } else if (document.getElementById('filterSelect').value === 'inactive') {
               return user.fields.is_active === false;
             }
             return true;
@@ -96,14 +89,10 @@ const UserActivation = () => {
 
     switch (status) {
       case 'active':
-        updatedFilteredUsers = currentUsers.filter(
-          (user) => user.fields.is_active === true
-        );
+        updatedFilteredUsers = currentUsers.filter((user) => user.fields.is_active === true);
         break;
       case 'inactive':
-        updatedFilteredUsers = currentUsers.filter(
-          (user) => user.fields.is_active === false
-        );
+        updatedFilteredUsers = currentUsers.filter((user) => user.fields.is_active === false);
         break;
       default:
         updatedFilteredUsers = currentUsers;
@@ -131,131 +120,121 @@ const UserActivation = () => {
     });
   };
 
-  if (role === 'ADMIN') {
-    return (
-      <div>
-        {errorMessage && (
-          <div className='alert alert-danger' role='alert'>
-            {errorMessage}
-          </div>
-        )}
+  return (
+    <div>
+      {errorMessage && (
+        <div className='alert alert-danger' role='alert'>
+          {errorMessage}
+        </div>
+      )}
 
-        <div className='container page-container'>
-          <h2 className='text-center mt-4'>Accounts Management</h2>
-          <div className='row'>
-            <div className='col-sm-12'>
-              <div className='form-group'>
-                <label htmlFor='filterSelect'>Filter By:</label>
-                <select
-                  className='form-control'
-                  id='filterSelect'
-                  onChange={(e) => handleFilterChange(e.target.value)}
-                >
-                  <option value='all'>All</option>
-                  <option value='active'>Active</option>
-                  <option value='inactive'>Inactive</option>
-                </select>
-              </div>
-              <table className='table table-rounded'>
-                <thead className='thead-green'>
-                  <tr>
-                    <th>Profile Photo</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Commercial Reg</th>
-                    <th>Account Activation</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredUsers.map((user) => (
-                    <tr key={user.pk}>
-                      <td>
-                        {user.fields.profile_picture ? (
-                          <img
-                            src={`${API}user/images/${user.fields.profile_picture}`}
-                            alt='Profile Picture'
-                            className='rounded-circle'
-                            style={{ width: '30px', height: '30px' }}
-                          />
-                        ) : (
-                          <Avatar
-                            title={false}
-                            size={'30px'}
-                            variant='beam'
-                            name='Mother Frances'
-                            square={false}
-                            colors={['', '', '#bfbfbf', '', '#617f62']}
-                          />
-                        )}
-                      </td>
-                      <td>{user.fields.email}</td>
-                      <td>{user.fields.role}</td>
-                      <td>
-                        <span
-                          className={
-                            user.fields.is_active
-                              ? 'badge badge-active  rounded-pill'
-                              : 'badge badge-inactive  rounded-pill'
-                          }
-                        >
-                          {user.fields.is_active ? 'Active' : 'Inactive'}
-                        </span>
-                      </td>
-                      <td>
-                        <button
-                          className='btn btn-link dark-green-link'
-                          onClick={() =>
-                            handleImageClick(user.fields.commercial_reg)
-                          }
-                        >
-                          View Image
-                        </button>
-                      </td>
-                      <td>
-                        {user.fields.is_active ? (
-                          <button
-                            className='btn deactivate-btn'
-                            onClick={() => deactivateUser(user.fields.email)}
-                          >
-                            Deactivate
-                          </button>
-                        ) : (
-                          <button
-                            className='btn activate-btn'
-                            onClick={() => activateUser(user.fields.email)}
-                          >
-                            Activate
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+      <div className='container page-container'>
+        <h2 className='text-center mt-4'>Accounts Management</h2>
+        <div className='row'>
+          <div className='col-sm-12'>
+            <div className='form-group'>
+              <label htmlFor='filterSelect'>Filter By:</label>
+              <select
+                className='form-control'
+                id='filterSelect'
+                onChange={(e) => handleFilterChange(e.target.value)}
+              >
+                <option value='all'>All</option>
+                <option value='active'>Active</option>
+                <option value='inactive'>Inactive</option>
+              </select>
             </div>
+            <table className='table table-rounded'>
+              <thead className='thead-green'>
+                <tr>
+                  <th>Profile Photo</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Commercial Reg</th>
+                  <th>Account Activation</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredUsers.map((user) => (
+                  <tr key={user.pk}>
+                    <td>
+                      {user.fields.profile_picture ? (
+                        <img
+                          src={`${API}user/images/${user.fields.profile_picture}`}
+                          alt='Profile Picture'
+                          className='rounded-circle'
+                          style={{width: '30px', height: '30px'}}
+                        />
+                      ) : (
+                        <Avatar
+                          title={false}
+                          size={'30px'}
+                          variant='beam'
+                          name='Mother Frances'
+                          square={false}
+                          colors={['', '', '#bfbfbf', '', '#617f62']}
+                        />
+                      )}
+                    </td>
+                    <td>{user.fields.email}</td>
+                    <td>{user.fields.role}</td>
+                    <td>
+                      <span
+                        className={
+                          user.fields.is_active
+                            ? 'badge badge-active  rounded-pill'
+                            : 'badge badge-inactive  rounded-pill'
+                        }
+                      >
+                        {user.fields.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td>
+                      <button
+                        className='btn btn-link dark-green-link'
+                        onClick={() => handleImageClick(user.fields.commercial_reg)}
+                      >
+                        View Image
+                      </button>
+                    </td>
+                    <td>
+                      {user.fields.is_active ? (
+                        <button
+                          className='btn deactivate-btn'
+                          onClick={() => deactivateUser(user.fields.email)}
+                        >
+                          Deactivate
+                        </button>
+                      ) : (
+                        <button
+                          className='btn activate-btn'
+                          onClick={() => activateUser(user.fields.email)}
+                        >
+                          Activate
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-
-        {showImagePopup && (
-          <div className='popup'>
-            <div className='popup-inner'>
-              <button className='close-button' onClick={closeImagePopup}>
-                &times;
-              </button>
-              <img
-                src={imageURL}
-                alt='Commercial Registration'
-                className='img-fluid mt-4'
-              />
-            </div>
-          </div>
-        )}
       </div>
-    );
-  }
 
-  return <div className='container-mt-3 p-4'>{navigate('/')}</div>;
+      {showImagePopup && (
+        <div className='popup'>
+          <div className='popup-inner'>
+            <button className='close-button' onClick={closeImagePopup}>
+              &times;
+            </button>
+            <img src={imageURL} alt='Commercial Registration' className='img-fluid mt-4' />
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default UserActivation;
