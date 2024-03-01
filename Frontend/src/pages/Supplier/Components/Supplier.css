@@ -14,7 +14,8 @@
     height: auto;
 }
 .ant-layout-sider-children{
-    background:#002603;
+    background:#002603 !important;
+    
 }
 
 .menu-bar{
@@ -29,18 +30,21 @@
     position: relative;
     border-radius: 25px;
 }
+.ant-menu-item{
+  color:#888888 !important;
+}
 .ant-menu-item-selected{
-    
     background: rgba(255, 255, 255, 0.04) !important;
     color:#f9f9f9 !important;
     
 }
 .ant-menu-item-active{
-    
     background: rgba(255, 255, 255, 0.04) !important;
     color:#ffffff !important;
     
 }
+
+
 .Fold {
   background:rgb(255, 255, 255);
   color:#002603 !important;
@@ -49,15 +53,18 @@
   display:flex;
   gap:.5rem;
   justify-content:space-between;
+  
 }
 :where(.css-dev-only-do-not-override-1xg9z9n).ant-btn-text:not(:disabled):not(.ant-btn-disabled){
-  color: #888888;
+  
+  color: #002603 !important;
 }
 :where(.css-dev-only-do-not-override-1xg9z9n).ant-btn-text:not(:disabled):not(.ant-btn-disabled):hover{
   color: #002603;
 }
 .DashboardContent{
   flex:1;
+  margin-top: 1.5rem;
   border-radius:20px;
   padding:1.5rem;
   display:flex;
@@ -104,7 +111,6 @@
 }
 .editable-row .ant-form-item-explain {
   position: absolute;
-  
   font-size: 12px;
 }
 .AddButton{
@@ -121,3 +127,35 @@
   font-size: 1rem;
 
 }
+.Profile{
+  height:auto;
+  margin: 0px 20px;
+  padding:0rem 1rem;
+  display:flex;
+  cursor: pointer;
+}
+.Notification, .Search{
+  color:#002603;
+    width: 1.5em;
+    height: 1.5em;
+    display: inline-block;
+    fill: currentcolor;
+    flex-shrink: 0;
+    transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    font-size: 1.5rem;
+}
+.Notification:hover{
+  color:#888888;  
+}
+.Search:hover{
+  color:#888888;  
+}
+.ProfileDropDown{
+  
+}
+
+
+
+
+
+ 

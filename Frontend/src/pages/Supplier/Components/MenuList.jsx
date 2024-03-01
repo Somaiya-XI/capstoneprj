@@ -1,10 +1,11 @@
 import { Menu } from 'antd';
 import "./Supplier.css";
 import {
-    HomeOutlined,
     SettingOutlined,
     ProductOutlined,
-    LogoutOutlined
+    LogoutOutlined,
+    PoundCircleOutlined,
+    CalendarOutlined,
 } from '@ant-design/icons'
 import Products from './Products';
 
@@ -12,11 +13,14 @@ function MenuList() {
     return (
         <div>
             <Menu theme="dark" mode="inline" className="menu-bar">
-                {/* <Menu.Item key="Home" icon={<HomeOutlined />}>
-                    Dashboard
-                </Menu.Item> */}
-                <Menu.Item key="Products" icon={<ProductOutlined />}>
+            <Menu.Item key="Products" icon={<ProductOutlined />}>
                     Products
+                </Menu.Item>
+                <Menu.Item key="Schedule" icon={<CalendarOutlined />}>
+                    Supply Schedule
+                </Menu.Item>
+                <Menu.Item key="Home" icon={<PoundCircleOutlined />}>
+                    Incoming Orders
                 </Menu.Item>
                 <Menu.Item key="Settings" icon={<SettingOutlined />}>
                     Settings
@@ -26,6 +30,8 @@ function MenuList() {
                 </Menu.Item>
             </Menu>
         </div>
+
+
 
     );
 }

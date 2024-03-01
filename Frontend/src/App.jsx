@@ -20,12 +20,12 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path='/login' element={<Login />} />
           <Route path='/user-activation' element={<AdminRoute><UserActivation /></AdminRoute>} />
-          <Route path='SupplierDashboard' element={<SupplierRoute><SupplierDashboard /> </SupplierRoute>} />
+          {/* <Route path='/SupplierDashboard' element={<SupplierRoute><SupplierDashboard /> </SupplierRoute>} /> */}
+          <Route path='/SupplierDashboard' element={<SupplierDashboard />}/>
           <Route path='/profile' element={<Profile />} />
           <Route path='/register' element={<Register />} />
           <Route path='/forgot-password' element={<ForgotPassword />} />
           <Route path='/reset-password/form/:uidb64/:token' element={<NewPasswordForm />} />
-          {/* <Route element={<RequireAuth />}></Route> */}
         </Routes>{' '}
       </UserContextProvider>
     </Router>
