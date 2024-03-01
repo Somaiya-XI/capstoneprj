@@ -200,6 +200,7 @@ const ProductTable = ({}) => {
       console.log('Validate Failed:', errInfo);
     }
   };
+
   const columns = [
     {
       title: 'Product Image',
@@ -340,18 +341,4 @@ const ProductTable = ({}) => {
     </Form>
   );
 };
-
-ProductTable.propTypes = {
-  ProductName: PropTypes.string,
-  ProductImage: PropTypes.string,
-  Description: PropTypes.string,
-  Price: PropTypes.number,
-  Quantity: PropTypes.number,
-  StockLevel: PropTypes.number,
-  ProductionDate: PropTypes.string,
-  ExpiryDate: PropTypes.string,
-  DiscountPercentage: PropTypes.number,
-  BrandName: PropTypes.string,
-};
-
 export default ProductTable;

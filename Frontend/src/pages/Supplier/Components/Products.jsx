@@ -7,6 +7,8 @@ import ProductTable from './ProductTable';
 
 
 
+
+
 const Products = () => {
   return (
     <div className="SupplierDashboard">
@@ -18,6 +20,7 @@ const Products = () => {
       </div>
         <DashboardHeader/>
         <ProductTable/>
+        
       
     </div>
   )
