@@ -1,0 +1,90 @@
+.carousel-item {
+  background-image: url(../../images/slider1.png) !important;
+  width: 100% !important;
+  position: relative !important;
+  top: 0px !important;
+  opacity: 1 !important;
+  left: 0 !important;
+  height: 538px;
+  border-radius: 30px;
+  background-size: cover;
+  background-position: center center;
+  display: block;
+  min-height: 1px;
+  float: left;
+}
+.carousel-item2 {
+  background-image: url(../../images/slider2.png) !important;
+}
+.carousel-caption {
+  position: absolute;
+  top: 50% !important;
+  left: 6% !important;
+  -webkit-transform: translateY(-50%);
+  /* transform: translateY(-50%); */
+  right: unset !important;
+  bottom: unset !important;
+}
+.carousel-control-prev,
+.carousel-control-next {
+  background: #f2f3f4 !important;
+  width: 45px !important;
+  height: 45px !important;
+  top: 50% !important;
+  z-index: 100;
+  border-radius: 50%;
+  -webkit-transition: all 0.2s ease-out;
+  transition: all 0.2s ease-out;
+  color: #7e7e7e !important;
+}
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+  background-color: #3bb77e !important;
+  color: #fff !important;
+  border-color: #3bb77e !important;
+}
+.carousel-dark .carousel-indicators [data-bs-target] {
+  background-color: #3bb77e !important;
+  border-radius: 50% !important;
+  height: 15px !important;
+  width: 15px !important;
+}
+.carousel-control-prev {
+  left: 20px !important;
+}
+.carousel-control-next {
+  right: 20px !important;
+}
+.carousel-control-next-icon,
+.carousel-control-prev-icon {
+  width: 1rem !important;
+  height: 1rem !important;
+}
+
+.carousel-item form {
+  background-color: #fff;
+  max-width: 450px;
+  border-radius: 50px;
+}
+
+.carousel-item form input {
+  border: 0;
+  border-radius: 50px 0 0 50px;
+  padding-left: 58px;
+  font-size: 16px;
+  width: 100%;
+  box-shadow: none;
+  height: 64px;
+  outline: none;
+  background: url(../../images/icon-plane.png) no-repeat 25px center;
+}
+.carousel-item form button {
+  font-size: 16px;
+  font-weight: 500;
+  padding: 15px 40px;
+  color: #ffffff;
+  background-color: #3bb77e;
+  border: 1px solid #29a56c;
+  border: 0;
+  border-radius: 50px;
+}

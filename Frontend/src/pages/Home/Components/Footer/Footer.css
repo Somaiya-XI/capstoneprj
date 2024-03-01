@@ -1,0 +1,29 @@
+#footer {
+  background-color: #023c07;
+  height: 130px;
+  padding-top: 40px;
+  padding-left: 30px;
+}
+#fSection {
+  display: inline-block;
+  margin-left: 5%;
+  margin-right: 20%;
+}
+#sSection {
+  color: white;
+  display: inline-block;
+  margin-right: 19%;
+}
+#paraghraps {
+  color: white;
+  font-weight: 300;
+}
+#thSection {
+  display: inline-block;
+  margin-right: 5%;
+}
+#paraghraps2 {
+  color: white;
+  display: inline;
+  margin-right: 15px;
+}

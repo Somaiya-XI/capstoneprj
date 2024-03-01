@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, {useState, useEffect, useContext} from 'react';
+import {Link, useNavigate} from 'react-router-dom';
 import UserContext from '../../hooks/UserContext';
 import axios from 'axios';
 import './form.css';
-import { API } from '../../backend';
-import { logout, login, getUser } from './AuthHelpers';
+import {API} from '../../backend';
+import {logout, login, getUser} from './AuthHelpers';
 
 const Login = () => {
-  const { role, setRole, csrf, setCSRF, isAuthenticated, setIsAuthenticated } =
-    useContext(UserContext);
+  const {role, setRole, csrf, setCSRF, isAuthenticated, setIsAuthenticated} = useContext(UserContext);
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -21,7 +20,7 @@ const Login = () => {
 
   const getCSRF = () => {
     return axios
-      .get(`${API}user/csrf/`, { withCredentials: true })
+      .get(`${API}user/csrf/`, {withCredentials: true})
       .then((response) => {
         let csrfToken = response.headers['x-csrftoken'];
         console.log('getcsrf: ', csrfToken);
@@ -59,7 +58,7 @@ const Login = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    login({ email, password }, csrf)
+    login({email, password}, csrf)
       .then((response) => {
         console.log('DATA: ', response.data);
         setIsAuthenticated(true);
@@ -76,10 +75,6 @@ const Login = () => {
           setError(error.response.data.error);
         }
       });
-  };
-
-  const handleButton = (event) => {
-    navigate('/user-activation');
   };
 
   if (!isAuthenticated) {
@@ -166,19 +161,32 @@ const Login = () => {
       <p> Logged in</p>
       <button className='btn login-btn' onClick={getUser}>
         Get The User
-      </button>
+      </button>{' '}
       <button
         className='btn login-btn'
         onClick={() => {
-          logout;
+          logout();
           setIsAuthenticated(false);
           getCSRF();
         }}
       >
         Log out
-      </button>
-      <button className='btn login-btn' onClick={handleButton}>
+      </button>{' '}
+      <button
+        className='btn login-btn'
+        onClick={() => {
+          navigate('/user-activation');
+        }}
+      >
         Go to admin
+      </button>{' '}
+      <button
+        className='btn login-btn'
+        onClick={() => {
+          navigate('/SupplierDashboard');
+        }}
+      >
+        Go to supplier
       </button>
     </div>
   );
