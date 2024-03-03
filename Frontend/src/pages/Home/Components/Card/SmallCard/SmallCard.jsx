@@ -1,7 +1,4 @@
-import Text from "../../Navbar/Text";
-import { SMALL_CARD_DATA } from "../constants";
 import { Card } from "react-bootstrap";
-import { HiOutlineArrowNarrowRight } from "react-icons/hi";
 import "./smallcard.css";
 
 const SmallCard = ({ image, headingTop, headingMiddle, headingBottom }) => {
