@@ -16,8 +16,9 @@ import {
 import "./Supplier.css";
 import Logo from './Logo';
 import MenuList from './MenuList';
-import Products from './Products';
-const SupplierHeader = () => {
+import UserActivation from '../../Admin/ActivateUsers';
+import OrdersTable from './OrdersTable';
+const  Schedule = () => {
   const [collapsed, setCollapsed] = useState(false)
   const url = 'https://avatars.githubusercontent.com/u/85838482?v=4';
   const items = [
@@ -76,8 +77,14 @@ const SupplierHeader = () => {
           </Space>
 
         </Header >
-        {/* <Products/> */}
-        
+        <div className="SupplierDashboard">
+                    <div className="DashboardContent">
+                        <h3 className="HeaderTitle">Supply Schedule</h3>
+                        
+                    </div>
+    
+                </div>
+       
           
         
         
@@ -94,4 +101,4 @@ const SupplierHeader = () => {
   )
 }
 
-export default SupplierHeader
+export default Schedule

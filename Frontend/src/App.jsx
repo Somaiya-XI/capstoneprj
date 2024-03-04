@@ -9,8 +9,11 @@ import NewPasswordForm from './pages/Account/ResetPassword.jsx';
 import Register from './pages/Account/RegisterPage.jsx';
 import Login from './pages/Account/LoginPage.jsx';
 import UserContextProvider from './pages/Account/UserContextProvider.jsx';
-import SupplierDashboard from './pages/Supplier/SupplierDashboard';
+import ProductsPage from './pages/Supplier/SupplierDashboard.jsx';
 import { AdminRoute, SupplierRoute } from './Components/index.jsx';
+import Schedule from './pages/Supplier/Components/Schedule.jsx';
+import Orders from './pages/Supplier/Components/Orders.jsx';
+
 
 function App() {
   return (
@@ -19,9 +22,16 @@ function App() {
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/login' element={<Login />} />
-          <Route path='/user-activation' element={<AdminRoute><UserActivation /></AdminRoute>} />
-          {/* <Route path='/SupplierDashboard' element={<SupplierRoute><SupplierDashboard /> </SupplierRoute>} /> */}
-          <Route path='/SupplierDashboard' element={<SupplierDashboard />}/>
+          <Route path='/user-activation' element={<UserActivation />} />
+          {/* Supplier Routes */}
+          <Route>
+            {/* <Route path='/SupplierDashboard' element={<SupplierRoute><SupplierDashboard /> </SupplierRoute>} /> */}
+            <Route path='/SupplierDashboard' element={<ProductsPage />} />
+            <Route path='/SupplierDashboard/Schedule' element={<Schedule />} />
+            <Route path='/SupplierDashboard/Orders' element={<Orders />} />
+          </Route>
+
+
           <Route path='/profile' element={<Profile />} />
           <Route path='/register' element={<Register />} />
           <Route path='/forgot-password' element={<ForgotPassword />} />
