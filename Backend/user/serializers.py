@@ -2,13 +2,13 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from drf_extra_fields.fields import Base64ImageField
-from .models import User
+from .models import User, Supplier
 import re
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     commercial_reg = Base64ImageField()
-    profile_picture = Base64ImageField()
+    profile_picture = Base64ImageField(required=False)
 
     def validate_password(self, value):
         errors = []

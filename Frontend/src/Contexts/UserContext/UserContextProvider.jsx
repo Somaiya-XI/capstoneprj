@@ -1,4 +1,4 @@
-import UserContext from '../../hooks/UserContext';
+import UserContext from './UserContext';
 import { Outlet } from 'react-router-dom';
 import { useState } from 'react';
 

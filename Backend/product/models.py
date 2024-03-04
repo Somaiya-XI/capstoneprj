@@ -10,9 +10,7 @@ import datetime
 
 
 class Product(models.Model):
-    product_id = models.UUIDField(
-        "ID", default=uuid.uuid4, editable=False, unique=True, primary_key=True
-    )
+    product_id = models.UUIDField("ID", default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     product_name = models.CharField("Name", max_length=50)
     price = models.DecimalField("Price", max_digits=5, decimal_places=2)
     quantity = models.IntegerField("Quantity")
@@ -25,12 +23,8 @@ class Product(models.Model):
 
 
 class ProductCatalog(Product):
-    supplier = models.ForeignKey(
-        Supplier, on_delete=models.CASCADE, verbose_name="Supplier"
-    )
-    product_img = models.ImageField(
-        "Product Image", upload_to='catalogImgs/', blank=True, null=False
-    )
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, verbose_name="Supplier")
+    product_img = models.ImageField("Product Image", upload_to='catalogImgs/', blank=True, null=False)
     description = models.CharField("Description", max_length=250, blank=True, null=True)
     category = models.ForeignKey(
         Category,
@@ -56,12 +50,8 @@ class ProductCatalog(Product):
 
 
 class SupermarketProduct(Product):
-    Retailer = models.ForeignKey(
-        Retailer, on_delete=models.CASCADE, verbose_name="Retailer"
-    )
-    product_img = models.ImageField(
-        "Product Image", upload_to='marketProductImgs/', blank=True, null=True
-    )
+    Retailer = models.ForeignKey(Retailer, on_delete=models.CASCADE, verbose_name="Retailer")
+    product_img = models.ImageField("Product Image", upload_to='marketProductImgs/', blank=True, null=True)
 
     def __str__(self):
         return self.product_name
@@ -72,9 +62,7 @@ class SupermarketProduct(Product):
 
 class ProductBulks(Product):
     bulk_id = models.IntegerField("Bulk ID")
-    supplier = models.ForeignKey(
-        Supplier, on_delete=models.CASCADE, verbose_name="Brand"
-    )
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, verbose_name="Brand")
 
     def __str__(self):
         return self.product_name

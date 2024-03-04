@@ -8,9 +8,9 @@ import ForgotPassword from './pages/Account/ForgotPassword.jsx';
 import NewPasswordForm from './pages/Account/ResetPassword.jsx';
 import Register from './pages/Account/RegisterPage.jsx';
 import Login from './pages/Account/LoginPage.jsx';
-import UserContextProvider from './pages/Account/UserContextProvider.jsx';
 import SupplierDashboard from './pages/Supplier/SupplierDashboard';
 import { AdminRoute, SupplierRoute } from './Components/index.jsx';
+import {UserContextProvider} from './Contexts/index.jsx';
 
 function App() {
   return (
@@ -26,7 +26,7 @@ function App() {
           <Route path='/forgot-password' element={<ForgotPassword />} />
           <Route path='/reset-password/form/:uidb64/:token' element={<NewPasswordForm />} />
           {/* <Route element={<RequireAuth />}></Route> */}
-        </Routes>{' '}
+        </Routes>
       </UserContextProvider>
     </Router>
   );

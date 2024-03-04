@@ -23,9 +23,7 @@ def create_product(request):
         data['supplier'] = request.user.id
         print(data)
     else:
-        return JsonResponse(
-            {'error': 'You are not authenticated, log in then try again'}
-        )
+        return JsonResponse({'error': 'You are not authenticated, log in then try again'})
 
     serializer = ProductCatalogSerializer(data=data)
 

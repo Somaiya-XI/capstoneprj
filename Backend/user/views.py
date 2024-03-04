@@ -50,9 +50,7 @@ def login_view(request):
     UserModel = get_user_model()
 
     if not email and not password:
-        return JsonResponse(
-            {'error': 'please fill all the required feilds'}, status=400
-        )
+        return JsonResponse({'error': 'please fill all the required feilds'}, status=400)
     if not email:
         return JsonResponse({'error': 'Email field is required'}, status=400)
 
@@ -67,9 +65,7 @@ def login_view(request):
         user_role = user.role
         print(user_role)
         if not user.is_active:
-            return JsonResponse(
-                {'error': 'your account has not been activated'}, status=400
-            )
+            return JsonResponse({'error': 'your account has not been activated'}, status=400)
 
     except UserModel.DoesNotExist:
         return JsonResponse({'error': 'This email address does not exist'}, status=400)
@@ -188,7 +184,10 @@ def activate_user_account(request):
 
         user_account.is_active = activation_status.capitalize()
         user_account.save()
-        return JsonResponse({'success': 'User account activated successfully'})
+
+        message = "deactivated" if not activation_status == "true" else "activated"
+
+        return JsonResponse({'success': f'User account {message} successfully'})
 
     return JsonResponse({'error': 'Invalid request method'})
 
@@ -218,15 +217,11 @@ def reset_password(request):
                     fail_silently=False,
                 )
                 print('email sent')
-                return JsonResponse(
-                    {'message': 'Password reset link sent to your email'}
-                )
+                return JsonResponse({'message': 'Password reset link sent to your email'})
         except UserModel.DoesNotExist:
             return JsonResponse({'error': 'User with this email does not exist'})
     else:
-        return JsonResponse(
-            {'error': 'Please send a POST request with valid parameters'}
-        )
+        return JsonResponse({'error': 'Please send a POST request with valid parameters'})
 
 
 @csrf_exempt
@@ -241,9 +236,7 @@ def authorize_password_reset(request, uidb64, token):
         print(user)
         if PasswordResetTokenGenerator().check_token(user, token):
             # return JsonResponse({'success': 'you can reset your password'})
-            return redirect(
-                f"http://localhost:5173/reset-password/form/{uidb64}/{token}/"
-            )
+            return redirect(f"http://localhost:5173/reset-password/form/{uidb64}/{token}/")
         else:
             return JsonResponse({'error': 'Invalid or expired token'})
             # redirect(f"http://localhost:5173/reset-password/expired-token/")
@@ -274,9 +267,7 @@ def set_new_password(request):
                     print(user)
                     if PasswordResetTokenGenerator().check_token(user, token):
                         try:
-                            validated_password = serializer.validate_password(
-                                new_password
-                            )
+                            validated_password = serializer.validate_password(new_password)
                         except ValidationError as e:
                             errors = e.detail
                             return JsonResponse({'error': errors})
@@ -285,9 +276,7 @@ def set_new_password(request):
                         user.save()
                         return JsonResponse({'message': 'Password reset successfully'})
                     else:
-                        return JsonResponse(
-                            {'error': 'Invalid or expired token'}, status=400
-                        )
+                        return JsonResponse({'error': 'Invalid or expired token'}, status=400)
                 except UserModel.DoesNotExist:
                     return JsonResponse({'error': 'Invalid user ID'}, status=400)
             else:
@@ -333,10 +322,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         try:
-            return [
-                permission()
-                for permission in self.permission_classes_by_action[self.action]
-            ]
+            return [permission() for permission in self.permission_classes_by_action[self.action]]
         except KeyError:
             return [permission() for permission in self.permission_classes]
 
@@ -358,6 +344,4 @@ class UpdateProfile(APIView):
                 return JsonResponse(serializer.data)
             return JsonResponse(serializer.errors)
         except UserModel.DoesNotExist:
-            return JsonResponse(
-                {'error': 'Update failed, make sure you entered vaild information'}
-            )
+            return JsonResponse({'error': 'Update failed, make sure you entered vaild information'})
