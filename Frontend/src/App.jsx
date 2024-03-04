@@ -8,7 +8,6 @@ import ForgotPassword from './pages/Account/ForgotPassword.jsx';
 import NewPasswordForm from './pages/Account/ResetPassword.jsx';
 import Register from './pages/Account/RegisterPage.jsx';
 import Login from './pages/Account/LoginPage.jsx';
-import UserContextProvider from './pages/Account/UserContextProvider.jsx';
 import ProductsPage from './pages/Supplier/SupplierDashboard.jsx';
 import { AdminRoute, SupplierRoute } from './Components/index.jsx';
 import Schedule from './pages/Supplier/Components/Schedule.jsx';

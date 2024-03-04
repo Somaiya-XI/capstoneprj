@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
-import UserContext from '../../hooks/UserContext';
+import {UserContext} from '../../Contexts/index.jsx';
 
 const RetailerRoute = ({ children }) => {
   const { role, isAuthenticated } = useContext(UserContext);

@@ -3,7 +3,6 @@ import React, {useState, useEffect, useContext} from 'react';
 import axios from 'axios';
 import './ActivationPage.css';
 import {Avatar} from '@boringer-avatars/react';
-import UserContext from '../../hooks/UserContext';
 import {useNavigate} from 'react-router-dom';
 
 const UserActivation = () => {

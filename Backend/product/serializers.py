@@ -8,10 +8,9 @@ from user.serializers import UserSerializer
 
 class ProductCatalogSerializer(serializers.HyperlinkedModelSerializer):
     product_img = Base64ImageField(required=True)
+    # supplier = serializers.PrimaryKeyRelatedField(queryset=Supplier.objects.all())
     supplier = UserSerializer()
-    category = serializers.SlugRelatedField(
-        slug_field='name', queryset=Category.objects.all()
-    )
+    category = serializers.SlugRelatedField(slug_field='name', queryset=Category.objects.all())
 
     class Meta:
         model = ProductCatalog
