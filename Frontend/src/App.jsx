@@ -12,7 +12,7 @@ import ProductsPage from './pages/Supplier/SupplierDashboard.jsx';
 import { AdminRoute, SupplierRoute } from './Components/index.jsx';
 import Schedule from './pages/Supplier/Components/Schedule.jsx';
 import Orders from './pages/Supplier/Components/Orders.jsx';
-import {UserContextProvider} from './Contexts/index.jsx';
+import { UserContextProvider } from './Contexts/index.jsx';
 
 
 function App() {
@@ -23,7 +23,6 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path='/login' element={<Login />} />
           <Route path='/user-activation' element={<AdminRoute><UserActivation /></AdminRoute>} />
-          {/* Supplier Routes */}
           <Route>
             {/* <Route path='/SupplierDashboard' element={<SupplierRoute><SupplierDashboard /> </SupplierRoute>} /> */}
             <Route path='/SupplierDashboard' element={<ProductsPage />} />
