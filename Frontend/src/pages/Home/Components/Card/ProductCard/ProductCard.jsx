@@ -2,11 +2,13 @@ import "./productcard.css";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 const ProductCard = ({
   customClass,
+  productID,
   productImage,
   productName,
   seller,
   price,
   oldPrice,
+  discount,
 }) => {
   return (
     <div id={customClass} className="col-lg-1-5 col-md-4 col-12 col-sm-6">
@@ -20,9 +22,9 @@ const ProductCard = ({
               <img className="default-img" src={productImage} alt="" />
             </a>
           </div>
-          {oldPrice !== null ? (
+          {discount !== "0.00" ? (
             <div className="product-badges product-badges-position product-badges-mrg">
-              <span className="hot">Hot</span>
+              <span className="hot">{discount + "%"}</span>
             </div>
           ) : null}
         </div>
@@ -32,15 +34,17 @@ const ProductCard = ({
           </h2>
           <div>
             <span className="font-small text-muted">
-              Seller <a href="#">{seller}</a>
+              Seller <a href="#">{seller.company_name}</a>
             </span>
           </div>
           <div className="product-card-bottom">
             <div className="product-price">
-              <span className="old-price">
-                <i>{oldPrice}</i>
-              </span>
-              <span>{price}</span>
+              {discount !== "0.00" ? (
+                <span className="old-price">
+                  <i>{"$" + oldPrice}</i>
+                </span>
+              ) : null}
+              <span>{"$" + price}</span>
             </div>
             <div className="add-cart">
               <a className="add" href="#">

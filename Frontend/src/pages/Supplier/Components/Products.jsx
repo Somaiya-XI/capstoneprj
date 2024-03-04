@@ -1,8 +1,10 @@
 import React from 'react'
 import "./Supplier.css";
 import { Button} from 'antd';
-import DashboardHeader from './DashboardHeader';
+import DashboardHeader from './SupplierHeader';
 import ProductTable from './ProductTable';
+
+
 
 
 
@@ -16,8 +18,9 @@ const Products = () => {
             + Add
           </Button>
       </div>
-        <DashboardHeader/>
+        
         <ProductTable/>
+        
       
     </div>
   )

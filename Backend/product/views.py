@@ -59,6 +59,17 @@ def update_product(request):
         return JsonResponse({'message': 'Product deleted'}, status=204)
 
 
+def get_categories(request):
+    categories = ProductCatalog.objects.select_related('category')
+    category_names = list({category.category.name for category in categories})
+    return JsonResponse(category_names, safe=False)
+
+
+def get_brands(request):
+    brands = list(ProductCatalog.objects.values_list('brand', flat=True).distinct())
+    return JsonResponse(brands, safe=False)
+
+
 # Create your views here.
 class CatalogViewSet(viewsets.ModelViewSet):
     queryset = ProductCatalog.objects.all()

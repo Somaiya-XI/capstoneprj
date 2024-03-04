@@ -1,11 +1,13 @@
 import Slider from "react-slick";
-import { SMALL_CARD_DATA } from "../Card/constants";
 import "./customslider.css";
 import {
   HiOutlineArrowNarrowLeft,
   HiOutlineArrowNarrowRight,
 } from "react-icons/hi";
 import Text from "../Navbar/Text";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import icon from "../../images/supplier1.png";
 
 function SampleNextArrow(props) {
   const { className, style, onClick, customCLass } = props;
@@ -47,6 +49,7 @@ function SamplePrevArrow(props) {
 }
 
 const CustomSlider = () => {
+  const [brands, setBrands] = useState([]);
   var settings = {
     dots: true,
     infinite: false,
@@ -84,15 +87,27 @@ const CustomSlider = () => {
     ],
   };
 
+  const loadBrands = async () => {
+    const { data } = await axios.get(
+      `${import.meta.env.VITE_API_URL}product/catalog-product/get-brands/`
+    );
+    console.log(data);
+    setBrands(data);
+  };
+
+  useEffect(() => {
+    loadBrands();
+  }, []);
+
   return (
     <div className="pb-5">
       <Slider {...settings}>
-        {SMALL_CARD_DATA.map((card, index) => {
+        {brands.map((brand, index) => {
           return (
             <div key={index}>
               <Text
-                icon={card.icon}
-                text={card.text}
+                icon={icon}
+                text={brand}
                 type="small"
                 customClasses=" small-card"
               />

@@ -106,8 +106,8 @@
 // export default ProductTable;
 
 import React, { useState } from 'react';
-import { Form, Input, InputNumber, Popconfirm, Table, Typography } from 'antd';
-import PropTypes from 'prop-types'; 
+import { Form, Input, InputNumber, Popconfirm, Table, Typography, Tag } from 'antd';
+import PropTypes from 'prop-types';
 
 const originData = [];
 for (let i = 1; i < 100; i++) {
@@ -116,6 +116,9 @@ for (let i = 1; i < 100; i++) {
     ProductName: `Canderial Chocolate ${i}`,
     Price: `${i} Riyals`,
     Quantity: `${i} Bulks`,
+    Stock:`${i} Bulks`,
+    
+    
   });
 }
 
@@ -154,7 +157,7 @@ const EditableCell = ({
   );
 };
 
-const ProductTable = ({}) => {
+const ProductTable = ({ }) => {
   const [form] = Form.useForm();
   const [data, setData] = useState(originData);
   const [editingKey, setEditingKey] = useState('');
@@ -200,30 +203,37 @@ const ProductTable = ({}) => {
       console.log('Validate Failed:', errInfo);
     }
   };
+
   const columns = [
     {
       title: 'Product Image',
-      dataIndex: 'ProductImage', 
+      dataIndex: 'ProductImage',
 
       editable: true,
     },
     {
       title: 'Product Name',
-      dataIndex: 'ProductName', 
+      dataIndex: 'ProductName',
 
       editable: true,
     },
     {
       title: 'Description',
       dataIndex: 'Description',
-
+      width: "10%",
+      editable: true,
+    },
+    {
+      title: 'Category',
+      dataIndex: 'Category',
+      width: "10%",
       editable: true,
     },
     {
       title: 'Price',
       dataIndex: 'Price',
-
       editable: true,
+
     },
     {
       title: 'Quantity',
@@ -233,9 +243,23 @@ const ProductTable = ({}) => {
     },
     {
       title: 'Stock Level',
-      dataIndex: 'StockLevel', 
-
+      dataIndex: 'StockLevel',
       editable: true,
+      // render: (_, { StockLevel }) => (
+      //   <>
+      //     {StockLevel.map((Stock) => {
+      //       let color = Stock.length > 5 ? 'geekblue' : 'green';
+      //       if ( Stock === 'Full') {
+      //         color = 'volcano';
+      //       }
+      //       return (
+      //         <Tag color={color} key={Stock}>
+      //           {Stock.toUpperCase()}
+      //         </Tag>
+      //       );
+      //     })}
+      //   </>
+      // ),
     },
     {
       title: 'Production Date',
@@ -296,14 +320,14 @@ const ProductTable = ({}) => {
     }
     return {
       ...col,
-      onCell: (record) => ({  
+      onCell: (record) => ({
         record,
         inputType: col.dataIndex === 'ProductImage' ? 'image' : 'text',
         inputType: col.dataIndex === 'ProductName' ? 'text' : 'text',
         inputType: col.dataIndex === 'BrandName' ? 'text' : 'text',
         inputType: col.dataIndex === 'Description' ? 'text' : 'text',
-        inputType: col.dataIndex === 'Price' ? 'number' : 'text', 
-        inputType: col.dataIndex === 'Quantity' ? 'number' : 'text', 
+        inputType: col.dataIndex === 'Price' ? 'number' : 'text',
+        inputType: col.dataIndex === 'Quantity' ? 'number' : 'text',
         inputType: col.dataIndex === 'StockLevel' ? 'number' : 'text',
         inputType: col.dataIndex === 'ProductionDate' ? 'date' : 'text',
         inputType: col.dataIndex === 'ExpiryDate' ? 'date' : 'text',
@@ -312,12 +336,12 @@ const ProductTable = ({}) => {
 
         dataIndex: col.dataIndex,
         title: col.title,
-        editing: isEditing(record),                   
-        
-        
-        
-        
-        
+        editing: isEditing(record),
+
+
+
+
+
       }),
     };
   });
@@ -340,18 +364,15 @@ const ProductTable = ({}) => {
     </Form>
   );
 };
-
-ProductTable.propTypes = {
-  ProductName: PropTypes.string,
-  ProductImage: PropTypes.string,
-  Description: PropTypes.string,
-  Price: PropTypes.number,
-  Quantity: PropTypes.number,
-  StockLevel: PropTypes.number,
-  ProductionDate: PropTypes.string,
-  ExpiryDate: PropTypes.string,
-  DiscountPercentage: PropTypes.number,
-  BrandName: PropTypes.string,
-};
-
 export default ProductTable;
+
+// New Table
+
+
+export const ProductTable2 = () => {
+
+
+
+}
+
+
