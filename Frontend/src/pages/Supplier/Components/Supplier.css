@@ -151,7 +151,16 @@
   color:#888888;  
 }
 .ProfileDropDown{
+  padding:100px;
+}
+:where(.css-dev-only-do-not-override-1xg9z9n).ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-title-content >a, :where(.css-dev-only-do-not-override-1xg9z9n).ant-dropdown-menu-submenu .ant-dropdown-menu .ant-dropdown-menu-title-content >a {
   
+  margin: 2px;
+  margin-right: 4rem;
+  display:flex !important;
+  align-items: left;
+  font-size: 1rem;
+
 }
 
 

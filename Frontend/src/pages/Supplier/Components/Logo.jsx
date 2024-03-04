@@ -1,5 +1,19 @@
 import * as React from "react";
 import "./Supplier.css"
+export const Logo1 = () => {
+  <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="51"
+      height="36"
+      fill="none"
+      viewBox="0 0 51 36"
+    >
+      <path
+        fill="#002603"
+        d="M50.4.9L41.25 36H30.9l-5.6-23.1L19.5 36H9.15L.25.9H9.4l5.05 25.55L20.7.9h9.4l6 25.55L41.2.9h9.2z"
+      ></path>
+    </svg>
+}
 const Logo = (props) => (
   <svg className="WiserLogo"
     viewBox="0 0 183 67"
