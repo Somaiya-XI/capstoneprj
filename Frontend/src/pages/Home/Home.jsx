@@ -11,15 +11,35 @@ import "./Home.css";
 import ProductCard from "./Components/Card/ProductCard/ProductCard";
 import Header from "./Components/Header/Header.jsx";
 import Footer from "./Components/Footer/Footer.jsx";
-
-import product1 from "./images/product1.png";
-import product2 from "./images/product2.png";
-import product4 from "./images/product4.png";
-import product5 from "./images/product5.png";
-import product6 from "./images/product6.png";
-import product7 from "./images/product7.png";
+import React from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 const Home = () => {
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
+
+  const loadCategories = async () => {
+    const { data } = await axios.get(
+      `${import.meta.env.VITE_API_URL}product/catalog-product/get-categories/`
+    );
+    console.log(data);
+    setCategories(data);
+  };
+
+  const loadProducts = async () => {
+    const { data } = await axios.get(
+      `${import.meta.env.VITE_API_URL}product/catalog-product/`
+    );
+    console.log(data);
+    setProducts(data);
+  };
+
+  useEffect(() => {
+    loadCategories();
+    loadProducts();
+  }, []);
+
   return (
     <>
       <Header />
@@ -53,55 +73,20 @@ const Home = () => {
               <div className="tab-content">
                 <div className="tab-pane fade active show">
                   <div className="row">
-                    <ProductCard
-                      productImage={product1}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={"$40"}
-                    />
-                    <ProductCard
-                      productImage={product2}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={"$40"}
-                    />
-                    <ProductCard
-                      productImage={product4}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={"$40"}
-                    />
-                    <ProductCard
-                      productImage={product5}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={"$40"}
-                    />
-                    <ProductCard
-                      productImage={product6}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={"$40"}
-                    />
-                    <ProductCard
-                      productImage={product7}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={"$40"}
-                    />
-                    <ProductCard
-                      productImage={product1}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={"$40"}
-                    />
+                    {products.map((product, index) =>
+                      product.discount_percentage !== "0.00" ? (
+                        <ProductCard
+                          productID={product.product_id}
+                          productImage={product.product_img}
+                          productName={product.product_name}
+                          seller={product.supplier}
+                          price={product.new_price}
+                          oldPrice={product.price}
+                          discount={product.discount_percentage}
+                          key={index}
+                        />
+                      ) : null
+                    )}
                   </div>
                 </div>
               </div>
@@ -120,156 +105,50 @@ const Home = () => {
                   </li>
                 </ul>
               </div>
-              {CARD_DATA.map((card, index) => {
-                return (
-                  <div className="col-md-4" key={index}>
-                    <SmallCard image={card.imaage} />
-                  </div>
-                );
-              })}
+              {CARD_DATA.map((card, index) => (
+                <div className="col-md-4" key={index}>
+                  <SmallCard image={card.imaage} />
+                </div>
+              ))}
             </div>
-            <div className="popular">
-              <div
-                className="title d-flex justify-content-between mb-5"
-                id="title"
-              >
-                <h3 className="mr-5">Fruits</h3>
-                <ul className="list-inline nav nav-tabs links">
-                  <li className="list-inline-item nav-item">
-                    <a href="#" className="nav-link">
-                      view all {">"}
-                    </a>
-                  </li>
-                </ul>
-              </div>
+            {categories.map((category, index) => (
+              <div className="popular" key={index}>
+                <div
+                  className="title d-flex justify-content-between mb-5"
+                  id="title"
+                >
+                  <h3 className="mr-5">{category}</h3>
+                  <ul className="list-inline nav nav-tabs links">
+                    <li className="list-inline-item nav-item">
+                      <a href="#" className="nav-link">
+                        view all {">"}
+                      </a>
+                    </li>
+                  </ul>
+                </div>
 
-              <div className="tab-content">
-                <div className="tab-pane fade active show">
-                  <div className="row">
-                    <ProductCard
-                      productImage={product1}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={null}
-                    />
-                    <ProductCard
-                      productImage={product2}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={null}
-                    />
-                    <ProductCard
-                      productImage={product4}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={null}
-                    />
-                    <ProductCard
-                      productImage={product5}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={null}
-                    />
-                    <ProductCard
-                      productImage={product6}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={null}
-                    />
-                    <ProductCard
-                      productImage={product7}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={null}
-                    />
-                    <ProductCard
-                      productImage={product1}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={null}
-                    />
+                <div className="tab-content">
+                  <div className="tab-pane fade active show">
+                    <div className="row">
+                      {products.map((product, index) =>
+                        product.category === category ? (
+                          <ProductCard
+                            productID={product.product_id}
+                            productImage={product.product_img}
+                            productName={product.product_name}
+                            seller={product.supplier}
+                            price={product.new_price}
+                            oldPrice={product.price}
+                            discount={product.discount_percentage}
+                            key={index}
+                          />
+                        ) : null
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="popular">
-              <div
-                className="title d-flex justify-content-between mb-5"
-                id="title"
-              >
-                <h3 className="mr-5">Fruits</h3>
-                <ul className="list-inline nav nav-tabs links">
-                  <li className="list-inline-item nav-item">
-                    <a href="#" className="nav-link">
-                      view all {">"}
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="tab-content">
-                <div className="tab-pane fade active show">
-                  <div className="row">
-                    <ProductCard
-                      productImage={product1}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={null}
-                    />
-                    <ProductCard
-                      productImage={product2}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={null}
-                    />
-                    <ProductCard
-                      productImage={product4}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={null}
-                    />
-                    <ProductCard
-                      productImage={product5}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={null}
-                    />
-                    <ProductCard
-                      productImage={product6}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={null}
-                    />
-                    <ProductCard
-                      productImage={product7}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={null}
-                    />
-                    <ProductCard
-                      productImage={product1}
-                      productName={"Foster Farms Takeout Crispy"}
-                      seller={"Lusine"}
-                      price={"$20"}
-                      oldPrice={null}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>

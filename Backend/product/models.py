@@ -48,6 +48,10 @@ class ProductCatalog(Product):
     min_order_quantity = models.IntegerField("Min Allowed", default=1)
     production_date = models.DateField("Production Date", null=False, blank=False)
 
+    @property
+    def new_price(self):
+        return self.price - (self.price * (self.discount_percentage / 100))
+
     def __str__(self):
         return self.product_name
 
