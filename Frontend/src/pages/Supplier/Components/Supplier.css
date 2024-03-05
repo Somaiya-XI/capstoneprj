@@ -340,7 +340,7 @@ td:first-letter {
 .SubTitle{
   margin-left:25px;
 }
-:where(.css-dev-only-do-not-override-1xg9z9n).ant-picker-calendar {
+/* :where(.css-dev-only-do-not-override-1xg9z9n).ant-picker-calendar {
   background: #ffffff;
   padding: 30px 30px;
   position: relative;
@@ -357,7 +357,9 @@ td:first-letter {
   justify-content: flex-end;
   padding: 20px;
   margin-bottom: 30px;
-}
+} */
+
+
 
 
 
