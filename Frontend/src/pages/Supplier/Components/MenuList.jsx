@@ -23,9 +23,11 @@ function MenuList() {
                 </Menu.Item>
                 <Menu.Item key="Schedule" icon={<CalendarOutlined />}>
                     Supply Schedule
+                    <Link to="/SupplierDashboard/Schedule"/>
                 </Menu.Item>
                 <Menu.Item key="Incoming Orders" icon={<PoundCircleOutlined />}>
                     Incoming Orders
+                    <Link to="/SupplierDashboard/Orders"/>
                 </Menu.Item>
                 <Menu.Item key="Settings" icon={<SettingOutlined />}>
                     Settings

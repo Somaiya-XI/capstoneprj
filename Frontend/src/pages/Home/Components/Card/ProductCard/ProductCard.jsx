@@ -1,5 +1,7 @@
 import "./productcard.css";
 import { AiOutlineShoppingCart } from "react-icons/ai";
+import { Link } from "react-router-dom";
+
 const ProductCard = ({
   customClass,
   productID,
@@ -18,9 +20,9 @@ const ProductCard = ({
       >
         <div className="product-img-action-wrap">
           <div className="product-img product-img-zoom">
-            <a href="#">
+            <Link to={`/${productID}`}>
               <img className="default-img" src={productImage} alt="" />
-            </a>
+            </Link>
           </div>
           {discount !== "0.00" ? (
             <div className="product-badges product-badges-position product-badges-mrg">
@@ -30,11 +32,11 @@ const ProductCard = ({
         </div>
         <div className="product-content-wrap">
           <h2>
-            <a href="#">{productName}</a>
+            <Link to={`/${productID}`}>{productName}</Link>
           </h2>
           <div>
             <span className="font-small text-muted">
-              Seller <a href="#">{seller.company_name}</a>
+              Seller <Link to={`/${productID}`}>{seller.company_name}</Link>
             </span>
           </div>
           <div className="product-card-bottom">
