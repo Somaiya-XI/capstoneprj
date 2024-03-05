@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import Home from './pages/Home/Home.jsx';
 import ProductDetail from './pages/ProductDetail/ProductDetail.jsx';
@@ -10,21 +10,25 @@ import NewPasswordForm from './pages/Account/ResetPassword.jsx';
 import Register from './pages/Account/RegisterPage.jsx';
 import Login from './pages/Account/LoginPage.jsx';
 import ProductsPage from './pages/Supplier/SupplierDashboard.jsx';
-import { AdminRoute, SupplierRoute } from './Components/index.jsx';
+import {AdminRoute, SupplierRoute} from './Components/index.jsx';
 import Schedule from './pages/Supplier/Components/Schedule.jsx';
 import Orders from './pages/Supplier/Components/Orders.jsx';
-import { UserContextProvider } from './Contexts/index.jsx';
+import {UserContextProvider} from './Contexts/index.jsx';
 
+import Cart from './pages/Cart/Cart.jsx';
+import Navbar from './pages/Home/Components/Navbar/Navbar.jsx';
+import Header from './pages/Home/Components/Header/Header.jsx';
 
 function App() {
   return (
     <Router>
       <UserContextProvider>
         <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path="/:id" element={<ProductDetail />} />
+          <Route path='/' element={<><Header><Navbar /></Header><Home /></>} />
+          <Route path='/cart' element={ <> <Header>  <Navbar /></Header> <Cart /></> } />
+          <Route path='/:id' element={<ProductDetail />} />
           <Route path='/login' element={<Login />} />
-          <Route path='/user-activation' element={<AdminRoute><UserActivation /></AdminRoute>} />
+          <Route path="/user-activation" element={<AdminRoute><UserActivation /></AdminRoute>} />
           <Route>
             {/* <Route path='/SupplierDashboard' element={<SupplierRoute><SupplierDashboard /> </SupplierRoute>} /> */}
             <Route path='/SupplierDashboard' element={<ProductsPage />} />
@@ -35,8 +39,7 @@ function App() {
           <Route path='/register' element={<Register />} />
           <Route path='/forgot-password' element={<ForgotPassword />} />
           <Route path='/reset-password/form/:uidb64/:token' element={<NewPasswordForm />} />
-        </Routes>{' '}
-
+        </Routes>
       </UserContextProvider>
     </Router>
   );

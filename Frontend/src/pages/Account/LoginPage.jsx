@@ -7,7 +7,7 @@ import {API} from '../../backend';
 import {logout, login, getUser} from './AuthHelpers';
 
 const Login = () => {
-  const {role, setRole, csrf, setCSRF, isAuthenticated, setIsAuthenticated} = useContext(UserContext);
+  const {user, setUser, setRole, csrf, setCSRF, isAuthenticated, setIsAuthenticated} = useContext(UserContext);
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -74,6 +74,20 @@ const Login = () => {
         } else {
           setError(error.response.data.error);
         }
+      });
+  };
+  const handleGetUser = (event) => {
+    event.preventDefault();
+
+    getUser()
+      .then((data) => {
+        console.log('Response data:', data);
+        setUser((u) => {
+          return {...u, ...data};
+        });
+      })
+      .catch((error) => {
+        console.log('Error:', error);
       });
   };
 
@@ -159,7 +173,7 @@ const Login = () => {
     <div className='container-mt-3 p-4'>
       <h1>Authenticated</h1>
       <p> Logged in</p>
-      <button className='btn login-btn' onClick={getUser}>
+      <button className='btn login-btn' onClick={handleGetUser}>
         Get The User
       </button>{' '}
       <button
@@ -193,5 +207,3 @@ const Login = () => {
 };
 
 export default Login;
-
-

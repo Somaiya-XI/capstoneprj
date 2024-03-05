@@ -1,4 +1,3 @@
-
 export {default as UserContext} from './UserContext/UserContext';
 export {default as UserContextProvider} from './UserContext/UserContextProvider';
 
