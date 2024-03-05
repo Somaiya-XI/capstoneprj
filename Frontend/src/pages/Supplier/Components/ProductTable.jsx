@@ -109,6 +109,7 @@ import React, { useState } from 'react';
 import { Form, Input, InputNumber, Popconfirm, Table, Typography, Tag } from 'antd';
 import PropTypes from 'prop-types';
 
+
 const originData = [];
 for (let i = 1; i < 100; i++) {
   originData.push({
@@ -158,6 +159,16 @@ const EditableCell = ({
 };
 
 const ProductTable = ({ }) => {
+  const handleAdd = () => {
+    const newData = {
+      key: count,
+      name: `Edward King ${count}`,
+      age: '32',
+      address: `London, Park Lane no. ${count}`,
+    };
+    setDataSource([...dataSource, newData]);
+    setCount(count + 1);
+  };
   const [form] = Form.useForm();
   const [data, setData] = useState(originData);
   const [editingKey, setEditingKey] = useState('');
