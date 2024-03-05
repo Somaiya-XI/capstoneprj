@@ -112,7 +112,14 @@ def get_user(request):
     if not request.user.is_authenticated:
         return JsonResponse({'isAuthenticated': False})
 
-    return JsonResponse({'email': request.user.email})
+    return JsonResponse(
+        {
+            'id': request.user.id,
+            'email': request.user.email,
+            'company_name': request.user.company_name,
+            'role': request.user.role,
+        }
+    )
 
 
 def users_api(request):

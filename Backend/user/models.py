@@ -20,10 +20,8 @@ class User(AbstractUser):
         null=False,
         default='000',
     )
-    profile_picture = models.ImageField(
-        "profile picture", upload_to='profile_imgs/', blank=True, null=True
-    )
-    session_token = models.CharField(max_length=10, default=0)
+    profile_picture = models.ImageField("profile picture", upload_to='profile_imgs/', blank=True, null=True)
+    session_token = models.CharField(max_length=100, default=0)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -33,9 +31,7 @@ class User(AbstractUser):
         SUPPLIER = "SUPPLIER", "Supplier"
         RETAILER = "RETAILER", "Retailer"
 
-    role = models.CharField(
-        max_length=50, choices=Role.choices, blank=False, null=False
-    )
+    role = models.CharField(max_length=50, choices=Role.choices, blank=False, null=False)
 
     def save(self, *args, **kwargs):
         if not self.pk:

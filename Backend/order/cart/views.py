@@ -4,6 +4,7 @@ from .models import Cart, CartItem
 from product.models import ProductCatalog
 from django.views.decorators.csrf import csrf_exempt
 from product.models import ProductCatalog
+from product.serializers import ProductCatalogSerializer
 
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
@@ -105,6 +106,43 @@ def calculate_cart_total(cart):
     total_price = cart.cartitem_set.aggregate(total_price=Sum('subtotal'))['total_price']
     cart.total = total_price or 0
     cart.save()
+
+
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def view_cart(request):
+    user = request.user
+
+    cart = Cart.objects.filter(user=user).first()
+
+    if not cart:
+        return JsonResponse({'message': 'Your cart is empty :('})
+
+    cart_items = CartItem.objects.filter(cart=cart)
+
+    response_data = {
+        'cart': cart.cart_id,
+        'products': [],
+        'total': cart.total,
+    }
+
+    for cart_item in cart_items:
+        product = cart_item.product
+        product_serializer = ProductCatalogSerializer(instance=product)
+
+        item_data = {
+            'product_id': product.product_id,
+            'name': product.product_name,
+            'unit_price': product.price,
+            'quantity': cart_item.quantity,
+            'image': product.product_img.url if product.product_img else None,
+            'subtotal': cart_item.subtotal,
+        }
+
+        response_data['products'].append(item_data)
+
+    return JsonResponse(response_data)
 
 
 # Create your views here.
