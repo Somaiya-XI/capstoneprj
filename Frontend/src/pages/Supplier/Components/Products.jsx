@@ -4,6 +4,8 @@ import { Button } from 'antd';
 import DashboardHeader from './SupplierHeader';
 import ProductTable from './ProductTable';
 import { Layout } from 'antd';
+import SearchField from './SearchField';
+
 
 
 
@@ -21,6 +23,7 @@ const Products = () => {
           + Add
         </Button>
       </div>
+      <SearchField/>
       <ProductTable />
 
 

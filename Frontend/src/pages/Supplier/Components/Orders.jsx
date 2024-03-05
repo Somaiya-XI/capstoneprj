@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Button, Layout, Avatar, Space, Dropdown } from 'antd';
 import { Link } from 'react-router-dom';
 import OrdersTable from './OrdersTable';
+
+import SearchField from './SearchField';
 const { Header, Sider } = Layout;
 import {
     MenuUnfoldOutlined,
@@ -77,19 +79,24 @@ const Orders = () => {
                     </Space>
 
                 </Header >
+                
 
 
                 <div className="SupplierDashboard">
                     <div className="DashboardContent">
+                        
                         <h3 className="HeaderTitle">Orders</h3>
 
                     </div>
+                    <SearchField/>
                     <OrdersTable />
 
 
 
 
                 </div>
+
+             
 
 
 

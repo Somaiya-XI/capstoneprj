@@ -292,6 +292,73 @@ td:first-letter {
   background-color: #666666;
   color: white;
 }
+:where(.css-dev-only-do-not-override-1xg9z9n).ant-modal-root .ant-modal-mask {
+  background-color: #00000017;
+  
+  
+}
+:where(.css-dev-only-do-not-override-1xg9z9n).ant-modal .ant-modal-content {
+  
+  border-radius: 10px;
+  box-shadow: none;
+  padding: 35px 24px;
+}
+:where(.css-dev-only-do-not-override-1xg9z9n).ant-modal .ant-modal-header {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 2rem !important;
+  color: rgba(0, 0, 0, 0.88);
+  margin-bottom: 20px;
+  
+}
+:where(.css-dev-only-do-not-override-1xg9z9n).ant-modal .ant-modal-footer >.ant-btn+.ant-btn {
+  font-family: 'Poppins', sans-serif !important;
+  background: #002603;
+}
+.input_group {
+  margin-left: 20px;
+  border: 2px solid #bce3c9;
+  border-radius: 50px;
+  max-width: 700px;
+  background-color: #fff;
+  width: 100%;
+}
+.divider {
+  position: relative;
+}
+.divider::after {
+  content: "";
+  position: absolute;
+  height: 100%;
+  width: 2px;
+  color: #bce3c9;
+  background-color: #023c07;
+}
+#logoSearch {
+  display: inline-flex;
+  margin-right: 10px;
+}
+.SubTitle{
+  margin-left:25px;
+}
+:where(.css-dev-only-do-not-override-1xg9z9n).ant-picker-calendar {
+  background: #ffffff;
+  padding: 30px 30px;
+  position: relative;
+  transition: opacity 0.3s;
+  bottom: 0;
+  right: 0;
+  top: 0%;
+ 
+
+}
+
+:where(.css-dev-only-do-not-override-1xg9z9n).ant-picker-calendar .ant-picker-calendar-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
 
 
 

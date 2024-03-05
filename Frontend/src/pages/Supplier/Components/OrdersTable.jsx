@@ -1,114 +1,258 @@
 import React, { useState } from 'react';
-import { Space, Table } from 'antd';
+import { Form, Input, InputNumber, Popconfirm, Table, Typography, Tag, Modal, Button } from 'antd';
 import "./Supplier.css";
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sydney No. 1 Lake Park',
-  },
-  {
-    key: '4',
-    name: 'Jim Red',
-    age: 32,
-    address: 'London No. 2 Lake Park',
-  },
-];
-const OrderTable = () => {
-  const [filteredInfo, setFilteredInfo] = useState({});
-  const [sortedInfo, setSortedInfo] = useState({});
-  const handleChange = (pagination, filters, sorter) => {
-    console.log('Various parameters', pagination, filters, sorter);
-    setFilteredInfo(filters);
-    setSortedInfo(sorter);
-  };
-  const clearFilters = () => {
-    setFilteredInfo({});
-  };
-  const clearAll = () => {
-    setFilteredInfo({});
-    setSortedInfo({});
-  };
-  const setAgeSort = () => {
-    setSortedInfo({
-      order: 'descend',
-      columnKey: 'age',
+
+
+const originData = [];
+for (let i = 1; i < 100; i++) {
+    originData.push({
+        key: i.toString(),
+        UserEmail: `UserX@gmail.com ${i}`,
+        OrderID: `563${i}541`,
+        OrderDate: `${i}/9/2024`,
+        TotalPrice: `${i}25 Riyals`,
+        PaymentMethod: `STC Pay`,
+        OrderStatus: `Pinned`,
+        ShippingAddress: `6th-Street Neighbrohood`,
+
+
     });
-  };
-  const columns = [
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      filters: [
-        {
-          text: 'Joe',
-          value: 'Joe',
-        },
-        {
-          text: 'Jim',
-          value: 'Jim',
-        },
-      ],
-      filteredValue: filteredInfo.name || null,
-      onFilter: (value, record) => record.name.includes(value),
-      sorter: (a, b) => a.name.length - b.name.length,
-      sortOrder: sortedInfo.columnKey === 'name' ? sortedInfo.order : null,
-      ellipsis: true,
-    },
-    {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
-      sorter: (a, b) => a.age - b.age,
-      sortOrder: sortedInfo.columnKey === 'age' ? sortedInfo.order : null,
-      ellipsis: true,
-    },
-    {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
-      filters: [
-        {
-          text: 'London',
-          value: 'London',
-        },
-        {
-          text: 'New York',
-          value: 'New York',
-        },
-      ],
-      filteredValue: filteredInfo.address || null,
-      onFilter: (value, record) => record.address.includes(value),
-      sorter: (a, b) => a.address.length - b.address.length,
-      sortOrder: sortedInfo.columnKey === 'address' ? sortedInfo.order : null,
-      ellipsis: true,
-    },
-  ];
-  return (
-    <>
-      <Space
-        style={{
-          marginBottom: 16,
-        }}
-      >
-        
-      </Space>
-      <Table columns={columns} dataSource={data} onChange={handleChange} />
-    </>
-  );
+}
+
+const EditableCell = ({
+    editing,
+    dataIndex,
+    title,
+    inputType,
+    record,
+    index,
+    children,
+    ...restProps
+}) => {
+    const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
+    return (
+        <td {...restProps}>
+            {editing ? (
+                <Form.Item
+                    name={dataIndex}
+                    style={{
+                        margin: 0,
+                    }}
+                    rules={[
+                        {
+                            required: true,
+                            message: `Please Input ${title}!`,
+                        },
+                    ]}
+                >
+                    {inputNode}
+                </Form.Item>
+            ) : (
+                children
+            )}
+        </td>
+    );
 };
-export default OrderTable;
+
+const ProductTable = ({ }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleOk = () => {
+        
+        setIsModalOpen(false);
+    };
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
+    const [form] = Form.useForm();
+    const [data, setData] = useState(originData);
+    const [editingKey, setEditingKey] = useState('');
+    const isEditing = (record) => record.key === editingKey;
+    const edit = (record) => {
+        form.setFieldsValue({
+            ProductName: '',
+            ProductImage: '',
+            Description: '',
+            Price: '',
+            Quantity: '',
+            Stock: '',
+            ProductionDate: '',
+            ExpiryDate: '',
+            DiscountPercentage: '',
+            BrandName: '',
+            ...record,
+        });
+        setEditingKey(record.key);
+    };
+    const cancel = () => {
+        setEditingKey('');
+    };
+    const save = async (key) => {
+        try {
+            const row = await form.validateFields();
+            const newData = [...data];
+            const index = newData.findIndex((item) => key === item.key);
+            if (index > -1) {
+                const item = newData[index];
+                newData.splice(index, 1, {
+                    ...item,
+                    ...row,
+                });
+                setData(newData);
+                setEditingKey('');
+            } else {
+                newData.push(row);
+                setData(newData);
+                setEditingKey('');
+            }
+        } catch (errInfo) {
+            console.log('Validate Failed:', errInfo);
+        }
+    };
+
+    const columns = [
+        {
+            title: 'Profile Photo',
+            dataIndex: 'UserImage',
+            editable: true,
+        },
+        {
+            title: 'Email',
+            dataIndex: 'UserEmail',
+            editable: true,
+        },
+
+        {
+            title: 'Order ID',
+            dataIndex: 'OrderID',
+            editable: true,
+
+        },
+        {
+            title: 'Order Date',
+            dataIndex: 'OrderDate',
+            editable: true,
+        },
+        {
+            title: 'Total Price',
+            dataIndex: 'TotalPrice',
+            width: "10%",
+            editable: true,
+        },
+        {
+            title: 'Payment Method',
+            dataIndex: 'PaymentMethod',
+            width: "10%",
+            editable: true,
+        },
+        {
+            title: 'Order Status',
+            dataIndex: 'OrderStatus',
+
+            editable: true,
+        },
+
+        {
+            title: 'Shipping Address',
+            dataIndex: 'ShippingAddress',
+
+            editable: true,
+        },
+
+        {
+            title: 'Order Details',
+            dataIndex: 'OrderDetails',
+            width: "10%",
+            render: (_, record) => {
+                const editable = isEditing(record);
+                return editable ? (
+                    <span>
+                        <Typography.Link
+                            onClick={() => save(record.key)}
+                            style={{
+                                marginRight: 8,
+                            }}
+                        >
+                            Save
+                        </Typography.Link>
+                        <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+                            <a>Cancel</a>
+                        </Popconfirm>
+                    </span>
+                ) : (
+                    <>
+                        <Typography.Link  onClick={showModal}>
+                            View
+                        </Typography.Link>
+                        <Modal title="Order Details" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                            <p>Evaborated Milk 5L - 5 Bulks</p>
+                            <p>Milk Chocolate 1L - 1 Bulk</p>
+                            <p>Canned Milk 8L - 2 Bulks</p>
+                        </Modal>
+                    </>
+
+                );
+            },
+        },
+    ];
+    const mergedColumns = columns.map((col) => {
+        if (!col.editable) {
+            return col;
+        }
+        return {
+            ...col,
+            onCell: (record) => ({
+                record,
+                inputType: col.dataIndex === 'ProductImag' ? 'image' : 'text',
+                inputType: col.dataIndex === 'ProductName' ? 'text' : 'text',
+                inputType: col.dataIndex === 'BrandName' ? 'text' : 'text',
+                inputType: col.dataIndex === 'Description' ? 'text' : 'text',
+                inputType: col.dataIndex === 'Price' ? 'number' : 'text',
+                inputType: col.dataIndex === 'Quantity' ? 'number' : 'text',
+                inputType: col.dataIndex === 'StockLevel' ? 'number' : 'text',
+                inputType: col.dataIndex === 'ProductionDate' ? 'date' : 'text',
+                inputType: col.dataIndex === 'ExpiryDate' ? 'date' : 'text',
+                inputType: col.dataIndex === 'DiscountPercentage' ? 'number' : 'text',
+
+
+                dataIndex: col.dataIndex,
+                title: col.title,
+                editing: isEditing(record),
+
+
+
+
+
+            }),
+        };
+    });
+    return (
+        
+        <Form form={form} component={false}>
+            <Table
+                components={{
+                    body: {
+                        cell: EditableCell,
+                    },
+                }}
+                bordered
+                dataSource={data}
+                columns={mergedColumns}
+                rowClassName="editable-row"
+                pagination={{
+                    onChange: cancel,
+                }}
+            />
+        </Form>
+    );
+};
+export default ProductTable;
+
+
+
+

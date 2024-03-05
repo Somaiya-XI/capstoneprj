@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button, Layout, Avatar, Space, Dropdown } from 'antd';
 import { Link } from 'react-router-dom';
+import SetSupply from './SetSupply';
 const { Header, Sider } = Layout;
 import {
   MenuUnfoldOutlined,
@@ -18,7 +19,7 @@ import Logo from './Logo';
 import MenuList from './MenuList';
 import UserActivation from '../../Admin/ActivateUsers';
 import OrdersTable from './OrdersTable';
-const  Schedule = () => {
+const Schedule = () => {
   const [collapsed, setCollapsed] = useState(false)
   const url = 'https://avatars.githubusercontent.com/u/85838482?v=4';
   const items = [
@@ -43,16 +44,16 @@ const  Schedule = () => {
   return (
     <Layout>
 
-    
-     
-        <Sider collapsed={collapsed}
-          collapsible
-          trigger={null}
-          className="sidebar"><Logo />
-          <MenuList />
-        </Sider>
-      
-    
+
+
+      <Sider collapsed={collapsed}
+        collapsible
+        trigger={null}
+        className="sidebar"><Logo />
+        <MenuList />
+      </Sider>
+
+
       <Layout>
         <Header className="Fold">
           <Button type='text'
@@ -78,18 +79,22 @@ const  Schedule = () => {
 
         </Header >
         <div className="SupplierDashboard">
-                    <div className="DashboardContent">
-                        <h3 className="HeaderTitle">Supply Schedule</h3>
-                        
-                    </div>
-    
-                </div>
-       
+          <div className="DashboardContent">
+            <h3 className="HeaderTitle">Supply Schedule</h3>
+            
+            
+          </div>
+          <div><h4 className="SubTitle">Please Select the preferred scheduling date and Time</h4></div>
+          <SetSupply />
           
+
+        </div>
         
-        
-      
-     </Layout>   
+
+
+
+
+      </Layout>
     </Layout>
 
 
