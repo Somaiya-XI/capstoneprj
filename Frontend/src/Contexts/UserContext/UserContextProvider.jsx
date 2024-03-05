@@ -1,12 +1,12 @@
 import UserContext from './UserContext';
-import { Outlet } from 'react-router-dom';
-import { useState } from 'react';
+import {Outlet} from 'react-router-dom';
+import {useState} from 'react';
 
-const UserContextProvider = ({ children }) => {
+const UserContextProvider = ({children}) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [csrf, setCSRF] = useState('');
   const [role, setRole] = useState('');
-
+  const [user, setUser] = useState({});
   const userValues = {
     csrf,
     setCSRF,
@@ -14,6 +14,8 @@ const UserContextProvider = ({ children }) => {
     setIsAuthenticated,
     role,
     setRole,
+    user,
+    setUser,
   };
 
   return (

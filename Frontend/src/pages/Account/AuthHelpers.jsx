@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API } from '../../backend';
+import {API} from '../../backend';
 
 export const register = (user) => {
   const formData = new FormData();
@@ -49,17 +49,18 @@ export const login = (user, csrf) => {
 };
 
 export const getUser = () => {
-  fetch(`${API}user/get-user/`, {
+  return fetch(`${API}user/get-user/`, {
     headers: {
       'Content-Type': 'application/json',
     },
     credentials: 'include',
   })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log('Logged in as: ' + data.email);
+    .then((response) => {
+      return response.json();
     })
+
     .catch((error) => {
       console.log(error);
+      throw error;
     });
 };

@@ -15,9 +15,7 @@ urlpatterns = [
         views.update_product,
         name='update-product',
     ),
-    path(
-        'catalog-product/get-categories/', views.get_categories, name='get_categories'
-    ),
+    path('catalog-product/get-categories/', views.get_categories, name='get_categories'),
     path('catalog-product/get-brands/', views.get_brands, name='get_brands'),
     path('', include(router.urls)),
 ]

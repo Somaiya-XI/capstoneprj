@@ -17,6 +17,9 @@ class Cart(models.Model):
         db_table = "Cart"
         unique_together = ('cart_id', 'user')
 
+    def __str__(self):
+        return f"{self.user.company_name.capitalize()}'s Cart"
+
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
@@ -27,6 +30,9 @@ class CartItem(models.Model):
     class Meta:
         db_table = "Cart Item"
         unique_together = ('product', 'cart')
+
+    def __str__(self):
+        return f"{self.product} of {self.cart.user.company_name.capitalize()}'s Cart "
 
     def save(self, *args, **kwargs):
         if self.product:
