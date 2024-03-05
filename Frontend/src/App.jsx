@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import Home from './pages/Home/Home.jsx';
+import ProductDetail from './pages/ProductDetail/ProductDetail.jsx';
 import Profile from './pages/Profile/Profile.jsx';
 import RequireAuth from './auth/RequireAuth';
 import UserActivation from './pages/Admin/ActivateUsers.jsx';
@@ -21,6 +22,7 @@ function App() {
       <UserContextProvider>
         <Routes>
           <Route path='/' element={<Home />} />
+          <Route path="/:id" element={<ProductDetail />} />
           <Route path='/login' element={<Login />} />
           <Route path='/user-activation' element={<UserActivation />} />
           <Route>
@@ -29,13 +31,12 @@ function App() {
             <Route path='/SupplierDashboard/Schedule' element={<Schedule />} />
             <Route path='/SupplierDashboard/Orders' element={<Orders />} />
           </Route>
-
-
           <Route path='/profile' element={<Profile />} />
           <Route path='/register' element={<Register />} />
           <Route path='/forgot-password' element={<ForgotPassword />} />
           <Route path='/reset-password/form/:uidb64/:token' element={<NewPasswordForm />} />
         </Routes>{' '}
+
       </UserContextProvider>
     </Router>
   );
