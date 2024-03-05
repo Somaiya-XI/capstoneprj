@@ -70,6 +70,17 @@
   display:flex;
   justify-content:space-between;
 }
+.DashboardContent2{
+  
+    margin-bottom: 65px;
+    flex: 1;
+    margin-top: 1.5rem;
+    border-radius: 20px;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+
+}
 .ant-layout{
   background: #ffffff;
 }
@@ -127,6 +138,21 @@
   font-size: 1rem;
 
 }
+.AddButton2{
+  color: #fff;
+  background: #002603 !important;
+  height:auto;
+  width:100px;
+  padding: 12px 20px;
+  text-align: center;
+  display: inline-block;
+  margin: 4px 4px;
+  cursor: pointer;
+  border-radius: 10px;
+  font-size: 1rem;
+  margin-top: 50px;
+
+}
 .Profile{
   height:auto;
   margin: 0px 20px;
@@ -164,7 +190,7 @@
 }
 
 /* Schedule  */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap');
+
 
 .page-container {
   line-height: 1.5;
@@ -340,6 +366,12 @@ td:first-letter {
 .SubTitle{
   margin-left:25px;
 }
+.SubTitle2{
+  margin-left:25px;
+  color:#848282;
+  margin-top: 20px;
+  font-weight: 300;
+}
 /* :where(.css-dev-only-do-not-override-1xg9z9n).ant-picker-calendar {
   background: #ffffff;
   padding: 30px 30px;
@@ -359,6 +391,31 @@ td:first-letter {
   margin-bottom: 30px;
 } */
 
+:where(.css-dev-only-do-not-override-1xg9z9n).ant-form-item .ant-form-item-label >label {
+  max-width: 100%;
+  
+  font-size: 21px;
+  
+}
+:where(.css-dev-only-do-not-override-1xg9z9n).ant-picker {
+  width: 60vh;
+  padding: 10px;
+  color: rgba(0, 0, 0, 0.88);
+  font-size: 20px;
+  line-height: 1;
+  list-style: none;
+  font-family: 'Poppins', 'Karla', sans-serif;;
+  
+  border-radius: 10px;
+  
+}
+:where(.css-dev-only-do-not-override-1xg9z9n).ant-picker .ant-picker-input >input:placeholder-shown {
+  font-size: 16px;
+}
+:where(.css-dev-only-do-not-override-1xg9z9n).ant-select-filled:not(.ant-select-customize-input) .ant-select-selector {
+  width: 60vh;
+  padding: 22px;
+}
 
 
 

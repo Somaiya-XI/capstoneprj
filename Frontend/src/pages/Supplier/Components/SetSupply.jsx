@@ -1,5 +1,6 @@
 import React from 'react';
 import "./Supplier.css";
+import SuccessMsg from './SuccessMsg';
 import {
   Button,
   Cascader,
@@ -7,14 +8,9 @@ import {
   DatePicker,
   Form,
   message,
+  
 } from 'antd';
-const success = () => {
-    const [messageApi, contextHolder] = message.useMessage();
-    messageApi.open({
-      type: 'success',
-      content: 'This is a success message',
-    });
-  };
+
 const formItemLayout = {
   labelCol: {
     xs: {
@@ -39,8 +35,8 @@ const SetSupply = () => (
     {...formItemLayout}
     variant="filled"
     style={{
-      maxWidth: 1000,
-      padding:80,
+      maxWidth: 500,
+      padding:60,
       
       
     }}
@@ -73,7 +69,18 @@ const SetSupply = () => (
       <TimePicker />
     </Form.Item>
 
-
+    <Form.Item
+      label="Product"
+      name="Cascader"
+      rules={[
+        {
+          required: false,
+          message: 'Optional',
+        },
+      ]}
+    >
+      <Cascader/>
+    </Form.Item>
     <Form.Item
       wrapperCol={{
         offset: 6,
@@ -81,10 +88,14 @@ const SetSupply = () => (
       }}
     >
         
-      <Button type="Primary" className="AddButton" htmlType="submit" onClick={success}>
+
+        
+      <Button type="Primary" className="AddButton2" htmlType="submit">
         Submit
       </Button>
+      
     </Form.Item>
+
   </Form>
 );
 export default SetSupply;

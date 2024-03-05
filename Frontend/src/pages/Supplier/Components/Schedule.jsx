@@ -79,13 +79,16 @@ const Schedule = () => {
 
         </Header >
         <div className="SupplierDashboard">
-          <div className="DashboardContent">
+          <div className="DashboardContent2">
             <h3 className="HeaderTitle">Supply Schedule</h3>
             
             
           </div>
           <div><h4 className="SubTitle">Please Select the preferred scheduling date and Time</h4></div>
+          <div><h5 className="SubTitle2" >Select Products for optional specified Products Supplying Set</h5></div>
           <SetSupply />
+          
+
           
 
         </div>
