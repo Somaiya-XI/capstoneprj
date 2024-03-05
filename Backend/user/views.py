@@ -64,6 +64,13 @@ def login_view(request):
         print(user)
         user_role = user.role
         print(user_role)
+        user_data = {
+            'id': user.id,
+            'email': user.email,
+            'company_name': user.company_name,
+            'role': user.role,
+        }
+
         if not user.is_active:
             return JsonResponse({'error': 'your account has not been activated'}, status=400)
 
@@ -78,7 +85,7 @@ def login_view(request):
         user.save()
         login(request, user)
         return JsonResponse(
-            {'message': 'Successfully logged in.', 'role': user_role},
+            {'message': 'Successfully logged in.', 'role': user_role, 'user': user_data},
             status=200,
         )
     return JsonResponse({'error': 'The password you entered is incorrect'}, status=400)

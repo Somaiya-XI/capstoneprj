@@ -66,6 +66,7 @@ const Login = () => {
         setPassword('');
         setError('');
         setRole(response.data.role);
+        setUser(response.data.user);
       })
       .catch((error) => {
         console.log('error occured', error.response.data.error);
