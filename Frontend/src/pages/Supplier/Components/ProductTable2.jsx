@@ -166,8 +166,11 @@ const ProductTable2 = () => {
     const defaultColumns = [
       {
         title: 'Product Image',
-        dataIndex: 'product_img', // Matches the column name in the database table
+        dataIndex: 'product_img', 
+        width: 180,
+        maxWidth: 80,
         editable: true,
+        render: (t, r) => <img src={`${r.product_img}`} />
       },
       {
         title: 'Product Name',

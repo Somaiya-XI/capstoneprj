@@ -44,7 +44,7 @@ const Products = () => {
     // </div>
     <>
     <ProductTable2/>
-    <ProductTable3/>
+    
     </>
 
 
