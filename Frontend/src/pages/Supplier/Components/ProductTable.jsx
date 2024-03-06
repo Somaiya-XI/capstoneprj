@@ -1,12 +1,12 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Button, Form, Input, Popconfirm, Table, Typography } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Popconfirm, Table, Typography } from 'antd';
 import {
   DeleteOutlined,
 } from '@ant-design/icons';
 import axios from "axios";
 
 import "./Supplier.css";
-import SearchField from '../Layout/SearchField';
+import SearchField from './SearchField';
 
 
 const ProductTable2 = () => {

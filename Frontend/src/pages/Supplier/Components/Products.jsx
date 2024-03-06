@@ -1,9 +1,5 @@
 import React from 'react'
 import "./Supplier.css";
-import { Button } from 'antd';
-import DashboardHeader from '../SupplierHeader';
-import { Layout } from 'antd';
-import SearchField from '../SearchField';
 import ProductTable2 from './ProductTable';
 
 

@@ -15,10 +15,8 @@ import {
   from '@ant-design/icons'
 
 import "./Supplier.css";
-import Logo from '../Layout/Logo';
-import MenuList from '../Layout/MenuList';
-import UserActivation from '../../../Admin/ActivateUsers';
-import OrdersTable from './OrdersTable';
+import Logo from './Logo';
+import MenuList from './MenuList';
 const Schedule = () => {
   const [collapsed, setCollapsed] = useState(false)
   const url = 'https://avatars.githubusercontent.com/u/85838482?v=4';

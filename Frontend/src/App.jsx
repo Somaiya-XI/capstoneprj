@@ -3,7 +3,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import Home from './pages/Home/Home.jsx';
 import ProductDetail from './pages/ProductDetail/ProductDetail.jsx';
 import Profile from './pages/Profile/Profile.jsx';
-import RequireAuth from './auth/RequireAuth';
 import UserActivation from './pages/Admin/ActivateUsers.jsx';
 import ForgotPassword from './pages/Account/ForgotPassword.jsx';
 import NewPasswordForm from './pages/Account/ResetPassword.jsx';
@@ -11,8 +10,11 @@ import Register from './pages/Account/RegisterPage.jsx';
 import Login from './pages/Account/LoginPage.jsx';
 import ProductsPage from './pages/Supplier/SupplierDashboard.jsx';
 import {AdminRoute, SupplierRoute} from './Components/index.jsx';
-import Schedule from './pages/Supplier/Components/Schedule.jsx';
-import Orders from './pages/Supplier/Components/Orders.jsx';
+import  Orders from './pages/Supplier/Components/Orders.jsx';
+import  Schedule from './pages/Supplier/Components/Schedule.jsx';
+
+
+
 import {UserContextProvider} from './Contexts/index.jsx';
 
 import Cart from './pages/Cart/Cart.jsx';

@@ -1,7 +1,7 @@
 import { Menu } from 'antd';
 import "./Supplier.css";
 import { Link } from 'react-router-dom';
-import { logout } from '../../../Account/AuthHelpers';
+import { logout } from '../../Account/AuthHelpers';
 
 
 import {
@@ -11,7 +11,7 @@ import {
     PoundCircleOutlined,
     CalendarOutlined,
 } from '@ant-design/icons'
-import Products from './Products';
+
 
 function MenuList() {
     return (
