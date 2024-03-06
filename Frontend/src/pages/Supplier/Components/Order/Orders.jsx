@@ -3,7 +3,7 @@ import { Button, Layout, Avatar, Space, Dropdown } from 'antd';
 import { Link } from 'react-router-dom';
 import OrdersTable from './OrdersTable';
 
-import SearchField from './SearchField';
+import SearchField from '../Layout/SearchField';
 const { Header, Sider } = Layout;
 import {
     MenuUnfoldOutlined,
@@ -17,8 +17,8 @@ import {
     from '@ant-design/icons'
 
 import "./Supplier.css";
-import Logo from './Logo';
-import MenuList from './MenuList';
+import Logo from '../Layout/Logo';
+import MenuList from '../Layout/MenuList';
 import Products from './Products';
 const Orders = () => {
     const [collapsed, setCollapsed] = useState(false)

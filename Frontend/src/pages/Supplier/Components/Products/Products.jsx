@@ -1,12 +1,11 @@
 import React from 'react'
 import "./Supplier.css";
 import { Button } from 'antd';
-import DashboardHeader from './SupplierHeader';
-import ProductTable from './ProductTable';
+import DashboardHeader from '../SupplierHeader';
 import { Layout } from 'antd';
-import SearchField from './SearchField';
-import ProductTable2 from './ProductTable2';
-import ProductTable3 from './ProductTable3';
+import SearchField from '../SearchField';
+import ProductTable2 from './ProductTable';
+
 
 
 
