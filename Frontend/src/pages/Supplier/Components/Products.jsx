@@ -6,6 +6,7 @@ import ProductTable from './ProductTable';
 import { Layout } from 'antd';
 import SearchField from './SearchField';
 import ProductTable2 from './ProductTable2';
+import ProductTable3 from './ProductTable3';
 
 
 
@@ -41,7 +42,10 @@ const Products = () => {
 
 
     // </div>
+    <>
     <ProductTable2/>
+    <ProductTable3/>
+    </>
 
 
 

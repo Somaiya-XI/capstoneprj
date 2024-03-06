@@ -3,6 +3,7 @@ import { Button, Form, Input, Popconfirm, Table, Typography } from 'antd';
 import {
     DeleteOutlined,
 } from '@ant-design/icons';
+import axios from "axios";
 
 import "./Supplier.css";
 import SearchField from './SearchField';
@@ -87,20 +88,13 @@ const ProductTable2 = () => {
     const [editingKey, setEditingKey] = useState('');
     const [data, setData] = useState([]);
     const [dataSource, setDataSource] = useState([
-      {
-        key: '0',
-        name: 'Edward King 0',
-        age: '32',
-        address: 'London, Park Lane no. 0',
-      },
-      {
-        key: '1',
-        name: 'Edward King 1',
-        age: '32',
-        address: 'London, Park Lane no. 1',
-      },
     ]);
-    const [count, setCount] = useState(2);
+    useEffect(() => {
+      axios.get(`${import.meta.env.VITE_API_URL}product/catalog-product`)
+          .then((result) => { setDataSource(result.data) })
+          .catch(err => console.log(err))
+
+  }, []);
 
     const handleDelete = (key) => {
       const newData = dataSource.filter((item) => item.key !== key);
@@ -172,56 +166,56 @@ const ProductTable2 = () => {
     const defaultColumns = [
       {
         title: 'Product Image',
-        dataIndex: 'ProductImage',
+        dataIndex: 'product_img', // Matches the column name in the database table
         editable: true,
       },
       {
         title: 'Product Name',
-        dataIndex: 'ProductName',
+        dataIndex: 'product_name', 
         editable: true,
       },
       {
         title: 'Description',
-        dataIndex: 'Description',
+        dataIndex: 'description', 
         width: "10%",
         editable: true,
       },
       {
         title: 'Category',
-        dataIndex: 'Category',
+        dataIndex: 'category', 
         width: "10%",
         editable: true,
       },
       {
         title: 'Price',
-        dataIndex: 'Price',
+        dataIndex: 'price', 
         editable: true,
       },
       {
         title: 'Quantity',
-        dataIndex: 'Quantity',
+        dataIndex: 'quantity', 
         editable: true,
       },
       {
         title: 'Production Date',
-        dataIndex: 'ProductionDate',
+        dataIndex: 'production_date', 
         width: "10%",
         editable: true,
       },
       {
         title: 'Expiry date',
-        dataIndex: 'ExpiryDate',
+        dataIndex: 'expiry_date', 
         editable: true,
       },
       {
         title: 'Discount Percentage',
-        dataIndex: 'DiscountPercentage',
+        dataIndex: 'discount_percentage', 
         width: "5%",
         editable: true,
       },
       {
         title: 'Brand Name',
-        dataIndex: 'BrandName',
+        dataIndex: 'brand', 
         editable: true,
       },
       {
