@@ -1,31 +1,49 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Table, Popconfirm } from 'antd';
+import { Button, Table, Popconfirm, Modal } from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import axios from "axios";
+import SearchField from './SearchField';
+import AddProduct from './AddProduct.jsx'; 
 
 import "./Supplier.css";
-import SearchField from './SearchField';
 
 const ProductTable2 = () => {
   const [dataSource, setDataSource] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API_URL}product/catalog-product`)
-      .then((result) => { 
+      .then((result) => {
         const productsWithKeys = result.data.map(product => ({
           ...product,
-          key: product.product_id 
+          key: product.product_id
         }));
         setDataSource(productsWithKeys);
       })
       .catch(err => console.log(err));
   }, []);
 
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   const onDeleteProduct = (key) => {
     const newData = dataSource.filter((item) => item.key !== key);
     setDataSource(newData);
     return axios.delete(`${import.meta.env.VITE_API_URL}product/catalog-product/${key}`);
-  }; 
+  };
+
+  const onAddProduct = () => {
+    // Logic for adding a product
+  };
 
   const columns = [
     {
@@ -106,9 +124,12 @@ const ProductTable2 = () => {
     <div className="SupplierDashboard">
       <div className="DashboardContent">
         <h3 className="HeaderTitle">Products</h3>
-        <Button className="AddButton" type="primary">
+        <Button className="AddButton" type="primary" onClick={showModal}>
           + Add
         </Button>
+        <Modal title="Order Details" visible={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+          <AddProduct /> {/* Render ModalContent component */}
+        </Modal>
       </div>
       <SearchField />
       <Table
