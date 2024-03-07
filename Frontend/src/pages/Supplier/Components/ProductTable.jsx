@@ -25,7 +25,7 @@ const ProductTable2 = () => {
     const newData = dataSource.filter((item) => item.key !== key);
     setDataSource(newData);
     return axios.delete(`${import.meta.env.VITE_API_URL}product/catalog-product/${key}`);
-  };
+  }; 
 
   const columns = [
     {
