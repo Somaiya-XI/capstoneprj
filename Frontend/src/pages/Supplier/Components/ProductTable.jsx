@@ -42,7 +42,6 @@ const ProductTable2 = () => {
   };
 
   const onAddProduct = () => {
-    // Logic for adding a product
   };
 
   const columns = [
@@ -57,6 +56,11 @@ const ProductTable2 = () => {
     {
       title: 'Product Name',
       dataIndex: 'product_name',
+      editable: true,
+    },
+    {
+      title: 'Brand Name',
+      dataIndex: 'brand',
       editable: true,
     },
     {
@@ -75,11 +79,18 @@ const ProductTable2 = () => {
       title: 'Price',
       dataIndex: 'price',
       editable: true,
+      width:"10%",
     },
     {
       title: 'Quantity',
       dataIndex: 'quantity',
       editable: true,
+    },
+    {
+      title: 'Min order quantity',
+      dataIndex: 'min_order_quantity',
+      editable: true,
+      width:"7%",
     },
     {
       title: 'Production Date',
@@ -98,11 +109,7 @@ const ProductTable2 = () => {
       width: "5%",
       editable: true,
     },
-    {
-      title: 'Brand Name',
-      dataIndex: 'brand',
-      editable: true,
-    },
+    
     {
       title: 'Operation',
       dataIndex: 'operation',
@@ -128,7 +135,7 @@ const ProductTable2 = () => {
           + Add
         </Button>
         <Modal title="Order Details" visible={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-          <AddProduct /> {/* Render ModalContent component */}
+          <AddProduct /> 
         </Modal>
       </div>
       <SearchField />
