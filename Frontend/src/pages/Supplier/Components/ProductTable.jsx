@@ -1,23 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Popconfirm, Table, Typography } from 'antd';
-import {
-  DeleteOutlined,
-} from '@ant-design/icons';
+import { Button, Table, Popconfirm } from 'antd';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import axios from "axios";
 
 import "./Supplier.css";
 import SearchField from './SearchField';
 
-
 const ProductTable2 = () => {
-  const [dataSource, setDataSource] = useState([
-  ]);
+  const [dataSource, setDataSource] = useState([]);
+
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API_URL}product/catalog-product`)
-      .then((result) => { setDataSource(result.data) })
-      .catch(err => console.log(err))
-
+      .then((result) => { 
+        const productsWithKeys = result.data.map(product => ({
+          ...product,
+          key: product.product_id 
+        }));
+        setDataSource(productsWithKeys);
+      })
+      .catch(err => console.log(err));
   }, []);
+
+  const onDeleteProduct = (key) => {
+    const newData = dataSource.filter((item) => item.key !== key);
+    setDataSource(newData);
+    return axios.delete(`${import.meta.env.VITE_API_URL}product/catalog-product/${key}`);
+  };
 
   const columns = [
     {
@@ -26,7 +34,7 @@ const ProductTable2 = () => {
       width: 180,
       maxWidth: 80,
       editable: true,
-      render: (t, r) => <img src={`${r.product_img}`} />
+      render: (text, record) => <img src={record.product_img} alt="Product" />
     },
     {
       title: 'Product Name',
@@ -78,35 +86,19 @@ const ProductTable2 = () => {
       editable: true,
     },
     {
-      title: 'operation',
+      title: 'Operation',
       dataIndex: 'operation',
-      width: "10%",
-      render: (_, record) =>
-        dataSource.length >= 1 ? (
-          <>
-            <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-              <DeleteOutlined className="Delete" />
+      width: "5%",
+      render: (_, record) => (
+        <>
+          <EditOutlined />
+          {dataSource.length >= 1 ? (
+            <Popconfirm title="Sure to delete?" onConfirm={() => onDeleteProduct(record.key)}>
+              <DeleteOutlined style={{ color: 'red', marginLeft: 25 }} />
             </Popconfirm>
-          </>
-        ) : isEditing ? (
-          <>
-            <Typography.Link
-              onClick={() => save(record.key)}
-              style={{
-                marginRight: 8,
-              }}
-            >
-              Savedddd
-            </Typography.Link>
-            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-              <a>Cancel</a>
-            </Popconfirm>
-          </>
-        ) : (
-          <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
-            Edit
-          </Typography.Link>
-        ),
+          ) : null}
+        </>
+      ),
     },
   ];
 
@@ -124,8 +116,10 @@ const ProductTable2 = () => {
         bordered
         dataSource={dataSource}
         columns={columns}
+        key={dataSource.map(product => product.key).join()}
       />
     </div>
   );
 };
+
 export default ProductTable2;
