@@ -20,6 +20,7 @@ import {UserContextProvider} from './Contexts/index.jsx';
 import Cart from './pages/Cart/Cart.jsx';
 import Navbar from './pages/Home/Components/Navbar/Navbar.jsx';
 import Header from './pages/Home/Components/Header/Header.jsx';
+import Payment from './pages/Payment/Payment.jsx'
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
           <Route path='/register' element={<Register />} />
           <Route path='/forgot-password' element={<ForgotPassword />} />
           <Route path='/reset-password/form/:uidb64/:token' element={<NewPasswordForm />} />
+          <Route path='/payment' element={<Payment />} />
         </Routes>
       </UserContextProvider>
     </Router>

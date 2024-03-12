@@ -11,6 +11,10 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from django.db.models import Sum
+from django.conf import settings
+from django.shortcuts import redirect
+import stripe, os
+from dotenv import load_dotenv
 
 
 @csrf_exempt
@@ -103,7 +107,9 @@ def remove_from_cart(request):
 
 
 def calculate_cart_total(cart):
-    total_price = cart.cartitem_set.aggregate(total_price=Sum('subtotal'))['total_price']
+    total_price = cart.cartitem_set.aggregate(total_price=Sum('subtotal'))[
+        'total_price'
+    ]
     cart.total = total_price or 0
     cart.save()
 
@@ -143,6 +149,42 @@ def view_cart(request):
         response_data['products'].append(item_data)
 
     return JsonResponse(response_data)
+
+
+load_dotenv()
+stripe.api_key = os.environ['STRIPE_SECRET_KEY']
+
+
+@csrf_exempt
+def create_checkout_session(request):
+    # user = request.user.id
+    # cart = Cart.objects.filter(user=user)
+    # cart_items = CartItem.objects.filter(cart=cart.cart_id)
+    # items_details = []
+    # for cart_item in cart_items:
+    #     items_details.append(
+    #         {
+    #             'price': cart_item.product.product_id,
+    #             'quantity': cart_item.quantity,
+    #         }
+    #     )
+    checkout_session = stripe.checkout.Session.create(
+        # line_items=items_details,
+        line_items=[
+            {
+                'price': 'price_1OsWPPHFxZqMmcOBoEwYzFmN',
+                'quantity': 4,
+            },
+            {
+                'price': 'price_1OswRSHFxZqMmcOBqoxrN7T4',
+                'quantity': 3,
+            },
+        ],
+        mode='payment',
+        success_url=os.environ['URL'] + '?success=true',
+        cancel_url=os.environ['URL'] + '?canceled=true',
+    )
+    return redirect(checkout_session.url, code=303)
 
 
 # Create your views here.

@@ -9,6 +9,8 @@ django-cors-headers = "*"
 djangorestframework = "*"
 pillow = "*"
 drf-extra-fields = "*"
+stripe = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
