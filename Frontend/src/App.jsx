@@ -1,5 +1,4 @@
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
-import 'react-toastify/dist/ReactToastify.css';
 import Home from './pages/Home/Home.jsx';
 import ProductDetail from './pages/ProductDetail/ProductDetail.jsx';
 import Profile from './pages/Profile/Profile.jsx';
@@ -13,7 +12,7 @@ import ProductsPage from './pages/Supplier/SupplierDashboard.jsx';
 import {AdminRoute, SupplierRoute} from './Components/index.jsx';
 import Schedule from './pages/Supplier/Components/Schedule.jsx';
 import Orders from './pages/Supplier/Components/Orders.jsx';
-import {UserContextProvider} from './Contexts/index.jsx';
+import {UserContextProvider, CsrfTokenContextProvider, CartContextProvider } from './Contexts/index.jsx';
 
 import Cart from './pages/Cart/Cart.jsx';
 import Navbar from './pages/Home/Components/Navbar/Navbar.jsx';
@@ -22,16 +21,19 @@ import Header from './pages/Home/Components/Header/Header.jsx';
 function App() {
   return (
     <Router>
+      
       <UserContextProvider>
+       <CsrfTokenContextProvider>
+        <CartContextProvider>
         <Routes>
-          <Route path='/' element={<><Header><Navbar /></Header><Home /></>} />
-          <Route path='/cart' element={ <> <Header>  <Navbar /></Header> <Cart /></> } />
+          <Route path='/' element={<Home />} />
+          <Route path='/cart' element={ <Cart /> } />
           <Route path='/:id' element={<ProductDetail />} />
           <Route path='/login' element={<Login />} />
           <Route path="/user-activation" element={<AdminRoute><UserActivation /></AdminRoute>} />
           <Route>
             {/* <Route path='/SupplierDashboard' element={<SupplierRoute><SupplierDashboard /> </SupplierRoute>} /> */}
-            <Route path='/SupplierDashboard' element={<ProductsPage />} />
+            <Route path='/SupplierDashboard' element={<SupplierRoute><ProductsPage /></SupplierRoute>} />
             <Route path='/SupplierDashboard/Schedule' element={<Schedule />} />
             <Route path='/SupplierDashboard/Orders' element={<Orders />} />
           </Route>
@@ -40,7 +42,10 @@ function App() {
           <Route path='/forgot-password' element={<ForgotPassword />} />
           <Route path='/reset-password/form/:uidb64/:token' element={<NewPasswordForm />} />
         </Routes>
+        </CartContextProvider>
+       </CsrfTokenContextProvider>
       </UserContextProvider>
+
     </Router>
   );
 }

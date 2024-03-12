@@ -1,9 +1,9 @@
 import {useContext} from 'react';
 import {Navigate} from 'react-router-dom';
-import {UserContext} from '../../Contexts/index.jsx';
+import {useUserContext} from '../../Contexts/index.jsx';
 
 const SupplierRoute = ({children}) => {
-  const {role, isAuthenticated} = useContext(UserContext);
+  const {role, isAuthenticated} = useUserContext();
 
   if (isAuthenticated && role === 'SUPPLIER') {
     return <>{children}</>;

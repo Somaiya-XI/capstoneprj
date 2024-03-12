@@ -1,9 +1,9 @@
-import { useContext } from 'react';
-import { Navigate } from 'react-router-dom';
-import {UserContext} from '../../Contexts/index.jsx';
+import {useContext} from 'react';
+import {Navigate} from 'react-router-dom';
+import {useUserContext} from '../../Contexts/index.jsx';
 
-const RetailerRoute = ({ children }) => {
-  const { role, isAuthenticated } = useContext(UserContext);
+const RetailerRoute = ({children}) => {
+  const {role, isAuthenticated} = useUserContext();
 
   if (isAuthenticated && role === 'RETAILER') {
     return <>{children}</>;

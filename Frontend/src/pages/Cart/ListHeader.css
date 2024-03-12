@@ -1,0 +1,32 @@
+.list-container {
+  flex: 100%;
+  margin: 0;
+}
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ececec;
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.flex-container li {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  font-weight: 600;
+  font-size: 16px;
+  display: inline-flex;
+  justify-content: center;
+}
+
+.flex-container li:first-child {
+  margin-left: 10px;
+  justify-content: start;
+}
+
+.flex-container li:last-child {
+  display: inline-flex;
+  justify-content: center;
+}

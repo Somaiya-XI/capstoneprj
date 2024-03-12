@@ -50,7 +50,7 @@ def update_product(request):
         serializer = ProductCatalogSerializer(product, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse({'message': 'Product updated'}, status=200)
+            return JsonResponse({'message': f"Product {pk} updated"}, status=200)
         else:
             return JsonResponse(serializer.errors, status=400)
 

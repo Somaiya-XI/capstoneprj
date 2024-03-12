@@ -16,9 +16,6 @@ class SupplyingSchedule(models.Model):
         ('sun', 'Sunday'),
     ]
 
-    schedule_id = models.UUIDField(
-        "ID", default=uuid.uuid4, editable=False, unique=True, primary_key=True
-    )
     supplier_id = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     day = models.CharField(choices=WEEKDAY_CHOICES, max_length=3)
     time = models.TimeField()

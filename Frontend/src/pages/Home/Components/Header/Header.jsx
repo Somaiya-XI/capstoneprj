@@ -8,10 +8,10 @@ const Header = ({children}) => {
       <div id='header'>
         <div id='f-section'>
           <Link to='/'>
-            <a id='link'>About Us</a>
+            <span id='link'>About Us</span>
           </Link>
           <span id='customDivider'>|</span>
-          <a id='link'>Order Tracking</a>
+          <span id='link'>Order Tracking</span>
         </div>
         <div id='s-section'>
           <img id='iimg' src={earth} />

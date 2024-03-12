@@ -6,9 +6,10 @@ import ButtonGroup from '../Form/ButtonGroup/ButtonGroup';
 import './navbar.css';
 import {useContext} from 'react';
 import {UserContext} from '../../../../Contexts';
+
 const Navbar = ({children}) => {
   const options = ['Your Location', 'New york', 'albania'];
-  const {role} = useContext(UserContext);
+  const {user} = useContext(UserContext);
 
   return (
     <>
@@ -24,7 +25,7 @@ const Navbar = ({children}) => {
             <ButtonGroup icon={iconUser} buttonText={'Sign Up'} link='/register' />
             <div className='divider'></div>
 
-            {role === 'RETAILER' && <ButtonGroup icon={CartIcon} buttonText={'  Cart'} link='/cart' />}
+            {user.role === 'RETAILER' && <ButtonGroup icon={CartIcon} buttonText={'  Cart'} link='/cart' />}
           </div>
         </div>
       </div>

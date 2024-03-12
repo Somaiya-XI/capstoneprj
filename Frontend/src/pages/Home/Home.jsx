@@ -14,6 +14,8 @@ import Footer from './Components/Footer/Footer.jsx';
 import React from 'react';
 import {useState, useEffect} from 'react';
 import axios from 'axios';
+import {Link} from 'react-router-dom';
+import {useUserContext} from '../../Contexts/index.jsx';
 
 const Home = () => {
   const [categories, setCategories] = useState([]);
@@ -39,7 +41,9 @@ const Home = () => {
   return (
     <>
       <div id='c'>
+        <Header />
         <div id='c' className='md:container md:mx-auto mt-5'>
+          <Navbar />
           <NavbarMega />
           <Hero />
           <div className='feature_category'>
@@ -54,9 +58,9 @@ const Home = () => {
                 <h3 className='mr-5'>Supersaver Up to 50% off</h3>
                 <ul className='list-inline nav nav-tabs links'>
                   <li className='list-inline-item nav-item'>
-                    <a href='#' className='nav-link'>
+                    <Link to='#' className='nav-link'>
                       view all {'>'}
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -87,9 +91,9 @@ const Home = () => {
                 <h3 className='mr-5'>Special Offers</h3>
                 <ul className='list-inline nav nav-tabs links'>
                   <li className='list-inline-item nav-item'>
-                    <a href='#' className='nav-link'>
+                    <Link to='#' className='nav-link'>
                       view all {'>'}
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -105,9 +109,9 @@ const Home = () => {
                   <h3 className='mr-5'>{category}</h3>
                   <ul className='list-inline nav nav-tabs links'>
                     <li className='list-inline-item nav-item'>
-                      <a href='#' className='nav-link'>
+                      <Link to='#' className='nav-link'>
                         view all {'>'}
-                      </a>
+                      </Link>
                     </li>
                   </ul>
                 </div>

@@ -1,13 +1,15 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
-import {UserContext} from '../../Contexts/index.jsx';
+import {useUserContext, useCsrfContext} from '../../Contexts/index.jsx';
 import axios from 'axios';
 import './form.css';
 import {API} from '../../backend';
 import {logout, login, getUser} from './AuthHelpers';
 
 const Login = () => {
-  const {user, setUser, setRole, csrf, setCSRF, isAuthenticated, setIsAuthenticated} = useContext(UserContext);
+  const {setUser, setRole} = useUserContext();
+  const {getSession, getCsrfToken, isAuthenticated, setIsAuthenticated, csrf} = useCsrfContext();
+
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -17,35 +19,6 @@ const Login = () => {
   useEffect(() => {
     getSession();
   }, []);
-
-  const getCSRF = () => {
-    return axios
-      .get(`${API}user/csrf/`, {withCredentials: true})
-      .then((response) => {
-        let csrfToken = response.headers['x-csrftoken'];
-        console.log('getcsrf: ', csrfToken);
-        setCSRF(csrfToken);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  const getSession = async () => {
-    try {
-      const response = await axios.get(`${API}user/session/`, {
-        withCredentials: true,
-      });
-      const data = response.data;
-      console.log(data);
-      if (data.isAuthenticated) {
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-        await getCSRF();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const handleChange = (name) => (event) => {
     if (name === 'email') {
@@ -79,6 +52,7 @@ const Login = () => {
   };
   const handleGetUser = (event) => {
     event.preventDefault();
+    console.log('csrf is:', csrf);
 
     getUser()
       .then((data) => {
@@ -182,7 +156,7 @@ const Login = () => {
         onClick={() => {
           logout();
           setIsAuthenticated(false);
-          getCSRF();
+          getCsrfToken();
         }}
       >
         Log out
