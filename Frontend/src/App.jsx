@@ -12,10 +12,7 @@ import {AdminRoute, SupplierRoute} from './Components/index.jsx';
 import {UserContextProvider, CsrfTokenContextProvider, CartContextProvider} from './Contexts/index.jsx';
 import Orders from './pages/Supplier/Components/Orders.jsx';
 import Schedule from './pages/Supplier/Components/Schedule.jsx';
-
 import Cart from './pages/Cart/Cart.jsx';
-import Navbar from './pages/Home/Components/Navbar/Navbar.jsx';
-import Header from './pages/Home/Components/Header/Header.jsx';
 import Payment from './pages/Payment/Payment.jsx';
 
 function App() {
