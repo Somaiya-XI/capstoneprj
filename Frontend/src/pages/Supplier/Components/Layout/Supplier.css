@@ -420,6 +420,16 @@ td:first-letter {
   color:#e3121294;
   width:40px;
 }
+.AddProductModal{
+  background: #002603 !important;
+  border-radius: 100px;
+  box-shadow: none;
+  padding: 0px;
+}
+.AddForm > label{
+  max-width: 100%;
+    font-size: 200px !important;
+}
 
 
 

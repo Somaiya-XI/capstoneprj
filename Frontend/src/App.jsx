@@ -1,25 +1,27 @@
-import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
-import 'react-toastify/dist/ReactToastify.css';
-import Home from './pages/Home/Home.jsx';
-import ProductDetail from './pages/ProductDetail/ProductDetail.jsx';
-import Profile from './pages/Profile/Profile.jsx';
-import UserActivation from './pages/Admin/ActivateUsers.jsx';
-import ForgotPassword from './pages/Account/ForgotPassword.jsx';
-import NewPasswordForm from './pages/Account/ResetPassword.jsx';
-import Register from './pages/Account/RegisterPage.jsx';
-import Login from './pages/Account/LoginPage.jsx';
-import ProductsPage from './pages/Supplier/SupplierDashboard.jsx';
-import {AdminRoute, SupplierRoute} from './Components/index.jsx';
-import  Orders from './pages/Supplier/Components/Orders.jsx';
-import  Schedule from './pages/Supplier/Components/Schedule.jsx';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import {
+  Products,
+  AddProduct,
+  EditProduct,
+  Schedule,
+  Orders,
+  Home,
+  ProductDetail,
+  Profile,
+  UserActivation,
+  ForgotPassword,
+  NewPasswordForm,
+  Register,
+  Login,
+  AdminRoute,
+  SupplierRoute,
+  Cart,
+  Navbar,
+  Header,
+  UserContextProvider
+} from './url.jsx';
 
-
-
-import {UserContextProvider} from './Contexts/index.jsx';
-
-import Cart from './pages/Cart/Cart.jsx';
-import Navbar from './pages/Home/Components/Navbar/Navbar.jsx';
-import Header from './pages/Home/Components/Header/Header.jsx';
 
 function App() {
   return (
@@ -27,15 +29,17 @@ function App() {
       <UserContextProvider>
         <Routes>
           <Route path='/' element={<><Header><Navbar /></Header><Home /></>} />
-          <Route path='/cart' element={ <> <Header>  <Navbar /></Header> <Cart /></> } />
+          <Route path='/cart' element={<> <Header>  <Navbar /></Header> <Cart /></>} />
           <Route path='/:id' element={<ProductDetail />} />
           <Route path='/login' element={<Login />} />
           <Route path="/user-activation" element={<AdminRoute><UserActivation /></AdminRoute>} />
           <Route>
             {/* <Route path='/SupplierDashboard' element={<SupplierRoute><SupplierDashboard /> </SupplierRoute>} /> */}
-            <Route path='/SupplierDashboard' element={<ProductsPage />} />
+            <Route path='/SupplierDashboard/Products' element={<Products />} />
             <Route path='/SupplierDashboard/Schedule' element={<Schedule />} />
             <Route path='/SupplierDashboard/Orders' element={<Orders />} />
+            <Route path='/SupplierDashboard/Add' element={<AddProduct />} />
+            <Route path='/SupplierDashboard/Edit' element={<EditProduct />} />
           </Route>
           <Route path='/profile' element={<Profile />} />
           <Route path='/register' element={<Register />} />

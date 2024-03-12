@@ -1,7 +1,7 @@
 import { Menu } from 'antd';
 import "./Supplier.css";
 import { Link } from 'react-router-dom';
-import { logout } from '../../Account/AuthHelpers';
+import { logout } from '../../../Account/AuthHelpers';
 
 
 import {
@@ -19,7 +19,7 @@ function MenuList() {
             <Menu theme="dark" mode="inline" className="menu-bar">
                 <Menu.Item key="Products" icon={<ProductOutlined />}>
                     Products
-                    <Link to="/SupplierDashboard" />
+                    <Link to="/SupplierDashboard/Products" />
                 </Menu.Item>
                 <Menu.Item key="Schedule" icon={<CalendarOutlined />}>
                     Supply Schedule
