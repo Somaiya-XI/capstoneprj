@@ -11,7 +11,7 @@ import {
     PoundCircleOutlined,
     CalendarOutlined,
 } from '@ant-design/icons'
-import Products from './Products';
+
 
 function MenuList() {
     return (

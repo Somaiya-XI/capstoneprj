@@ -16,7 +16,7 @@ import {
 import "./Supplier.css";
 import Logo from './Logo';
 import MenuList from './MenuList';
-import Products from './Products';
+
 const SupplierHeader = () => {
   const [collapsed, setCollapsed] = useState(false)
   const url = 'https://avatars.githubusercontent.com/u/85838482?v=4';
@@ -76,7 +76,7 @@ const SupplierHeader = () => {
           </Space>
 
         </Header >
-        {/* <Products/> */}
+       
         
           
         

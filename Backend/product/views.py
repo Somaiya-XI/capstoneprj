@@ -6,10 +6,13 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+import stripe
 
 # THIS IS THE MANAGER CLASS OF ANY MODEL
 
 import json
+
+# stripe.api_key = os.environ['STRIPE_SECRET_KEY']
 
 
 @csrf_exempt
@@ -29,6 +32,7 @@ def create_product(request):
 
     if serializer.is_valid():
         serializer.save()
+        # stripe.Product.create(name=serializer.data.product_name, id=serializer.data.product_id)
         return JsonResponse({'message': 'Product created successfully.'}, status=201)
     else:
         return JsonResponse(serializer.errors, status=400)
@@ -51,11 +55,17 @@ def update_product(request):
         if serializer.is_valid():
             serializer.save()
             return JsonResponse({'message': f"Product {pk} updated"}, status=200)
+            # stripe.Product.modify(
+            #     serializer.data.product_id,
+            #     default_price=serializer.data.new_price,
+            # )
+            return JsonResponse({'message': 'Product updated'}, status=200)
         else:
             return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
         product.delete()
+        # stripe.Product.delete(product.product_id)
         return JsonResponse({'message': 'Product deleted'}, status=204)
 
 

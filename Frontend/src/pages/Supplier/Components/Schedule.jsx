@@ -17,8 +17,6 @@ import {
 import "./Supplier.css";
 import Logo from './Logo';
 import MenuList from './MenuList';
-import UserActivation from '../../Admin/ActivateUsers';
-import OrdersTable from './OrdersTable';
 const Schedule = () => {
   const [collapsed, setCollapsed] = useState(false)
   const url = 'https://avatars.githubusercontent.com/u/85838482?v=4';

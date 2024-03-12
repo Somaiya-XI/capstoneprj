@@ -15,6 +15,10 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 import json
 from django.middleware.csrf import get_token
+from django.conf import settings
+from django.shortcuts import redirect
+import stripe, os
+from dotenv import load_dotenv
 
 
 @csrf_exempt
@@ -181,6 +185,78 @@ def clear_cart(request):
         return JsonResponse({'message': 'Cart cleared'})
     else:
         return JsonResponse({'message': 'Cart not found'})
+
+
+load_dotenv()
+stripe.api_key = os.environ['STRIPE_SECRET_KEY']
+
+
+@csrf_exempt
+def create_checkout_session(request):
+    # user = request.user.id
+    # cart = Cart.objects.filter(user=user)
+    # cart_items = CartItem.objects.filter(cart=cart.cart_id)
+    # items_details = []
+    # for cart_item in cart_items:
+    #     items_details.append(
+    #         {
+    #             'price': cart_item.product.product_id,
+    #             'quantity': cart_item.quantity,
+    #         }
+    #     )
+    checkout_session = stripe.checkout.Session.create(
+        # line_items=items_details,
+        line_items=[
+            {
+                'price': 'price_1OsWPPHFxZqMmcOBoEwYzFmN',
+                'quantity': 4,
+            },
+            {
+                'price': 'price_1OswRSHFxZqMmcOBqoxrN7T4',
+                'quantity': 3,
+            },
+        ],
+        mode='payment',
+        success_url=os.environ['URL'] + '?success=true',
+        cancel_url=os.environ['URL'] + '?canceled=true',
+    )
+    return redirect(checkout_session.url, code=303)
+
+
+load_dotenv()
+stripe.api_key = os.environ['STRIPE_SECRET_KEY']
+
+
+@csrf_exempt
+def create_checkout_session(request):
+    # user = request.user.id
+    # cart = Cart.objects.filter(user=user)
+    # cart_items = CartItem.objects.filter(cart=cart.cart_id)
+    # items_details = []
+    # for cart_item in cart_items:
+    #     items_details.append(
+    #         {
+    #             'price': cart_item.product.product_id,
+    #             'quantity': cart_item.quantity,
+    #         }
+    #     )
+    checkout_session = stripe.checkout.Session.create(
+        # line_items=items_details,
+        line_items=[
+            {
+                'price': 'price_1OsWPPHFxZqMmcOBoEwYzFmN',
+                'quantity': 4,
+            },
+            {
+                'price': 'price_1OswRSHFxZqMmcOBqoxrN7T4',
+                'quantity': 3,
+            },
+        ],
+        mode='payment',
+        success_url=os.environ['URL'] + '?success=true',
+        cancel_url=os.environ['URL'] + '?canceled=true',
+    )
+    return redirect(checkout_session.url, code=303)
 
 
 # Create your views here.
