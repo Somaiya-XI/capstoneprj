@@ -26,24 +26,10 @@ function App() {
               <Route path='/cart' element={<Cart />} />
               <Route path='/:id' element={<ProductDetail />} />
               <Route path='/login' element={<Login />} />
-              <Route
-                path='/user-activation'
-                element={
-                  <AdminRoute>
-                    <UserActivation />
-                  </AdminRoute>
-                }
-              />
+              <Route path='/user-activation' element={<AdminRoute><UserActivation /></AdminRoute>}/>
               <Route>
                 {/* <Route path='/SupplierDashboard' element={<SupplierRoute><SupplierDashboard /> </SupplierRoute>} /> */}
-                <Route
-                  path='/SupplierDashboard'
-                  element={
-                    <SupplierRoute>
-                      <ProductsPage />
-                    </SupplierRoute>
-                  }
-                />
+                <Route path='/SupplierDashboard' element={<SupplierRoute><ProductsPage /></SupplierRoute> }/>
                 <Route path='/SupplierDashboard/Schedule' element={<Schedule />} />
                 <Route path='/SupplierDashboard/Orders' element={<Orders />} />
               </Route>
