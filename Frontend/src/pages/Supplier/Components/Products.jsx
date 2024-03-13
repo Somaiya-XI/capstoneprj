@@ -7,6 +7,7 @@ import SearchField from './Layout/SearchField';
 import SupplierLayout from './Layout/SupplierLayout';
 
 
+
 const Products = () => {
 
   const [dataSource, setDataSource] = useState([]);
@@ -31,21 +32,6 @@ const Products = () => {
     })
 
   };
-
-  // const onAddProduct = () => {
-  //   setDataSource(pre=>{
-  //     const newProduct= {
-        
-
-  //     }
-  //     return [...pre, newProduct]
-  //   })
-    
-  //   axios.delete(`${import.meta.env.VITE_API_URL}product/catalog-product/create/`, {
-      
-  //   })
-
-  // };
 
   const columns = [
     {
@@ -121,12 +107,13 @@ const Products = () => {
       render: (_, record) => (
 
         <>
-          <EditOutlined>
-          navigate("/SupplierDashboard/Edit");
-          </EditOutlined>
+          <Link to={`/SupplierDashboard/Edit/${record.key}`}>
+      <EditOutlined style={{ fontSize: '20px', cursor: 'pointer' }} />
+      
+    </Link>
           {dataSource.length >= 1 ? (
             <Popconfirm title="Sure to delete?" onConfirm={() => onDeleteProduct(record.key)}>
-              <DeleteOutlined style={{ color: 'red', marginLeft: 25 }} />
+              <DeleteOutlined style={{ color: 'red', marginLeft: 20, fontSize: '18px', cursor: 'pointer' }} />
             </Popconfirm>
           ) : null}
         </>
@@ -138,7 +125,7 @@ const Products = () => {
     <SupplierLayout>
     <div className="SupplierDashboard">
       <div className="DashboardContent">
-        <h3 className="HeaderTitle">Products</h3>
+        <h3 className="HeaderTitle" data-testid="cypress-title">Products</h3>
         <Button className="AddButton" type="primary">
           
           <Link to="/SupplierDashboard/Add">+ Add </Link>
@@ -149,7 +136,7 @@ const Products = () => {
       </div>
       <SearchField/>
       
-      <Table
+      <Table data-testid="cypress-Product-table"
         rowClassName={() => 'editable-row'}
         bordered
         dataSource={dataSource}
