@@ -5,9 +5,10 @@ import axios from 'axios';
 import './form.css';
 import {API} from '../../backend';
 import {logout, login, getUser} from './AuthHelpers';
+import {Navigate} from 'react-router-dom';
 
 const Login = () => {
-  const {setUser, setRole} = useUserContext();
+  const {setUser, user} = useUserContext();
   const {getSession, getCsrfToken, isAuthenticated, setIsAuthenticated, csrf} = useCsrfContext();
 
   const navigate = useNavigate();
@@ -38,8 +39,10 @@ const Login = () => {
         setEmail('');
         setPassword('');
         setError('');
-        setRole(response.data.role);
-        setUser(response.data.user);
+        const current_user = response.data.user;
+        setUser((oldUser) => {
+          return {...oldUser, ...current_user};
+        });
       })
       .catch((error) => {
         console.log('error occured', error.response.data.error);
@@ -143,7 +146,12 @@ const Login = () => {
       </div>
     );
   }
-
+  if (isAuthenticated && user.role === 'SUPPLIER') {
+    return <Navigate to='/SupplierDashboard/Products' replace={true} />;
+  }
+  if (isAuthenticated && user.role === 'RETAILER') {
+    return <Navigate to='/' />;
+  }
   return (
     <div className='container-mt-3 p-4'>
       <h1>Authenticated</h1>
@@ -176,6 +184,14 @@ const Login = () => {
         }}
       >
         Go to supplier
+      </button>{' '}
+      <button
+        className='btn login-btn'
+        onClick={() => {
+          navigate('/SupplierDashboard/Schedule');
+        }}
+      >
+        Go to Schedule
       </button>
     </div>
   );

@@ -25,7 +25,8 @@ from dotenv import load_dotenv
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def add_to_cart(request):
-
+    if request.user.is_anonymous:
+        return JsonResponse({'message': 'You cannot add to cart'})
     user = request.user
     print('got user: ', user)
     product_id = request.data.get('product_id')
@@ -52,11 +53,14 @@ def add_to_cart(request):
     print('got ITEM,: ', cart_item)
 
     if cart_item:
-        cart_item.quantity = int(quantity)
-
-        cart_item.save()
-        cart_item_serializer = CartItemSerializer(instance=cart_item)
-        message = 'Cart item updated'
+        if int(quantity) <= product.quantity:
+            cart_item.quantity = int(quantity)
+            cart_item.save()
+            cart_item_serializer = CartItemSerializer(instance=cart_item)
+            message = 'Cart item updated'
+        else:
+            message = f'Over the stock, you cannot add more than  {product.quantity} piece of this item'
+            cart_item_serializer = None
     else:
         cart_item_serializer = CartItemSerializer(
             data={
@@ -74,7 +78,7 @@ def add_to_cart(request):
 
     response_data = {
         'message': message,
-        'cart_item': cart_item_serializer.data,
+        'cart_item': cart_item_serializer.data if cart_item_serializer else [],
         'cart': cart_serializer.data,
     }
 
@@ -131,12 +135,16 @@ def calculate_cart_total(cart):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def view_cart(request):
+
+    if request.user.is_anonymous:
+        return JsonResponse({'message': 'You must be logged in to get a cart'})
+
     user = request.user
 
     cart = Cart.objects.filter(user=user).first()
 
     if not cart:
-        return JsonResponse({'message': 'Your do not have cart'})
+        return JsonResponse({'message': 'You have no cart'})
 
     cart_items = CartItem.objects.filter(cart=cart)
 
@@ -157,6 +165,8 @@ def view_cart(request):
             'quantity': cart_item.quantity,
             'image': product.product_img.url if product.product_img else None,
             'subtotal': cart_item.subtotal,
+            'stock': product.quantity,
+            'min_qyt': product.min_order_quantity,
         }
 
         response_data['products'].append(item_data)

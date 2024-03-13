@@ -1,14 +1,17 @@
 import {API} from '../../backend';
 import {Link} from 'react-router-dom';
 import './CartItem.css';
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useRef} from 'react';
 import axios from 'axios';
 import {useCsrfContext} from '../../Contexts';
 import BinIcon from './BinIcon';
-const CartItem = ({image, id, product_name, unit_price, subtotal, quantity, reloadCart, remove, add}) => {
+import {toast} from 'sonner';
+import {Icon} from '@iconify/react';
+
+const CartItem = ({image, id, product_name, unit_price, subtotal, quantity, min_qyt, stock, remove, add}) => {
   const [qty, setQty] = useState(quantity);
   const [subTot, setSubTot] = useState(subtotal);
-
+  const [alertMessage, setAlertMessage] = useState('');
   const {csrf} = useCsrfContext();
 
   useEffect(() => {
@@ -18,9 +21,11 @@ const CartItem = ({image, id, product_name, unit_price, subtotal, quantity, relo
 
   const handleQuantityChange = (newQuantity) => {
     setQty(newQuantity);
-    add(id, newQuantity);
-  };
 
+    if (newQuantity !== '' && newQuantity >= min_qyt && newQuantity <= stock) {
+      add(id, newQuantity);
+    }
+  };
   const decreaseQuantity = () => {
     const newQuantity = qty - 1;
     if (newQuantity >= 1) {
@@ -30,26 +35,43 @@ const CartItem = ({image, id, product_name, unit_price, subtotal, quantity, relo
 
   const increaseQuantity = () => {
     const newQuantity = qty + 1;
-    handleQuantityChange(newQuantity);
-  };
-
-  const handleInputChange = (event) => {
-    const newQuantity = parseInt(event.target.value);
-    if (!isNaN(newQuantity) && newQuantity >= 1) {
+    if (newQuantity <= stock) {
       handleQuantityChange(newQuantity);
-    } else {
-      handleQuantityChange(1);
+    }
+    if (newQuantity > stock) {
+      // alert Over the stock
     }
   };
 
-  const handleRemoveItem = () => {
+  const handleInputChange = (event) => {
+    const inputValue = event.target.value.trim();
+    if (inputValue === '') {
+      handleQuantityChange('');
+    } else {
+      const newQuantity = parseInt(inputValue);
+      if (!isNaN(newQuantity) && newQuantity >= min_qyt && newQuantity <= stock) {
+        handleQuantityChange(newQuantity);
+      } else if (newQuantity > stock) {
+        handleQuantityChange(stock);
+      } else {
+        handleQuantityChange(min_qyt);
+      }
+    }
+  };
+
+  const handleRemoveItem = async () => {
     console.log('Item:', id);
     console.log('csrf:', csrf);
-    remove(id);
+    const res = await remove(id);
+    console.log('res: ', res);
+    const message = res.data.message;
+
+    toast.info(message, {duration: 1500});
   };
 
   return (
     <div className='cart-item'>
+      <div className='card flex justify-content-center'></div>
       <ul className='item-flex-container'>
         <li className='img-cont'>
           <div className='image-container'>{image && <img src={`${API}${image}`} alt={product_name} />}</div>
@@ -66,7 +88,7 @@ const CartItem = ({image, id, product_name, unit_price, subtotal, quantity, relo
           <span className='btn-span' onClick={decreaseQuantity}>
             -
           </span>
-          <input type='number' value={qty} min='1' lang='en' onChange={handleInputChange} />
+          <input type='number' value={qty} lang='en' onChange={handleInputChange} />
           <span className='btn-span' onClick={increaseQuantity}>
             +
           </span>

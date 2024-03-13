@@ -4,8 +4,20 @@ import {useState, useContext, useEffect} from 'react';
 import {API} from '../../backend';
 
 const CsrfTokenContextProvider = ({children}) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [csrf, setCSRF] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    const localAuth = localStorage.getItem('auth');
+    try {
+      return localAuth ? JSON.parse(localAuth) : false;
+    } catch (error) {
+      console.error('Invalid JSON data:', error);
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('auth', JSON.stringify(isAuthenticated));
+  }, [isAuthenticated]);
 
   async function getCsrfToken() {
     let _csrfToken = null;
@@ -38,6 +50,22 @@ const CsrfTokenContextProvider = ({children}) => {
       console.log(error);
     }
   }
+
+  async function logUserOut() {
+    console.log('Context Logout!');
+    try {
+      const response = await axios.get(`${API}user/logout`, {
+        withCredentials: true,
+      });
+      const data = response.data;
+      console.log(data);
+      setIsAuthenticated(false);
+      await getCsrfToken();
+      console.log('Context Logout Success');
+    } catch (err) {
+      console.log(err);
+    }
+  }
   const authValues = {
     csrf,
     setCSRF,
@@ -45,6 +73,7 @@ const CsrfTokenContextProvider = ({children}) => {
     setIsAuthenticated,
     getCsrfToken,
     getSession,
+    logUserOut,
   };
 
   return <CsrfTokenContext.Provider value={authValues}>{children}</CsrfTokenContext.Provider>;

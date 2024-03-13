@@ -18,7 +18,7 @@ const UserContextProvider = ({children}) => {
   });
 
   useEffect(() => {
-    console.log('user: ', user);
+    //console.log('user: ', user);
     // localStorage.setItem('csrf', JSON.stringify(csrf));
     localStorage.setItem('user', JSON.stringify(user));
   }, [user]);

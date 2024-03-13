@@ -11,6 +11,8 @@ import BinIcon from './BinIcon';
 import {RiEmotionSadLine} from 'react-icons/ri';
 import Navbar from '../Home/Components/Navbar/Navbar';
 import Header from '../Home/Components/Header/Header';
+import {toast} from 'sonner';
+
 const Cart = () => {
   const text = ['Product', 'Unit Price', 'Quantity', 'Subtotal', 'Remove'];
   const flex = [3];
@@ -28,40 +30,50 @@ const Cart = () => {
   };
 
   const removeFromCart = async (id) => {
-    try {
-      await axios.post(
-        `${API}cart/remove-from-cart/`,
-        {product_id: id},
-        {
-          headers: {
-            'X-CSRFToken': csrf,
-          },
-          withCredentials: true,
-        }
-      );
-      console.log('Item removed:', id);
-      reloadCart();
-    } catch (error) {
-      console.error(error);
+    if (cart) {
+      try {
+        const response = await axios.post(
+          `${API}cart/remove-from-cart/`,
+          {product_id: id},
+          {
+            headers: {
+              'X-CSRFToken': csrf,
+            },
+            withCredentials: true,
+          }
+        );
+        console.log('Item removed:', id);
+        reloadCart();
+        console.log('response: ', response);
+        return response;
+      } catch (error) {
+        console.error(error.message);
+      }
+    } else {
+      toast.error('cannot perform this action, try again', {duration: 1500});
     }
   };
 
   const clearCart = async () => {
-    try {
-      await axios.post(
-        `${API}cart/clear-cart/`,
-        {},
-        {
-          headers: {
-            'X-CSRFToken': csrf,
-          },
-          withCredentials: true,
-        }
-      );
-      console.log('Cart cleared');
-      reloadCart();
-    } catch (error) {
-      console.error(error);
+    if (cart) {
+      try {
+        await axios.post(
+          `${API}cart/clear-cart/`,
+          {},
+          {
+            headers: {
+              'X-CSRFToken': csrf,
+            },
+            withCredentials: true,
+          }
+        );
+        console.log('Cart cleared');
+        reloadCart();
+      } catch (error) {
+        console.error(error.message);
+      }
+    } else {
+      toast.warning('your cart is empty', {duration: 1500});
     }
   };
 
@@ -95,7 +107,7 @@ const Cart = () => {
                 <h4 className='m-4'>Loading cart...</h4>
               ) : (
                 <>
-                  {cart && cart.products.length > 0 ? (
+                  {cart && cart.products?.length > 0 ? (
                     cart.products.map((p) => (
                       <CartItem
                         key={p.product_id}
@@ -105,6 +117,8 @@ const Cart = () => {
                         unit_price={p.unit_price}
                         subtotal={p.subtotal}
                         quantity={p.quantity}
+                        min_qyt={p.min_qyt}
+                        stock={p.stock}
                         remove={removeFromCart}
                         add={UpdateCartContent}
                       />
