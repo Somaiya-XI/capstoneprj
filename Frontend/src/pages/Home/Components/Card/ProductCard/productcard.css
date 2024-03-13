@@ -63,8 +63,7 @@
   z-index: 2;
   opacity: 0;
   visibility: hidden;
-  transition: 0.25s opacity, 0.25s visibility,
-    transform 1.5s cubic-bezier(0, 0, 0.2, 1),
+  transition: 0.25s opacity, 0.25s visibility, transform 1.5s cubic-bezier(0, 0, 0.2, 1),
     -webkit-transform 1.5s cubic-bezier(0, 0, 0.2, 1);
 }
 
@@ -209,7 +208,7 @@
 
 .product-cart-wrap .product-action-1 button:before,
 .product-cart-wrap .product-action-1 a.action-btn:before {
-  content: "";
+  content: '';
   position: absolute;
   left: calc(50% - 7px);
   bottom: 100%;
@@ -220,8 +219,7 @@
   z-index: 9;
   margin-bottom: -13px;
   transition-delay: 0.1s;
-  transition: opacity 0.3s ease, visibility 0.3s ease,
-    transform 0.3s cubic-bezier(0.71, 1.7, 0.77, 1.24),
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s cubic-bezier(0.71, 1.7, 0.77, 1.24),
     -webkit-transform 0.3s cubic-bezier(0.71, 1.7, 0.77, 1.24);
   opacity: 0;
   visibility: hidden;
@@ -243,8 +241,7 @@
   transition-delay: 0.1s;
   -webkit-box-shadow: 4px 4px 8px rgb(0 0 0 / 10%);
   box-shadow: 4px 4px 8px rgb(0 0 0 / 10%);
-  transition: opacity 0.3s ease, visibility 0.3s ease,
-    transform 0.3s cubic-bezier(0.71, 1.7, 0.77, 1.24),
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s cubic-bezier(0.71, 1.7, 0.77, 1.24),
     -webkit-transform 0.3s cubic-bezier(0.71, 1.7, 0.77, 1.24);
   opacity: 0;
   visibility: hidden;

@@ -1,0 +1,17 @@
+body {
+  background-color: white;
+}
+
+.cart-items {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.x {
+  background-color: var(--color--primary);
+}
+
+.container-fluid {
+  padding: var(--primary-padding);
+}

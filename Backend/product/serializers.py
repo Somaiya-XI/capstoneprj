@@ -33,7 +33,7 @@ class ProductCatalogSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CartProductSerializer(serializers.HyperlinkedModelSerializer):
-    unit_price = serializers.DecimalField(source='price', max_digits=8, decimal_places=2)
+    unit_price = serializers.DecimalField(source='new_price', max_digits=8, decimal_places=2)
 
     class Meta:
         model = ProductCatalog

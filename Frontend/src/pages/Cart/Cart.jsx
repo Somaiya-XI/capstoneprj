@@ -1,110 +1,127 @@
-import {useContext, useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import './Cart.css';
 import {LiaTrashAltSolid as TrashIcon} from 'react-icons/lia';
-import {UserContext} from '../../Contexts';
+import {useCartContext, useCsrfContext, useUserContext} from '../../Contexts';
 import {API} from '../../backend';
 import axios from 'axios';
 import {Link} from 'react-router-dom';
-
+import ListHeader from './ListHeader';
+import CartItem from './CartItem';
+import BinIcon from './BinIcon';
+import {RiEmotionSadLine} from 'react-icons/ri';
+import Navbar from '../Home/Components/Navbar/Navbar';
+import Header from '../Home/Components/Header/Header';
 const Cart = () => {
-  const {user} = useContext(UserContext);
+  const text = ['Product', 'Unit Price', 'Quantity', 'Subtotal', 'Remove'];
+  const flex = [3];
 
-  const [cart, setCart] = useState(null);
-
-  const fetchCart = async () => {
-    try {
-      const response = await axios.get(`${API}cart/view-cart/`, {
-        withCredentials: true,
-      });
-      const {data} = response;
-      setCart(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const {user} = useUserContext();
+  const {csrf} = useCsrfContext();
+  const {cart, UpdateCartContent, fetchCart, loading} = useCartContext();
 
   useEffect(() => {
     fetchCart();
   }, []);
 
+  const reloadCart = () => {
+    fetchCart();
+  };
+
+  const removeFromCart = async (id) => {
+    try {
+      await axios.post(
+        `${API}cart/remove-from-cart/`,
+        {product_id: id},
+        {
+          headers: {
+            'X-CSRFToken': csrf,
+          },
+          withCredentials: true,
+        }
+      );
+      console.log('Item removed:', id);
+      reloadCart();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const clearCart = async () => {
+    try {
+      await axios.post(
+        `${API}cart/clear-cart/`,
+        {},
+        {
+          headers: {
+            'X-CSRFToken': csrf,
+          },
+          withCredentials: true,
+        }
+      );
+      console.log('Cart cleared');
+      reloadCart();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
+      <div id='c'>
+        <Header />
+        <div id='c' className='md:container md:mx-auto mt-5'>
+          <Navbar />
+        </div>
+      </div>
       <section className='mt-5 mb-5'>
         <div className='container-fluid m-5'>
           <div className='row'>
             <div className='col-lg-8 mb-4'>
-              <h1 className='display-5 fw-normal mb-4'>{user.company_name}'s Cart</h1>
+              <h1 className='display-5 fw-normal mb-4 ml-4'>{user.company_name}'s Cart</h1>
               <div className='d-flex justify-content-between'>
-                <h5>Carefully check the information before checkout</h5>
+                <h5 className='ml-4'>Carefully check the information before checkout</h5>
                 <h5>
-                  <Link to='#' className='text-muted d-flex align-items-center'>
-                    <span>Clear Cart</span> <TrashIcon className='mr-1' />
+                  <Link onClick={clearCart} className='text-muted d-flex align-items-center'>
+                    <span className='mr-1'>Clear Cart</span> <BinIcon height='1.5rem' width='1.5rem' className='mr-4' />
                   </Link>
                 </h5>
               </div>
             </div>
           </div>
-          <div className='row d-flex '>
-            <div className='col-lg-8'>
-              <div className='table-responsive'>
-                {cart ? (
-                  <table className='table'>
-                    <thead>
-                      <tr className='main-heading h4'>
-                        <th className='custome-checkbox start pl-3' colSpan='2'>
-                          Product
-                        </th>
-                        <th scope='col'>Unit Price</th>
-                        <th scope='col'>Quantity</th>
-                        <th scope='col'>Subtotal</th>
-                        <th scope='col' className='end'>
-                          Remove
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {cart.products.map((product) => (
-                        <tr key={product.product_id}>
-                          <td className='wrapper'>
-                            <div className='container d-flex justify-content-center align-items-center'>
-                              {product.image && <img src={`${API}${product.image}`} alt={product.name} width='70px' />}
-                            </div>
-                          </td>
-                          <td className='product-des product-name'>
-                            <h5 className='product-name'>
-                              <Link to={`/${product.product_id}`}>{product.name}</Link>
-                            </h5>
-                          </td>
-                          <td className='h5'>{product.unit_price}</td>
-                          <td className='h5 '>
-                            <input type='number' value={product.quantity} min='1' lang='en' />
-                          </td>
-                          <td className='h5'>{product.subtotal}</td>
-                          <td className='h5'>
-                            <button>
-                              <TrashIcon size={30} />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                      <tr>
-                        <td>
-                          <h4>Total:</h4>
-                        </td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>
-                          <h4>{cart.total}</h4>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                ) : (
-                  <p>Loading cart...</p>
-                )}
-              </div>
+          <div className='col-lg-8'>
+            <div className='cart-items'>
+              <ListHeader text={text} flexStyles={flex} /> <br />
+              {loading ? (
+                <h4 className='m-4'>Loading cart...</h4>
+              ) : (
+                <>
+                  {cart && cart.products.length > 0 ? (
+                    cart.products.map((p) => (
+                      <CartItem
+                        key={p.product_id}
+                        id={p.product_id}
+                        image={p.image}
+                        product_name={p.name}
+                        unit_price={p.unit_price}
+                        subtotal={p.subtotal}
+                        quantity={p.quantity}
+                        remove={removeFromCart}
+                        add={UpdateCartContent}
+                      />
+                    ))
+                  ) : (
+                    <div
+                      className='text-muted d-flex align-items-center justify-content-center w-100'
+                      style={{marginTop: '200px', marginLeft: 'auto'}}
+                    >
+                      <span className='display-6 d-flex align-items-center justify-content-center'>
+                        Your Cart is empty
+                      </span>
+                      <RiEmotionSadLine className='ml-2 d-flex align-items-center justify-content-center' size={40} />
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>

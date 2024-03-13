@@ -30,8 +30,18 @@ from django.middleware.csrf import get_token
 def get_csrf(request):
     response = JsonResponse({'detail': 'CSRF cookie set'})
     response['X-CSRFToken'] = get_token(request)
-    print(response['X-CSRFToken'])
+    print('csrf in get method', response['X-CSRFToken'])
     return response
+
+
+def get_new_csrf(request):
+    token = get_token(request)
+    print('in login get: ', token)
+    return JsonResponse({'csrfToken': token})
+
+
+def test(request):
+    return JsonResponse({'result': 'OK'})
 
 
 @csrf_protect
@@ -47,6 +57,7 @@ def login_view(request):
     csrf_token = headers.get('HTTP_X_CSRFTOKEN')
 
     print(request.user, 'trying to logg in')
+    print(csrf_token, 'is the current token')
     UserModel = get_user_model()
 
     if not email and not password:
@@ -111,7 +122,6 @@ def logout_view(request):
 def session_view(request):
     if not request.user.is_authenticated:
         return JsonResponse({'isAuthenticated': False})
-
     return JsonResponse({'isAuthenticated': True})
 
 
