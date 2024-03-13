@@ -15,7 +15,7 @@ import {
 
 import "./Supplier.css";
 import Logo from './Logo';
-import MenuList from './MenuList';
+import MenuList from '../MenuList';
 
 const SupplierHeader = () => {
   const [collapsed, setCollapsed] = useState(false)

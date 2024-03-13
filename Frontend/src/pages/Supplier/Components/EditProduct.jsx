@@ -3,7 +3,6 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Select, DatePicker, Upload, InputNumber } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import SupplierLayout from './Layout/SupplierLayout';
 
 const formItemLayout = {
   labelCol: {
@@ -16,7 +15,7 @@ const formItemLayout = {
   },
 };
 
-const AddProduct = () => {
+const EditProduct = () => {
   const [inputData, setInputData] = useState({
     product_img: '',
     product_name: '',
@@ -52,7 +51,7 @@ const AddProduct = () => {
     axios.post(`${import.meta.env.VITE_API_URL}product/catalog-product/create/`, inputData)
       .then(res => {
         alert("Data Sent");
-        navigate('/SupplierDashboard/Products');
+        navigate('/SupplierDashboard');
       })
       .catch(err => {
         console.log('Error:', err);
@@ -65,15 +64,6 @@ const AddProduct = () => {
   };
 
   return (
-    <SupplierLayout>
-      <div className="SupplierDashboard">
-      <div className="DashboardContent">
-        <h3 className="HeaderTitle">Add Product</h3>
-        
-
-
-
-      </div>
     <Form
       className="AddForm"
       {...formItemLayout}
@@ -184,11 +174,8 @@ const AddProduct = () => {
           Submit
         </Button>
       </Form.Item>
-      
     </Form>
-    </div>
-    </SupplierLayout>
   );
 };
 
-export default AddProduct;
+export default EditProduct;

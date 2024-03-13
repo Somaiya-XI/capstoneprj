@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-import stripe
+# import stripe
 
 # THIS IS THE MANAGER CLASS OF ANY MODEL
 
@@ -16,17 +16,17 @@ import json
 
 
 @csrf_exempt
-@login_required
+# @login_required
 # @permission_classes([AllowAny])
 def create_product(request):
 
     data = json.loads(request.body)
 
-    if request.user.is_authenticated:
-        data['supplier'] = request.user.id
-        print(data)
-    else:
-        return JsonResponse({'error': 'You are not authenticated, log in then try again'})
+    # if request.user.is_authenticated:
+    #     data['supplier'] = request.user.id
+    #     print(data)
+    # else:
+    #     return JsonResponse({'error': 'You are not authenticated, log in then try again'})
 
     serializer = ProductCatalogSerializer(data=data)
 

@@ -1,19 +1,28 @@
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
-import Home from './pages/Home/Home.jsx';
-import ProductDetail from './pages/ProductDetail/ProductDetail.jsx';
-import Profile from './pages/Profile/Profile.jsx';
-import UserActivation from './pages/Admin/ActivateUsers.jsx';
-import ForgotPassword from './pages/Account/ForgotPassword.jsx';
-import NewPasswordForm from './pages/Account/ResetPassword.jsx';
-import Register from './pages/Account/RegisterPage.jsx';
-import Login from './pages/Account/LoginPage.jsx';
-import ProductsPage from './pages/Supplier/SupplierDashboard.jsx';
-import {AdminRoute, SupplierRoute} from './Components/index.jsx';
-import {UserContextProvider, CsrfTokenContextProvider, CartContextProvider} from './Contexts/index.jsx';
-import Orders from './pages/Supplier/Components/Orders.jsx';
-import Schedule from './pages/Supplier/Components/Schedule.jsx';
-import Cart from './pages/Cart/Cart.jsx';
-import Payment from './pages/Payment/Payment.jsx';
+import {
+  Products,
+  AddProduct,
+  EditProduct,
+  Schedule,
+  Orders,
+  Home,
+  ProductDetail,
+  Profile,
+  UserActivation,
+  ForgotPassword,
+  NewPasswordForm,
+  Register,
+  Login,
+  AdminRoute,
+  SupplierRoute,
+  Cart,
+  Navbar,
+  Header,
+  UserContextProvider,
+  CsrfTokenContextProvider,
+  CartContextProvider,
+  Payment,
+} from './url.jsx';
 import {Toaster} from 'sonner';
 
 function App() {
@@ -29,11 +38,35 @@ function App() {
                 <Route path='/cart' element={<Cart />} />
                 <Route path='/:id' element={<ProductDetail />} />
                 <Route path='/login' element={<Login />} />
-                <Route path='/user-activation'element={  <AdminRoute> <UserActivation /></AdminRoute>} />
+                <Route
+                  path='/user-activation'
+                  element={
+                    <AdminRoute>
+                      {' '}
+                      <UserActivation />
+                    </AdminRoute>
+                  }
+                />
                 <Route>
                   {/* <Route path='/SupplierDashboard' element={<SupplierRoute><SupplierDashboard /> </SupplierRoute>} /> */}
-                  <Route path='/SupplierDashboard' element={<SupplierRoute><ProductsPage /></SupplierRoute>} />
-                  <Route path='/SupplierDashboard/Schedule'element={<SupplierRoute><Schedule /></SupplierRoute>} />
+                  <Route
+                    path='/SupplierDashboard'
+                    element={
+                      <SupplierRoute>
+                        <Products />
+                      </SupplierRoute>
+                    }
+                  />
+                  <Route path='/SupplierDashboard/Edit' element={<EditProduct />} />
+                  <Route path='/SupplierDashboard/Add' element={<AddProduct />} />
+                  <Route
+                    path='/SupplierDashboard/Schedule'
+                    element={
+                      <SupplierRoute>
+                        <Schedule />
+                      </SupplierRoute>
+                    }
+                  />
                   <Route path='/SupplierDashboard/Orders' element={<Orders />} />
                 </Route>
                 <Route path='/profile' element={<Profile />} />

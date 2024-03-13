@@ -12,7 +12,7 @@ class Order(models.Model):
     ]
 
     ORDER_STATUS_CHOICES = [
-        ("pending", "Pending"),
+        # ("ready_for_delivery", "ready for delivery"),
         ("processing", "Processing"),
         ("shipped", "Shipped"),
         ("delivered", "Delivered"),
