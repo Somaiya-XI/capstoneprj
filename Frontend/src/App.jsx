@@ -43,7 +43,7 @@ function App() {
                 <Route>
                   {/* <Route path='/SupplierDashboard' element={<SupplierRoute><SupplierDashboard /> </SupplierRoute>} /> */}
                   <Route path='/SupplierDashboard/Products' element={<SupplierRoute><Products /></SupplierRoute>} />
-                  <Route path='/SupplierDashboard/Edit' element={<EditProduct />} />
+                  <Route path='/SupplierDashboard/Edit/:id' element={<EditProduct />} />
                   <Route path='/SupplierDashboard/Add' element={<AddProduct />}/>
                   <Route path='/SupplierDashboard/Schedule'element={<SupplierRoute><Schedule /></SupplierRoute>} />
                   <Route path='/SupplierDashboard/Orders' element={<Orders />} />
