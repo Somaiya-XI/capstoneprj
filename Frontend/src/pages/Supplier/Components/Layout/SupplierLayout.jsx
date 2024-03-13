@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Layout, Button, Space, Avatar, Dropdown } from 'antd';
-import SearchField from './Components/Layout/SearchField';
+import SearchField from './SearchField';
 import { Link } from 'react-router-dom';
 import {
   MenuUnfoldOutlined,
@@ -9,8 +9,8 @@ import {
   UserOutlined,
   NotificationOutlined,
 } from '@ant-design/icons';
-import Logo from './Components/Layout/Logo';
-import MenuList from './Components/Layout/MenuList';
+import Logo from './Logo';
+import MenuList from './MenuList';
 
 const { Header, Sider } = Layout;
 

@@ -4,7 +4,7 @@ import { Button, Table, Popconfirm} from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import axios from "axios";
 import SearchField from './Layout/SearchField';
-import SupplierLayout from '../SupplierLayout';
+import SupplierLayout from './Layout/SupplierLayout';
 
 
 const Products = () => {

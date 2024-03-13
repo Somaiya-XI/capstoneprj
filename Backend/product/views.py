@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-import stripe
+# import stripe
 
 # THIS IS THE MANAGER CLASS OF ANY MODEL
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Input, InputNumber, Popconfirm, Table, Typography, Tag, Modal, Button } from 'antd';
-import SupplierLayout from '../SupplierLayout';
+import SupplierLayout from './Layout/SupplierLayout';
 import SearchField from './Layout/SearchField';
 
 

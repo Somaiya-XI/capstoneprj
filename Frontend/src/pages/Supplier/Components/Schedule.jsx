@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import {useNavigate} from 'react-router-dom'
-import SupplierLayout from '../SupplierLayout';
+import SupplierLayout from './Layout/SupplierLayout';
 
 import {
   Button,
