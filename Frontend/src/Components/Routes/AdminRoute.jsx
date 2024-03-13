@@ -1,11 +1,12 @@
 import {useContext} from 'react';
 import {Navigate} from 'react-router-dom';
-import {useUserContext} from '../../Contexts/index.jsx';
+import {useUserContext, useCsrfContext} from '../../Contexts/index.jsx';
 
 const AdminRoute = ({children}) => {
-  const {role, isAuthenticated} = useUserContext();
+  const {isAuthenticated} = useCsrfContext();
+  const {user} = useUserContext();
 
-  if (isAuthenticated && role === 'ADMIN') {
+  if (isAuthenticated && user.role === 'ADMIN') {
     return <>{children}</>;
   }
   return <Navigate to='/' replace={true} />;

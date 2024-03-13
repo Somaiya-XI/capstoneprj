@@ -5,27 +5,46 @@ import CartIcon from '../../images/cart.png';
 import ButtonGroup from '../Form/ButtonGroup/ButtonGroup';
 import './navbar.css';
 import {useContext} from 'react';
-import {UserContext} from '../../../../Contexts';
+import {useUserContext, useCsrfContext} from '../../../../Contexts';
+import {useEffect} from 'react';
+import {Link} from 'react-router-dom';
 
 const Navbar = ({children}) => {
   const options = ['Your Location', 'New york', 'albania'];
-  const {user} = useContext(UserContext);
+  const {user} = useUserContext();
+  const {logUserOut, isAuthenticated} = useCsrfContext();
 
   return (
     <>
       <div className='row navWeb pt-4 pb-4'>
         <div className='col-md-12 d-flex align-items-center justify-between'>
           <div className='logo'>
-            <img src={logo} alt='' />
+            <Link to='/'>
+              <img src={logo} alt='' />
+            </Link>
           </div>
           <InputGroup />
           <div className='button_group '>
-            <ButtonGroup icon={iconUser} buttonText={'Login'} link='/login' />
-            <div className='divider'></div>
-            <ButtonGroup icon={iconUser} buttonText={'Sign Up'} link='/register' />
-            <div className='divider'></div>
+            {!isAuthenticated && (
+              <>
+                <ButtonGroup icon={iconUser} buttonText={'Login'} link='/login' />
+                <div className='divider'></div>
+                <ButtonGroup icon={iconUser} buttonText={'Register'} link='/register' />
+              </>
+            )}
 
-            {user.role === 'RETAILER' && <ButtonGroup icon={CartIcon} buttonText={'  Cart'} link='/cart' />}
+            {isAuthenticated && user.role === 'RETAILER' && (
+              <>
+                <ButtonGroup icon='solar:cart-large-minimalistic-outline' buttonText={'  My Cart'} link='/cart' />
+                <div className='divider'></div>
+              </> // add to cart icon solar:cart-plus-outline solar:cart-large-2-bold-duotone solar:user-minus-broken
+            )}
+
+            {isAuthenticated && (
+              <>
+                <ButtonGroup icon='solar:user-minus-broken' buttonText={'  Logout'} link='/' onClick={logUserOut} />
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -33,12 +33,12 @@ const CartContextProvider = ({children}) => {
   }, []);
 
   const getProductQuantity = (productId) => {
-    const product = cart?.products.find((item) => item.product_id === productId);
+    const product = cart?.products?.find((item) => item.product_id === productId);
     return product ? product.quantity : 0;
   };
 
   const setProductQuantity = (productId, newQty) => {
-    const updatedProducts = cart?.products.map((item) => {
+    const updatedProducts = cart?.products?.map((item) => {
       if (item.product_id === productId) {
         return {...item, quantity: newQty, subtotal: item.price * newQty};
       }
@@ -68,6 +68,7 @@ const CartContextProvider = ({children}) => {
       console.error(error);
     }
   };
+
   const cartValues = {
     cart,
     setCart,
