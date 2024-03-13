@@ -147,7 +147,7 @@ const Login = () => {
     );
   }
   if (isAuthenticated && user.role === 'SUPPLIER') {
-    return <Navigate to='/SupplierDashboard' replace={true} />;
+    return <Navigate to='/SupplierDashboard/Products' replace={true} />;
   }
   if (isAuthenticated && user.role === 'RETAILER') {
     return <Navigate to='/' />;

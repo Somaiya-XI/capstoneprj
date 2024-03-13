@@ -1,4 +1,4 @@
-import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import {
   Products,
   AddProduct,
@@ -22,6 +22,7 @@ import {
   CsrfTokenContextProvider,
   CartContextProvider,
   Payment,
+
 } from './url.jsx';
 import {Toaster} from 'sonner';
 
@@ -38,35 +39,13 @@ function App() {
                 <Route path='/cart' element={<Cart />} />
                 <Route path='/:id' element={<ProductDetail />} />
                 <Route path='/login' element={<Login />} />
-                <Route
-                  path='/user-activation'
-                  element={
-                    <AdminRoute>
-                      {' '}
-                      <UserActivation />
-                    </AdminRoute>
-                  }
-                />
+                <Route path='/user-activation'element={  <AdminRoute> <UserActivation /></AdminRoute>} />
                 <Route>
                   {/* <Route path='/SupplierDashboard' element={<SupplierRoute><SupplierDashboard /> </SupplierRoute>} /> */}
-                  <Route
-                    path='/SupplierDashboard'
-                    element={
-                      <SupplierRoute>
-                        <Products />
-                      </SupplierRoute>
-                    }
-                  />
+                  <Route path='/SupplierDashboard/Products' element={<SupplierRoute><Products /></SupplierRoute>} />
                   <Route path='/SupplierDashboard/Edit' element={<EditProduct />} />
-                  <Route path='/SupplierDashboard/Add' element={<AddProduct />} />
-                  <Route
-                    path='/SupplierDashboard/Schedule'
-                    element={
-                      <SupplierRoute>
-                        <Schedule />
-                      </SupplierRoute>
-                    }
-                  />
+                  <Route path='/SupplierDashboard/Add' element={<AddProduct />}/>
+                  <Route path='/SupplierDashboard/Schedule'element={<SupplierRoute><Schedule /></SupplierRoute>} />
                   <Route path='/SupplierDashboard/Orders' element={<Orders />} />
                 </Route>
                 <Route path='/profile' element={<Profile />} />
@@ -84,3 +63,4 @@ function App() {
 }
 
 export default App;
+
