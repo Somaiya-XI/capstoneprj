@@ -38,15 +38,15 @@ function App() {
               <Route path='/cart' element={<Cart />} />
               <Route path='/:id' element={<ProductDetail />} />
               <Route path='/login' element={<Login />} />
-              <Route path='/user-activation' element={<AdminRoute><UserActivation /></AdminRoute>} />
+              <Route path='/user-activation' element={<UserActivation />} />
               <Route>
                 {/* <Route path='/SupplierDashboard' element={<SupplierRoute><SupplierDashboard /> </SupplierRoute>} /> */}
-                <Route path='/SupplierDashboard/Products' element={<SupplierRoute><Products /></SupplierRoute>} />
-                <Route path='/SupplierDashboard/Products/Edit' element={<SupplierRoute><EditProduct /></SupplierRoute>} />
-                <Route path='/SupplierDashboard/Products/Add' element={<SupplierRoute><AddProduct /></SupplierRoute>} />
+                <Route path='/SupplierDashboard/Products' element={<Products />} />
+                <Route path='/SupplierDashboard/Edit' element={<EditProduct />} />
+                <Route path='/SupplierDashboard/Add' element={<AddProduct />}/>
                 
-                <Route path='/SupplierDashboard/Schedule' element={<SupplierRoute><Schedule /></SupplierRoute>} />
-                <Route path='/SupplierDashboard/Orders' element={<SupplierRoute><Orders /></SupplierRoute>} />
+                <Route path='/SupplierDashboard/Schedule' element={<Schedule />}/>
+                <Route path='/SupplierDashboard/Orders' element={<Orders />} />
               </Route>
               <Route path='/profile' element={<Profile />} />
               <Route path='/register' element={<Register />} />

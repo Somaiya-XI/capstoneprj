@@ -172,7 +172,7 @@ const Login = () => {
       <button
         className='btn login-btn'
         onClick={() => {
-          navigate('/SupplierDashboard');
+          navigate('/SupplierDashboard/Products');
         }}
       >
         Go to supplier

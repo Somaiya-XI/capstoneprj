@@ -52,7 +52,7 @@ const AddProduct = () => {
     axios.post(`${import.meta.env.VITE_API_URL}product/catalog-product/create/`, inputData)
       .then(res => {
         alert("Data Sent");
-        navigate('/SupplierDashboard');
+        navigate('/SupplierDashboard/Products');
       })
       .catch(err => {
         console.log('Error:', err);
