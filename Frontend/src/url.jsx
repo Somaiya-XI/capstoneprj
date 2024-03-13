@@ -15,8 +15,9 @@ import NewPasswordForm from './pages/Account/ResetPassword.jsx';
 import Register from './pages/Account/RegisterPage.jsx';
 import Login from './pages/Account/LoginPage.jsx';
 import { AdminRoute, SupplierRoute } from './Components/index.jsx';
+import {UserContextProvider, CsrfTokenContextProvider, CartContextProvider} from './Contexts/index.jsx';
+import Payment from './pages/Payment/Payment.jsx';
 
-import { UserContextProvider } from './Contexts/index.jsx';
 
 import Cart from './pages/Cart/Cart.jsx';
 import Navbar from './pages/Home/Components/Navbar/Navbar.jsx';
@@ -42,7 +43,11 @@ export {
     Cart,
     Navbar,
     Header,
-    UserContextProvider
+    UserContextProvider,
+    CsrfTokenContextProvider,
+    CartContextProvider,
+    Payment
+
 
   };
 
