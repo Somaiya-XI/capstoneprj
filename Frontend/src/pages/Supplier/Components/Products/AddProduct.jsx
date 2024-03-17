@@ -3,7 +3,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Select, DatePicker, Upload, InputNumber } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import SupplierLayout from './Layout/SupplierLayout';
+import SupplierLayout from '../Layout/SupplierLayout';
 
 const formItemLayout = {
   labelCol: {
@@ -76,7 +76,7 @@ const AddProduct = () => {
     axios.post(`${import.meta.env.VITE_API_URL}product/catalog-product/create/`, inputData)
       .then(res => {
         alert("Data Sent");
-        navigate('/SupplierDashboard/Products');
+        navigate('/supplier-dahboard/products');
       })
       .catch(err => {
         console.log('Error:', err);

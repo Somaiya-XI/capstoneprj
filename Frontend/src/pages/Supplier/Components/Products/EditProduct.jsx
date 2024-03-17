@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import SupplierLayout from './Layout/SupplierLayout';
+import SupplierLayout from '../Layout/SupplierLayout';
+import ScheduleCard from '../Schedule/ScheduleCard';
 
 const formItemLayout = {
   labelCol: {
@@ -121,7 +122,8 @@ const EditProduct = () => {
                 className='form-control'
                 name='product_img'
                 accept='image/*'
-                onChange={handleImageChange('product_img')}
+                value={handleImageChange('product_img')}
+                
                 
                 
                 style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
@@ -300,4 +302,3 @@ const EditProduct = () => {
 };
 
 export default EditProduct;
-

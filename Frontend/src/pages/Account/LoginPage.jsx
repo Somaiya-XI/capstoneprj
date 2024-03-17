@@ -147,7 +147,7 @@ const Login = () => {
     );
   }
   if (isAuthenticated && user.role === 'SUPPLIER') {
-    return <Navigate to='/SupplierDashboard/Products' replace={true} />;
+    return <Navigate to='/supplier-dashboard/products' replace={true} />;
   }
   if (isAuthenticated && user.role === 'RETAILER') {
     return <Navigate to='/' />;
@@ -180,7 +180,7 @@ const Login = () => {
       <button
         className='btn login-btn'
         onClick={() => {
-          navigate('/SupplierDashboard/Products');
+          navigate('/supplier-dashboard/products');
         }}
       >
         Go to supplier
