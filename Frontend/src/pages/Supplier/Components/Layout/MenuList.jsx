@@ -11,9 +11,12 @@ import {
     PoundCircleOutlined,
     CalendarOutlined,
 } from '@ant-design/icons'
+import { useCsrfContext } from '../../../../Contexts';
 
 
 function MenuList() {
+    const {logUserOut} = useCsrfContext();
+
     return (
         <div>
 
@@ -42,7 +45,7 @@ function MenuList() {
                     <Link to="/profile"/>
                 </Menu.Item>
                 <Menu.Item key="Logout" icon={<LogoutOutlined />} onClick={() => {
-                    logout();
+                    logUserOut();
                 }}>
                     Logout
                     <Link to="/login" />
