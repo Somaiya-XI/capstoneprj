@@ -90,7 +90,6 @@ def login_view(request):
         user.save()
         login(request, user)
         resp = JsonResponse(
-        resp = JsonResponse(
             {'message': 'Successfully logged in.', 'role': user_role, 'user': user_data},
             status=200,
         )
