@@ -30,7 +30,6 @@ from django.middleware.csrf import get_token
 def get_csrf(request):
     response = JsonResponse({'detail': 'CSRF cookie set'})
     response['X-CSRFToken'] = get_token(request)
-    print('csrf in get method', response['X-CSRFToken'])
     return response
 
 
@@ -40,12 +39,7 @@ def get_new_csrf(request):
     return JsonResponse({'csrfToken': token})
 
 
-def test(request):
-    return JsonResponse({'result': 'OK'})
-
-
 @csrf_protect
-@require_POST
 def login_view(request):
 
     data = json.loads(request.body)
@@ -95,10 +89,18 @@ def login_view(request):
         user.session_token = csrf_token
         user.save()
         login(request, user)
-        return JsonResponse(
+        resp = JsonResponse(
             {'message': 'Successfully logged in.', 'role': user_role, 'user': user_data},
             status=200,
         )
+        resp['X-CSRFToken'] = get_token(request)
+        print('csrf after login method', resp['X-CSRFToken'])
+        return resp
+        # return JsonResponse(
+        #     {'message': 'Successfully logged in.', 'role': user_role, 'user': user_data},
+        #     status=200,
+        # )
+
     return JsonResponse({'error': 'The password you entered is incorrect'}, status=400)
 
 

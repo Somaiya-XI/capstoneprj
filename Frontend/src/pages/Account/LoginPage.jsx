@@ -1,200 +1,109 @@
-import React, {useState, useEffect, useContext} from 'react';
-import {Link, useNavigate} from 'react-router-dom';
-import {useUserContext, useCsrfContext} from '../../Contexts/index.jsx';
-import axios from 'axios';
 import './form.css';
-import {API} from '../../backend';
-import {logout, login, getUser} from './AuthHelpers';
+import loginImg from '../../assets/loginImage.webp';
+
+import {useEffect, useReducer} from 'react';
+import {useUserContext, useCsrfContext} from '../../Contexts/index.jsx';
 import {Navigate} from 'react-router-dom';
+
+import {FormsContainer, UiwLogin, EmailFeild, PasswordFeild, FormButton} from '../../Components/index.jsx';
 
 const Login = () => {
   const {setUser, user} = useUserContext();
-  const {getSession, getCsrfToken, isAuthenticated, setIsAuthenticated, csrf} = useCsrfContext();
+  const {isAuthenticated, getSession, logUserIn, setIsAuthenticated, setCSRF} = useCsrfContext();
 
-  const navigate = useNavigate();
+  const initState = {
+    email: '',
+    password: '',
+    error: '',
+  };
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case 'input':
+        return {...state, error: '', [action.field]: action.value};
+      case 'reset':
+        return initState;
+      case 'error':
+        return {...state, error: action.value};
+      default:
+        return state;
+    }
+  };
+
+  const [state, dispatch] = useReducer(reducer, initState);
+
+  const links = [
+    {link: '/register', text: 'Register'},
+    {link: '/forgot-password', text: 'Forgot password?'},
+  ];
 
   useEffect(() => {
     getSession();
   }, []);
 
-  const handleChange = (name) => (event) => {
-    if (name === 'email') {
-      setEmail(event.target.value);
-    } else if (name === 'password') {
-      setPassword(event.target.value);
-    }
+  const handleChange = (name) => (e) => {
+    dispatch({
+      type: 'input',
+      field: name,
+      value: e.target.value,
+    });
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    login({email, password}, csrf)
+    logUserIn(state)
       .then((response) => {
-        console.log('DATA: ', response.data);
-        setIsAuthenticated(true);
-        setEmail('');
-        setPassword('');
-        setError('');
+        let csrfToken = response.headers['x-csrftoken'];
+        setCSRF(csrfToken);
         const current_user = response.data.user;
         setUser((oldUser) => {
           return {...oldUser, ...current_user};
+        });
+        setIsAuthenticated(true);
+        dispatch({
+          type: 'reset',
         });
       })
       .catch((error) => {
         console.log('error occured', error.response.data.error);
         if ('password' in error) {
-          error;
+          dispatch({
+            type: 'error',
+            value: error,
+          });
         } else {
-          setError(error.response.data.error);
+          dispatch({
+            type: 'error',
+            value: error.response.data.error,
+          });
         }
       });
   };
-  const handleGetUser = (event) => {
-    event.preventDefault();
-    console.log('csrf is:', csrf);
-
-    getUser()
-      .then((data) => {
-        console.log('Response data:', data);
-        setUser((u) => {
-          return {...u, ...data};
-        });
-      })
-      .catch((error) => {
-        console.log('Error:', error);
-      });
-  };
-
   if (!isAuthenticated) {
     return (
-      <div className='container-fluid'>
-        <div className='row'>
-          <div className='col-sm-6 login-section-wrapper'>
-            <div className='brand-wrapper'>
-              {error && (
-                <div className='alert alert-danger'>
-                  {error.includes('password') ? (
-                    <div>
-                      Password is incorrect,{' '}
-                      <Link to='/signup' className='text-reset'>
-                        Forgot your password?
-                      </Link>
-                    </div>
-                  ) : (
-                    error
-                  )}
-                </div>
-              )}
-            </div>
-
-            <div className='login-wrapper my-auto'>
-              <h1 className='login-title'>Log In</h1>
-              <form onSubmit={handleSubmit}>
-                <div className='form-group mb-3'>
-                  <label htmlFor='email'>Email</label>
-                  <input
-                    type='text'
-                    value={email}
-                    className='form-control'
-                    placeholder='enter your email'
-                    id='email'
-                    required
-                    autoFocus
-                    onChange={handleChange('email')}
-                  />
-                </div>
-                <div className='form-group mb-3'>
-                  <label htmlFor='password'>Password</label>
-                  <input
-                    type='password'
-                    value={password}
-                    className='form-control'
-                    placeholder='enter your password'
-                    id='password'
-                    required
-                    autoFocus
-                    onChange={handleChange('password')}
-                  />
-                </div>
-                <button className='btn btn-block login-btn' type='submit'>
-                  Log In
-                </button>
-              </form>
-              <Link to='/forgot-password' className='forgot-password-link'>
-                Forgot password?
-              </Link>
-              <p className='login-wrapper-footer-text'>
-                Don't have an account?{' '}
-                <Link to='/register' className='text-reset'>
-                  Register
-                </Link>
-              </p>
-            </div>
-          </div>
-          <div className='col-sm-6 px-0 d-none d-sm-block'>
-            <img
-              src='https://images.unsplash.com/photo-1617957718645-7680362d6312?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA=='
-              alt='login image'
-              className='login-img'
-            />
-          </div>
-        </div>
-      </div>
+      <>
+        <FormsContainer
+          errors={state.error ? state.error : ''}
+          formIcon={UiwLogin}
+          formTitle={' Log In'}
+          formLinks={links}
+          handleSubmit={handleSubmit}
+          formImage={loginImg}
+        >
+          <EmailFeild value={state.email} onChange={handleChange('email')} />
+          <PasswordFeild value={state.password} onChange={handleChange('password')} />
+          <FormButton text='Log In' />
+        </FormsContainer>
+      </>
     );
   }
   if (isAuthenticated && user.role === 'SUPPLIER') {
-    return <Navigate to='/SupplierDashboard/Products' replace={true} />;
+    return <Navigate to='/SupplierDashboard/Products' replace={true} />; // SupplierDashboard/Products
   }
   if (isAuthenticated && user.role === 'RETAILER') {
     return <Navigate to='/' />;
   }
-  return (
-    <div className='container-mt-3 p-4'>
-      <h1>Authenticated</h1>
-      <p> Logged in</p>
-      <button className='btn login-btn' onClick={handleGetUser}>
-        Get The User
-      </button>{' '}
-      <button
-        className='btn login-btn'
-        onClick={() => {
-          logout();
-          setIsAuthenticated(false);
-          getCsrfToken();
-        }}
-      >
-        Log out
-      </button>{' '}
-      <button
-        className='btn login-btn'
-        onClick={() => {
-          navigate('/user-activation');
-        }}
-      >
-        Go to admin
-      </button>{' '}
-      <button
-        className='btn login-btn'
-        onClick={() => {
-          navigate('/SupplierDashboard/Products');
-        }}
-      >
-        Go to supplier
-      </button>{' '}
-      <button
-        className='btn login-btn'
-        onClick={() => {
-          navigate('/SupplierDashboard/Schedule');
-        }}
-      >
-        Go to Schedule
-      </button>
-    </div>
-  );
 };
 
 export default Login;
