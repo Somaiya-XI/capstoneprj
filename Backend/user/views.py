@@ -95,11 +95,17 @@ def login_view(request):
         user.session_token = csrf_token
         user.save()
         login(request, user)
-        return JsonResponse(
+        resp = JsonResponse(
             {'message': 'Successfully logged in.', 'role': user_role, 'user': user_data},
             status=200,
         )
-    return JsonResponse({'error': 'The password you entered is incorrect'}, status=400)
+        resp['X-CSRFToken'] = get_token(request)
+        print('csrf after login method', resp['X-CSRFToken'])
+        return resp
+        # return JsonResponse(
+        #     {'message': 'Successfully logged in.', 'role': user_role, 'user': user_data},
+        #     status=200,
+        # )
 
 
 def logout_view(request):

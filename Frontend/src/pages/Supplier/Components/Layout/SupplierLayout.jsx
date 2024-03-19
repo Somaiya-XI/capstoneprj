@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Layout, Button, Space, Avatar, Dropdown } from 'antd';
 import SearchField from './SearchField';
 import { Link } from 'react-router-dom';
+import {NextUIProvider} from "@nextui-org/react";
+<link href="./Supplier.css" rel="stylesheet"></link>
+import { motion } from "framer-motion";
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -26,13 +29,14 @@ const SupplierLayout = ({ children }) => {
       key: '3',
       label: (
         <Link to="/login" onClick={() => {
-          logout(); // Assuming you have a logout function defined somewhere
+          logout(); 
         }}>Logout</Link>
       ),
     },
   ];
 
   return (
+    <NextUIProvider>
     <Layout>
       <Sider
         collapsed={collapsed}
@@ -79,6 +83,8 @@ const SupplierLayout = ({ children }) => {
       </Layout>
       
     </Layout>
+    </NextUIProvider>  
+    
   );
 };
 

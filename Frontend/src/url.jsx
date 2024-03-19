@@ -2,7 +2,6 @@
 import Products from "./pages/Supplier/Components/Products/Products";
 import AddProduct from "./pages/Supplier/Components/Products/AddProduct";
 import EditProduct from "./pages/Supplier/Components/Products/EditProduct";
-import AddSchedule from "./pages/Supplier/Components/Schedule/AddSchedule";
 import Orders from "./pages/Supplier/Components/Orders";
 
 
@@ -29,7 +28,6 @@ import Schedule from "./pages/Supplier/Components/Schedule/Schedule";
 export {
     
     Schedule,
-    AddSchedule,
     Products,
     AddProduct,
     EditProduct,

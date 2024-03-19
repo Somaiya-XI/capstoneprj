@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import SupplierLayout from '../Layout/SupplierLayout';
 import ScheduleCard from '../Schedule/ScheduleCard';
+import { useUserContext } from '../../../../Contexts';
 
 const formItemLayout = {
   labelCol: {
@@ -16,6 +17,7 @@ const formItemLayout = {
 };
 
 const EditProduct = () => {
+  const {user} = useUserContext();
   const { id } = useParams();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -36,16 +38,19 @@ const EditProduct = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}product/catalog-product/${id}/`);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}get-user-products/${id}`);
         setFormData(response.data);
         console.log(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
-
-    fetchData();
+  
+    if (id) {
+      fetchData();
+    }
   }, [id]);
+  
 
   const handleDateChange = (name, date) => {
     setFormData({
@@ -80,7 +85,7 @@ const EditProduct = () => {
 
   function handleSubmit(event) {
     event.preventDefault();
-    axios.put(`${import.meta.env.VITE_API_URL}product/catalog-product/${id}/`, formData)
+    axios.put(`${import.meta.env.VITE_API_URL}product/catalog-product/update/${id}/`, formData)
       .then(res => {
         alert("Data Sent Successfly Ms Bassant!");
         navigate('/SupplierDashboard/Products');
@@ -122,10 +127,7 @@ const EditProduct = () => {
                 className='form-control'
                 name='product_img'
                 accept='image/*'
-                value={handleImageChange('product_img')}
-                
-                
-                
+                onChange={(e) => handleImageChange("product_img")(e)}
                 style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
               />
             </div>

@@ -22,7 +22,6 @@ import {
   CsrfTokenContextProvider,
   CartContextProvider,
   Payment,
-  AddSchedule,
 } from './url.jsx';
 import {Toaster} from 'sonner';
 
@@ -43,10 +42,9 @@ function App() {
                 <Route>
                   {/* <Route path='/SupplierDashboard' element={<SupplierRoute><SupplierDashboard /> </SupplierRoute>} /> */}
                   <Route path='/supplier-dashboard/products' element={<SupplierRoute><Products /></SupplierRoute>} />
-                  <Route path='/supplier-dashboard/products:edit/:id' element={<EditProduct />} />
-                  <Route path='/supplier-dashboard/products:add' element={<AddProduct />}/>
+                  <Route path='/supplier-dashboard/products/edit/:id' element={<EditProduct />} />
+                  <Route path='/supplier-dashboard/products/add' element={<AddProduct />}/>
                   <Route path='/supplier-dashboard/schedule' element={<Schedule/>} />
-                  <Route path='/supplier-dashboard/schedule:add'element={<SupplierRoute><AddSchedule /></SupplierRoute>} />
                   <Route path='/supplier-dashboard/schedule:edit'element={<SupplierRoute></SupplierRoute>} /> 
                   
                   <Route path='/supplier-dashboard/orders' element={<Orders />} />

@@ -5,31 +5,31 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import DjangoModelPermissionsOrAnonReadOnly
+from rest_framework.permissions import AllowAny
 
 import json
 
 
 @csrf_exempt
-# @login_required
+@api_view(['POST'])
+@permission_classes([AllowAny])
 def create_schedule(request):
-
-    data = json.loads(request.body)
-
-    # if request.user.is_authenticated:
-    #     data['supplier_id'] = request.user.id
-    #     print(data)
-    # else:
-    #     return JsonResponse({'error': 'You are not authenticated, log in then try again'})
-
+    if request.user.is_anonymous:
+        return JsonResponse({'message': 'You are not authenticated, log in then try again'})
+ 
+    data = request.data
+ 
+    if request.user.is_authenticated:
+        data['supplier_id'] = request.user.id
+        print(data)
+ 
     serializer = ScheduleSerializer(data=data)
-
+ 
     if serializer.is_valid():
         serializer.save()
         return JsonResponse({'message': 'Schedule created successfully.'})
     else:
         return JsonResponse(serializer.errors)
-
 
 @csrf_exempt
 def remove_schedule(request):
