@@ -1,303 +1,160 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { register } from './AuthHelpers';
 import './form.css';
+import loginImg from '../../assets/loginImage.webp';
+
+import {useReducer} from 'react';
+import {useCsrfContext} from '../../Contexts/index.jsx';
+
+import {
+  FormsContainer,
+  AddressIcon,
+  CompIcon,
+  UiwRegister,
+  IconedInput,
+  EmailFeild,
+  FormButton,
+  ImageField,
+  PasswordFeild,
+  PhoneField,
+  FormCheck,
+  CustomSuccessToast,
+} from '../../Components/index.jsx';
 
 const Register = () => {
-  const [values, setValues] = useState({
+  const {register} = useCsrfContext();
+
+  const initState = {
     company_name: '',
     email: '',
     password: '',
     role: '',
-    commercial_reg: null,
     phone: '',
     address: '',
+    commercial_reg: null,
     error: [],
     success: false,
-  });
+  };
 
-  const {
-    company_name,
-    email,
-    password,
-    role,
-    commercial_reg,
-    phone,
-    address,
-    error,
-    success,
-  } = values;
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case 'input':
+        return {...state, error: [], [action.field]: action.value};
+      case 'reset':
+        return initState;
+      case 'error':
+        const errorMessages = Object.values(action.error).flat();
 
-  const handleChange = (name) => (event) => {
-    if (name === 'commercial_reg') {
-      const img = event.target.files[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        setValues({
-          ...values,
-          commercial_reg: reader.result,
-        });
-      };
+        return {
+          ...state,
+          error: errorMessages,
+          success: false,
+        };
+      case 'success':
+        return {...state, error: [], success: true};
+      default:
+        return state;
+    }
+  };
 
-      if (img) {
-        reader.readAsDataURL(img);
-      }
+  const [state, dispatch] = useReducer(reducer, initState);
+
+  const links = [
+    {link: '/login', text: 'Log In'},
+    {link: '/forgot-password', text: 'Forgot password?'},
+  ];
+
+  const handleChange = (name) => (e) => {
+    if (name === 'phone') {
+      dispatch({
+        type: 'input',
+        field: name,
+        value: e,
+      });
     } else {
-      setValues({
-        ...values,
-        error: [],
-        success: '',
-        [name]: event.target.value,
+      dispatch({
+        type: 'input',
+        field: name,
+        value: e.target.value,
       });
     }
   };
 
   const onSubmit = (event) => {
     event.preventDefault();
-    setValues({ ...values, error: [] });
-    register({
-      company_name,
-      email,
-      password,
-      role,
-      commercial_reg,
-      phone,
-      address,
-    })
+    register(state)
       .then((data) => {
         console.log('Data', data);
-        if (data.hasOwnProperty('email')) {
-          setValues({ ...values, error: data.email, success: false });
+        let errors = [];
+        if (data.hasOwnProperty('id')) {
+          dispatch({type: 'success'});
+          CustomSuccessToast({msg: 'account created, wait for activation'});
+        } else if (data.hasOwnProperty('email')) {
+          errors.push(data.email);
         } else if (data.hasOwnProperty('password')) {
-          setValues({ ...values, error: data.password, success: false });
+          errors.push(data.password);
         } else if (data.hasOwnProperty('company_name')) {
-          setValues({ ...values, error: data.company_name, success: false });
+          errors.push(data.company_name);
         } else if (data.hasOwnProperty('role')) {
-          const roleError = ['Please select a role'];
-          setValues({ ...values, error: roleError, success: false });
+          errors.push('Please select a role');
         } else if (data.hasOwnProperty('commercial_reg')) {
-          const regError = [
-            'Commercial Register is required, please upload a valid image. ',
-          ];
-
-          setValues({ ...values, error: regError, success: false });
-        } else {
-          setValues({
-            ...values,
-            company_name: '',
-            email: '',
-            password: '',
-            role: '',
-            commercial_reg: '',
-            phone: '',
-            address: '',
-            error: [],
-            success: true,
-          });
+          errors.push('Commercial Register is required, please upload a valid image.');
+        }
+        if (errors.length > 0) {
+          throw errors;
         }
       })
-      .catch((e) => console.log(e));
+      .catch((errors) => {
+        console.log(errors);
+        dispatch({type: 'error', error: errors});
+      });
   };
-
-  const successMsg = () => {
-    return (
-      <div className='container-fluid'>
-        <div className=''>
-          <div className=''>
-            <div
-              className='alert alert-success'
-              style={{ display: success ? '' : 'none' }}
-            >
-              Your account has been created
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const errorMsg = () => {
-    const errorMessages = Object.values(error).flat();
-
-    if (errorMessages.length === 0) {
-      return null;
-    }
-
-    const passwordErrors = [];
-    const otherErrors = [];
-
-    errorMessages.forEach((errorMsg) => {
-      if (errorMsg.toLowerCase().includes('password')) {
-        passwordErrors.push(errorMsg);
-      } else {
-        otherErrors.push(errorMsg);
-      }
-    });
-
-    if (passwordErrors.length > 0) {
-      return (
-        <div className='container-fluid'>
-          <div className=''>
-            <div className='alert alert-danger'>
-              {passwordErrors.map((errorMsg, index) => (
-                <p key={index}>{errorMsg}</p>
-              ))}
-            </div>
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <div className='container-fluid'>
-          <div className=''>
-            <div className=''>
-              {error.length > 0 && (
-                <div>
-                  {error.map((errorMsg, index) => (
-                    <p className='alert alert-danger' key={index}>
-                      {errorMsg}
-                    </p>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      );
-    }
-  };
-
   return (
-    <div className='container-fluid'>
-      <div className='row'>
-        <div className='col-sm-6 login-section-wrapper'>
-          <div className='brand-wrapper'></div>
-          {successMsg()}
-          {errorMsg()}
-          <div className='login-wrapper my-auto'>
-            <h1 className='login-title'>Sign Up</h1>
-            <form onSubmit={onSubmit}>
-              <div className='form-group mb-3'>
-                <label htmlFor='email'>Email</label>
-                <input
-                  type='text'
-                  value={email}
-                  className='form-control'
-                  placeholder='enter your email'
-                  id='email'
-                  required
-                  autofocus
-                  onChange={handleChange('email')}
-                />
-              </div>
-              <div className='form-group mb-3'>
-                <label htmlFor='password'>Password</label>
-                <input
-                  type='password'
-                  value={password}
-                  className='form-control'
-                  placeholder='enter your password'
-                  id='password'
-                  required
-                  autofocus
-                  onChange={handleChange('password')}
-                />
-              </div>
-              <div className='form-group mb-3'>
-                <label htmlFor='comp-n'>Company Name</label>
-                <input
-                  type='text'
-                  value={company_name}
-                  className='form-control'
-                  placeholder='enter the company name'
-                  id='comp-n'
-                  required
-                  autofocus
-                  onChange={handleChange('company_name')}
-                />
-              </div>
-              <div className='form-group mb-3'>
-                <label htmlFor='commercial_register'>Commercial Register</label>
-                <input
-                  type='file'
-                  className='form-control'
-                  id='commercial_register'
-                  accept='image/*'
-                  onChange={handleChange('commercial_reg')}
-                />
-              </div>
-              <div className='form-group mb-3'>
-                <label htmlFor='phone'>Phone</label>
-                <input
-                  type='text'
-                  className='form-control'
-                  id='phone'
-                  value={values.phone}
-                  onChange={handleChange('phone')}
-                />
-              </div>
-              <div className='form-group'>
-                <label htmlFor='address'>Address</label>
-                <textarea
-                  className='form-control'
-                  id='address'
-                  rows='3'
-                  value={values.address}
-                  onChange={handleChange('address')}
-                ></textarea>
-              </div>
-              <div className='form-check'>
-                <input
-                  className='form-check-input'
-                  type='radio'
-                  name='flexRadioDefault'
-                  id='flexRadioDefault1'
-                  value='SUPPLIER'
-                  checked={role === 'SUPPLIER'}
-                  onChange={handleChange('role')}
-                />
-                <label className='form-check-label' htmlFor='flexRadioDefault1'>
-                  I'm Supplier
-                </label>
-              </div>
-              <div className='form-check'>
-                <input
-                  className='form-check-input'
-                  type='radio'
-                  name='flexRadioDefault'
-                  id='flexRadioDefault2'
-                  value='RETAILER'
-                  checked={role === 'RETAILER'}
-                  onChange={handleChange('role')}
-                />
-                <label className='form-check-label' htmlFor='flexRadioDefault2'>
-                  I'm Retailer
-                </label>
-              </div>
-              <button className='btn btn-block login-btn' type='submit'>
-                Register
-              </button>
-            </form>
-            {/* <Link to='' className='forgot-password-link'>
-                Forgot password?
-              </Link> */}
-            <p className='login-wrapper-footer-text'>
-              Already have an account?{' '}
-              <Link to='/login' className='text-reset'>
-                Log in
-              </Link>
-            </p>
-          </div>
-        </div>
-        <div className='col-sm-6 px-0 d-none d-sm-block'>
-          <img
-            src='https://images.unsplash.com/photo-1617957718645-7680362d6312?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA=='
-            alt='login image'
-            className='login-img'
-          />
-        </div>
-      </div>
-    </div>
+    <>
+      <FormsContainer
+        errors={state.error.length === 0 ? '' : state.error.map((error) => `${error}`).join('\n')}
+        formIcon={UiwRegister}
+        formTitle={' Register'}
+        formLinks={links}
+        handleSubmit={onSubmit}
+        formImage={loginImg}
+      >
+        <IconedInput
+          value={state.company_name}
+          onChange={handleChange('company_name')}
+          icon={CompIcon}
+          placeholder='enter your company name'
+          className='form-control'
+          fontSize='38px'
+          autoFocus
+          required
+        />
+        <EmailFeild value={state.email} onChange={handleChange('email')} />
+        <PasswordFeild value={state.password} onChange={handleChange('password')} />
+        <ImageField text='upload commercial register' dispatch={dispatch} />
+        <PhoneField value={state.phone} onChange={handleChange('phone')} />{' '}
+        <IconedInput
+          type='textarea'
+          value={state.address}
+          onChange={handleChange('address')}
+          icon={AddressIcon}
+          placeholder={`enter your address\ncountry:\ncity:`}
+          className='form-control'
+          fontSize='24px'
+        />
+        <FormCheck
+          text="I'm Retailer"
+          value='RETAILER'
+          checked={state.role === 'RETAILER'}
+          onChange={handleChange('role')}
+        />
+        <FormCheck
+          text="I'm Supplier"
+          value='SUPPLIER'
+          checked={state.role === 'SUPPLIER'}
+          onChange={handleChange('role')}
+        />
+        <FormButton text='Register' />
+      </FormsContainer>
+    </>
   );
 };
 

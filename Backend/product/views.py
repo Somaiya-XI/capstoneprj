@@ -3,9 +3,11 @@ from .serializers import ProductCatalogSerializer, SupermarketProductSerializer
 from .models import ProductCatalog, SupermarketProduct
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie, csrf_protect
 from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
+from django.middleware.csrf import get_token
+from django.views.decorators.http import require_POST
+
 # import stripe
 
 # THIS IS THE MANAGER CLASS OF ANY MODEL
@@ -16,17 +18,17 @@ import json
 
 
 @csrf_exempt
-# @login_required
-# @permission_classes([AllowAny])
+@api_view(['POST'])
+@permission_classes([AllowAny])
 def create_product(request):
 
-    data = json.loads(request.body)
+    if request.user.is_anonymous:
+        return JsonResponse({'message': 'You are not authenticated, log in then try again'}, status=400)
 
-    # if request.user.is_authenticated:
-    #     data['supplier'] = request.user.id
-    #     print(data)
-    # else:
-    #     return JsonResponse({'error': 'You are not authenticated, log in then try again'})
+    data = request.data
+    if request.user.is_authenticated:
+        data['supplier'] = request.user.id
+        print(data)
 
     serializer = ProductCatalogSerializer(data=data)
 
@@ -42,6 +44,9 @@ def create_product(request):
 @api_view(['PUT', 'DELETE'])
 @permission_classes([AllowAny])
 def update_product(request):
+    if request.user.is_anonymous:
+        return JsonResponse({'message': 'You are not authenticated, log in then try again'}, status=400)
+    print('the user updating is: ', request.user)
     data = json.loads(request.body)
     pk = data.get('id')
     print(pk)
@@ -49,6 +54,9 @@ def update_product(request):
         product = ProductCatalog.objects.get(pk=pk)
     except ProductCatalog.DoesNotExist:
         return JsonResponse({'error': 'This Product does not exist'}, status=404)
+
+    if product.supplier_id != request.user.id:
+        return JsonResponse({'message': 'You are not authorized to update this product'})
 
     if request.method == 'PUT':
         serializer = ProductCatalogSerializer(product, data=request.data, partial=True)
@@ -91,7 +99,7 @@ def view_user_products(request, supplier_id):
     for product in products:
         product_serializer = ProductCatalogSerializer(instance=product)
         response_data.append(product_serializer.data)
- 
+
     resp = JsonResponse(response_data, safe=False)
     resp['X-CSRFToken'] = get_token(request)
     print('csrf in PRODUCT method', resp['X-CSRFToken'])

@@ -137,6 +137,13 @@ const Cart = () => {
                 </>
               )}
             </div>
+            {/* <div className='container-fluid mt-4'>
+              {cart?.products && (
+                <h5 className='text-muted' style={{textAlign: 'end'}}>
+                  Total: {cart.total}
+                </h5>
+              )}
+            </div> */}
           </div>
         </div>
       </section>

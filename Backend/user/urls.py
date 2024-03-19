@@ -12,7 +12,6 @@ urlpatterns = [
     path('users/', views.users_api, name='users'),
     path('csrf/', views.get_csrf, name='api-csrf'),
     path('get-csrf/', views.get_new_csrf, name='csrf'),
-    path('test/', views.test, name='test-csrf'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('session/', views.session_view, name='session'),

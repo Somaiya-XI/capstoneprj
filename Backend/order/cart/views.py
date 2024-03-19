@@ -19,6 +19,15 @@ from django.conf import settings
 from django.shortcuts import redirect
 import stripe, os
 from dotenv import load_dotenv
+import uuid
+
+
+def is_valid_uuid(string):
+    try:
+        uuid_obj = uuid.UUID(string)
+        return True
+    except ValueError:
+        return False
 
 
 @csrf_exempt
@@ -26,19 +35,26 @@ from dotenv import load_dotenv
 @permission_classes([AllowAny])
 def add_to_cart(request):
     if request.user.is_anonymous:
-        return JsonResponse({'message': 'You cannot add to cart'})
+        return JsonResponse({'message': 'Unauthorized user! You cannot add to cart'})
     user = request.user
     print('got user: ', user)
     product_id = request.data.get('product_id')
-    print('got id: ', product_id)
-
     quantity = request.data.get('quantity')
-    print('got quant: ', quantity)
+
+    if not product_id or not is_valid_uuid(product_id):
+        return JsonResponse({'message': 'Please enter a valid id'})
+
+    if quantity:
+        try:
+            float(quantity)
+            int(quantity)
+        except (ValueError, TypeError):
+            return JsonResponse({'message': 'Please enter a valid quantity'})
+    else:
+        return JsonResponse({'message': 'Please enter a quantity'})
 
     product = get_object_or_404(ProductCatalog, product_id=product_id)
-
     cart = Cart.objects.filter(user=user).first()
-
     cart_serializer = CartSerializer(data={'user': user})
     cart_serializer.is_valid(raise_exception=True)
 
@@ -53,13 +69,18 @@ def add_to_cart(request):
     print('got ITEM,: ', cart_item)
 
     if cart_item:
+        if int(quantity) <= product.min_order_quantity:
+            return JsonResponse(
+                {'message': f'Minimum quantity of this product is {product.min_order_quantity}'}
+            )
+
         if int(quantity) <= product.quantity:
             cart_item.quantity = int(quantity)
             cart_item.save()
             cart_item_serializer = CartItemSerializer(instance=cart_item)
             message = 'Cart item updated'
         else:
-            message = f'Over the stock, you cannot add more than  {product.quantity} piece of this item'
+            message = f'Over the stock, you cannot add more than {product.quantity} piece of this item'
             cart_item_serializer = None
     else:
         cart_item_serializer = CartItemSerializer(

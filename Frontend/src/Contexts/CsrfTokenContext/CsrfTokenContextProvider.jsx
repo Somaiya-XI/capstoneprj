@@ -66,6 +66,32 @@ const CsrfTokenContextProvider = ({children}) => {
       console.log(err);
     }
   }
+
+  const logUserIn = (user) => {
+    return axios.post(`${API}user/login/`, user, {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrf,
+      },
+      withCredentials: true,
+    });
+  };
+
+  const register = (user) => {
+    const formData = new FormData();
+    for (const name in user) {
+      formData.append(name, user[name]);
+    }
+    return fetch(`${API}user/`, {
+      method: 'POST',
+      body: formData,
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .catch((err) => console.log(err));
+  };
+
   const authValues = {
     csrf,
     setCSRF,
@@ -74,6 +100,8 @@ const CsrfTokenContextProvider = ({children}) => {
     getCsrfToken,
     getSession,
     logUserOut,
+    logUserIn,
+    register,
   };
 
   return <CsrfTokenContext.Provider value={authValues}>{children}</CsrfTokenContext.Provider>;

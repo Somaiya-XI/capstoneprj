@@ -10,7 +10,7 @@ import {
   Profile,
   UserActivation,
   ForgotPassword,
-  NewPasswordForm,
+  ResetPassword,
   Register,
   Login,
   AdminRoute,
@@ -52,7 +52,7 @@ function App() {
                 <Route path='/profile' element={<Profile />} />
                 <Route path='/register' element={<Register />} />
                 <Route path='/forgot-password' element={<ForgotPassword />} />
-                <Route path='/reset-password/form/:uidb64/:token' element={<NewPasswordForm />} />
+                <Route path='/reset-password/form/:uidb64/:token' element={<ResetPassword />} />
                 <Route path='/payment' element={<Payment />} />
               </Routes>
             </CartContextProvider>
