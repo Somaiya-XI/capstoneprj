@@ -26,7 +26,7 @@ class Order(models.Model):
     total_price = models.DecimalField("Total", max_digits=5, decimal_places=2)
     payment_method = models.CharField(choices=PAYMENT_METHOD_CHOICES, max_length=20)
     order_status = models.CharField(choices=ORDER_STATUS_CHOICES, max_length=20)
-    shipping_address = models.CharField(max_length=200)
+    shipping_address = models.CharField(max_length=200) 
 
     class Meta:
         db_table = "Order"

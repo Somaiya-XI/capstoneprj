@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
-import {Button, Table, Popconfirm} from 'antd';
+import {Button, Table, Popconfirm, Card} from 'antd';
 import {DeleteOutlined, EditOutlined} from '@ant-design/icons';
+import SearchField from '../Layout/SearchField';
+import SupplierLayout from '../Layout/SupplierLayout';
 import axios from 'axios';
-import SearchField from './Layout/SearchField';
-import SupplierLayout from './Layout/SupplierLayout';
 
 const Products = () => {
   const [dataSource, setDataSource] = useState([]);
@@ -29,20 +29,6 @@ const Products = () => {
       data: {id: key},
     });
   };
-
-  // const onAddProduct = () => {
-  //   setDataSource(pre=>{
-  //     const newProduct= {
-
-  //     }
-  //     return [...pre, newProduct]
-  //   })
-
-  //   axios.delete(`${import.meta.env.VITE_API_URL}product/catalog-product/create/`, {
-
-  //   })
-
-  // };
 
   const columns = [
     {
@@ -116,10 +102,12 @@ const Products = () => {
       width: '5%',
       render: (_, record) => (
         <>
-          <EditOutlined>navigate("/SupplierDashboard/Edit");</EditOutlined>
+          <Link to={`/supplier-dashboard/products:edit/${record.key}`}>
+            <EditOutlined style={{fontSize: '20px', cursor: 'pointer'}} />
+          </Link>
           {dataSource.length >= 1 ? (
             <Popconfirm title='Sure to delete?' onConfirm={() => onDeleteProduct(record.key)}>
-              <DeleteOutlined style={{color: 'red', marginLeft: 25}} />
+              <DeleteOutlined style={{color: 'red', marginLeft: 20, fontSize: '18px', cursor: 'pointer'}} />
             </Popconfirm>
           ) : null}
         </>
@@ -131,20 +119,23 @@ const Products = () => {
     <SupplierLayout>
       <div className='SupplierDashboard'>
         <div className='DashboardContent'>
-          <h3 className='HeaderTitle'>Products</h3>
+          <h3 className='HeaderTitle' data-testid='cypress-title'>
+            Products
+          </h3>
           <Button className='AddButton' type='primary'>
-            <Link to='/SupplierDashboard/Add'>+ Add </Link>
+            <Link to='/supplier-dashboard/products:add'>+ Add </Link>
           </Button>
         </div>
         <SearchField />
 
         <Table
+          data-testid='cypress-Product-table'
           rowClassName={() => 'editable-row'}
           bordered
           dataSource={dataSource}
           columns={columns}
           key={dataSource.map((product) => product.key).join()}
-        />
+        ></Table>
       </div>
     </SupplierLayout>
   );

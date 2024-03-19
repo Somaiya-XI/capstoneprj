@@ -66,7 +66,8 @@ const CartItem = ({image, id, product_name, unit_price, subtotal, quantity, min_
     console.log('res: ', res);
     const message = res.data.message;
 
-    toast.info(message, {duration: 1500});
+//solution fot the success modal 
+    toast.info(message, {duration: 1500}); 
   };
 
   return (

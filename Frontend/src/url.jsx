@@ -1,7 +1,7 @@
-import Products from './pages/Supplier/Components/Products';
-import AddProduct from './pages/Supplier/Components/AddProduct';
-import EditProduct from './pages/Supplier/Components/EditProduct';
-import Schedule from './pages/Supplier/Components/Schedule';
+import Products from './pages/Supplier/Components/Products/Products';
+import AddProduct from './pages/Supplier/Components/Products/AddProduct';
+import EditProduct from './pages/Supplier/Components/Products/EditProduct';
+import AddSchedule from './pages/Supplier/Components/Schedule/AddSchedule';
 import Orders from './pages/Supplier/Components/Orders';
 
 import Home from './pages/Home/Home.jsx';
@@ -18,12 +18,14 @@ import Payment from './pages/Payment/Payment.jsx';
 import Cart from './pages/Cart/Cart.jsx';
 import Navbar from './pages/Home/Components/Navbar/Navbar.jsx';
 import Header from './pages/Home/Components/Header/Header.jsx';
+import Schedule from './pages/Supplier/Components/Schedule/Schedule';
 
 export {
+  Schedule,
+  AddSchedule,
   Products,
   AddProduct,
   EditProduct,
-  Schedule,
   Orders,
   Home,
   ProductDetail,
