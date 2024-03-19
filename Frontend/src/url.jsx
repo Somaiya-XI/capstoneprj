@@ -1,9 +1,7 @@
-
-import Products from "./pages/Supplier/Components/Products/Products";
-import AddProduct from "./pages/Supplier/Components/Products/AddProduct";
-import EditProduct from "./pages/Supplier/Components/Products/EditProduct";
-import Orders from "./pages/Supplier/Components/Orders";
-
+import Products from './pages/Supplier/Components/Products/Products';
+import AddProduct from './pages/Supplier/Components/Products/AddProduct';
+import EditProduct from './pages/Supplier/Components/Products/EditProduct';
+import Orders from './pages/Supplier/Components/Orders';
 
 import Home from './pages/Home/Home.jsx';
 import ProductDetail from './pages/ProductDetail/ProductDetail.jsx';
@@ -21,34 +19,28 @@ import Navbar from './pages/Home/Components/Navbar/Navbar.jsx';
 import Header from './pages/Home/Components/Header/Header.jsx';
 import Schedule from './pages/Supplier/Components/Schedule/Schedule';
 
+
 export {
-    
-    Schedule,
-    Products,
-    AddProduct,
-    EditProduct,
-    Orders,
-    Home,
-    ProductDetail,
-    Profile,
-    UserActivation,
-    ForgotPassword,
-    NewPasswordForm,
-    Register,
-    Login,
-    AdminRoute,
-    SupplierRoute,
-    Cart,
-    Navbar,
-    Header,
-    UserContextProvider,
-    CsrfTokenContextProvider,
-    CartContextProvider,
-    Payment
-
-
-  };
-
-
-
-
+  AddProduct,
+  Schedule,
+  Products,
+  EditProduct,
+  Orders,
+  Home,
+  ProductDetail,
+  Profile,
+  UserActivation,
+  ForgotPassword,
+  ResetPassword,
+  Register,
+  Login,
+  AdminRoute,
+  SupplierRoute,
+  Cart,
+  Navbar,
+  Header,
+  UserContextProvider,
+  CsrfTokenContextProvider,
+  CartContextProvider,
+  Payment,
+};

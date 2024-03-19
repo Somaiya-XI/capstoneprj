@@ -1,27 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Button, Table, Popconfirm, Card } from 'antd';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import React, {useEffect, useState} from 'react';
+import {Link} from 'react-router-dom';
+import {Button, Table, Popconfirm, Card} from 'antd';
+import {DeleteOutlined, EditOutlined} from '@ant-design/icons';
 import SearchField from '../Layout/SearchField';
 import SupplierLayout from '../Layout/SupplierLayout';
-import { useUserContext } from '../../../../Contexts';
-
-
-
-
+import axios from 'axios';
 
 const Products = () => {
   const [dataSource, setDataSource] = useState([]);
-  const {user} = useUserContext();
- 
+
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}get-user-products/${user.id}/`) 
+    axios
+      .get(`${import.meta.env.VITE_API_URL}product/catalog-product`)
       .then((result) => {
-        
-        const productsWithKeys = result.data.map(product => (
-          {
-          ...product, 
-          key: product.product_id
+        const productsWithKeys = result.data.map((product) => ({
+          ...product,
+          key: product.product_id,
         }));
         setDataSource(productsWithKeys);
       })
@@ -108,10 +102,9 @@ const Products = () => {
       width: '5%',
       render: (_, record) => (
         <>
-          <Link to={`/supplier-dashboard/products/edit/:${record.key}`}>
-      <EditOutlined style={{ fontSize: '20px', cursor: 'pointer' }} />
-      
-    </Link>
+          <Link to={`/supplier-dashboard/products:edit/${record.key}`}>
+            <EditOutlined style={{fontSize: '20px', cursor: 'pointer'}} />
+          </Link>
           {dataSource.length >= 1 ? (
             <Popconfirm title='Sure to delete?' onConfirm={() => onDeleteProduct(record.key)}>
               <DeleteOutlined style={{color: 'red', marginLeft: 20, fontSize: '18px', cursor: 'pointer'}} />
@@ -124,25 +117,24 @@ const Products = () => {
 
   return (
     <SupplierLayout>
-      <div className="SupplierDashboard">
-        <div className="DashboardContent">
-          <h3 className="HeaderTitle" data-testid="cypress-title">Products</h3>
-          <Button className="AddButton" type="primary">
-
-            <Link to="/supplier-dashboard/products:add">+ Add </Link>
+      <div className='SupplierDashboard'>
+        <div className='DashboardContent'>
+          <h3 className='HeaderTitle' data-testid='cypress-title'>
+            Products
+          </h3>
+          <Button className='AddButton' type='primary'>
+            <Link to='/supplier-dashboard/products:add'>+ Add </Link>
           </Button>
-
-
-
         </div>
         <SearchField />
 
-        <Table data-testid="cypress-Product-table"
+        <Table
+          data-testid='cypress-Product-table'
           rowClassName={() => 'editable-row'}
           bordered
           dataSource={dataSource}
           columns={columns}
-          key={dataSource.map(product => product.key).join()}
+          key={dataSource.map((product) => product.key).join()}
         ></Table>
       </div>
     </SupplierLayout>
