@@ -92,10 +92,10 @@ def get_brands(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def view_user_products(request, supplier_id):
-
+ 
     products = ProductCatalog.objects.filter(supplier=supplier_id)
     response_data = []
-
+ 
     for product in products:
         product_serializer = ProductCatalogSerializer(instance=product)
         response_data.append(product_serializer.data)

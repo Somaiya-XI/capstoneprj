@@ -16,21 +16,22 @@ import json
 def create_schedule(request):
     if request.user.is_anonymous:
         return JsonResponse({'message': 'You are not authenticated, log in then try again'})
-
+ 
     data = request.data
-
+ 
     if request.user.is_authenticated:
         data['supplier_id'] = request.user.id
         print(data)
+    else:
+        return JsonResponse({'error': 'You are not authenticated, log in then try again'})
 
     serializer = ScheduleSerializer(data=data)
-
+ 
     if serializer.is_valid():
         serializer.save()
         return JsonResponse({'message': 'Schedule created successfully.'})
     else:
         return JsonResponse(serializer.errors)
-
 
 @csrf_exempt
 def remove_schedule(request):
