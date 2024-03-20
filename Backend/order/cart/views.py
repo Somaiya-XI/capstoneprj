@@ -191,9 +191,8 @@ def view_cart(request):
 @csrf_protect
 @require_POST
 def clear_cart(request):
-    headers = request.META
-
-    csrf_token = headers.get('HTTP_X_CSRFTOKEN')
+    if request.user.is_anonymous:
+        return JsonResponse({'message': 'You must be logged in to clear your cart'})
 
     user = request.user
 

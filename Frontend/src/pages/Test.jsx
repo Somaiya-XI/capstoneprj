@@ -3,7 +3,7 @@ import {useCsrfContext, useUserContext} from '../Contexts';
 import {useEffect, useState} from 'react';
 import {API} from '../backend';
 import {toast} from 'sonner';
-
+import '../index.css';
 const ApiTest = () => {
   useEffect(() => {
     document.body.style.backgroundColor = 'rgb(23 23 23)';
@@ -197,25 +197,25 @@ const ApiTest = () => {
   };
   return (
     <div className='d-flex align-items-center justify-content-center' style={{height: '100vh'}}>
-      <button className='btn bg-amber-50 mr-2' onClick={handleCreateProduct}>
+      <button className='btn bg-amber-50 mr-2 bg-light' onClick={handleCreateProduct}>
         Create Product
       </button>
-      <button className='btn bg-indigo-100 mr-2' onClick={handleUpdateProduct}>
+      <button className='btn bg-indigo-100 mr-2 bg-light' onClick={handleUpdateProduct}>
         Update Product
       </button>
-      <button className='btn bg-rose-50 mr-2' onClick={handleDeleteProduct}>
+      <button className='btn bg-rose-50 mr-2 bg-light' onClick={handleDeleteProduct}>
         Delete Product
       </button>
-      <button className='btn bg-emerald-50 mr-2' onClick={handleCreateSchedule}>
+      <button className='btn bg-emerald-50 mr-2 bg-light' onClick={handleCreateSchedule}>
         Create Schedule
       </button>
-      <button className='btn bg-sky-100 mr-2' onClick={handleDeleteSchedule}>
+      <button className='bg-sky-100 mr-2 btn bg-light' onClick={handleDeleteSchedule}>
         Delete Schedule
       </button>
       <button className='btn bg-sky-100 mr-2 bg-light' onClick={handleMakeOrder}>
         Make Order
       </button>
-      <button className='btn bg-sky-100 mr-2' onClick={handleCancelOrder}>
+      <button className='btn bg-sky-100 mr-2 bg-light' onClick={handleCancelOrder}>
         Cancle Order
       </button>
     </div>
