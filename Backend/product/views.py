@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie, csrf_p
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.views.decorators.http import require_POST
+import stripe, os
 
 # import stripe
 
@@ -14,7 +15,7 @@ from django.views.decorators.http import require_POST
 
 import json
 
-# stripe.api_key = os.environ['STRIPE_SECRET_KEY']
+stripe.api_key = os.environ['STRIPE_SECRET_KEY']
 
 
 @csrf_exempt
@@ -23,7 +24,9 @@ import json
 def create_product(request):
 
     if request.user.is_anonymous:
-        return JsonResponse({'message': 'You are not authenticated, log in then try again'}, status=400)
+        return JsonResponse(
+            {'message': 'You are not authenticated, log in then try again'}, status=400
+        )
 
     data = request.data
     if request.user.is_authenticated:
@@ -34,7 +37,15 @@ def create_product(request):
 
     if serializer.is_valid():
         serializer.save()
-        # stripe.Product.create(name=serializer.data.product_name, id=serializer.data.product_id)
+        stripe.Product.create(
+            id=serializer.data['product_id'],
+            name=serializer.data['product_name'],
+            default_price_data={
+                "currency": 'usd',
+                "unit_amount_decimal": serializer.data['new_price'] * 100,
+            },
+            images=[serializer.data['product_img']],
+        )
         return JsonResponse({'message': 'Product created successfully.'}, status=201)
     else:
         return JsonResponse(serializer.errors, status=400)
@@ -45,7 +56,9 @@ def create_product(request):
 @permission_classes([AllowAny])
 def update_product(request):
     if request.user.is_anonymous:
-        return JsonResponse({'message': 'You are not authenticated, log in then try again'}, status=400)
+        return JsonResponse(
+            {'message': 'You are not authenticated, log in then try again'}, status=400
+        )
     print('the user updating is: ', request.user)
     data = json.loads(request.body)
     pk = data.get('id')
@@ -56,24 +69,36 @@ def update_product(request):
         return JsonResponse({'error': 'This Product does not exist'}, status=404)
 
     if product.supplier_id != request.user.id:
-        return JsonResponse({'message': 'You are not authorized to update this product'})
+        return JsonResponse(
+            {'message': 'You are not authorized to update this product'}
+        )
 
     if request.method == 'PUT':
         serializer = ProductCatalogSerializer(product, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
+            new_price = stripe.Price.create(
+                currency="usd",
+                unit_amount_decimal=serializer.data['new_price'] * 100,
+                product=serializer.data['product_id'],
+            )
+            stripe.Product.modify(
+                serializer.data['product_id'],
+                name=serializer.data['product_name'],
+                images=[serializer.data['product_img']],
+                default_price=new_price.id,
+            )
             return JsonResponse({'message': f"Product {pk} updated"}, status=200)
-            # stripe.Product.modify(
-            #     serializer.data.product_id,
-            #     default_price=serializer.data.new_price,
-            # )
             return JsonResponse({'message': 'Product updated'}, status=200)
         else:
             return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
         product.delete()
-        # stripe.Product.delete(product.product_id)
+        stripe.Product.modify(
+            product.product_id,
+            active=False,
+        )
         return JsonResponse({'message': 'Product deleted'}, status=204)
 
 
@@ -92,10 +117,10 @@ def get_brands(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def view_user_products(request, supplier_id):
- 
+
     products = ProductCatalog.objects.filter(supplier=supplier_id)
     response_data = []
- 
+
     for product in products:
         product_serializer = ProductCatalogSerializer(instance=product)
         response_data.append(product_serializer.data)
