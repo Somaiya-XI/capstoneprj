@@ -21,7 +21,6 @@ const Products = () => {
       let csrfToken = response.headers['x-csrftoken'];
       setCSRF(csrfToken);
   
-      // Assuming each product in the response has an `id` attribute
       const productsWithKeys = response.data.map((product) => ({
         ...product,
         key: product.id, // Assign the `id` as the `key`

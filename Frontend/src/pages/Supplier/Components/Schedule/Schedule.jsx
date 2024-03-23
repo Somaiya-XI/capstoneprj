@@ -82,7 +82,6 @@ const Schedule = () => {
             <div className="SupplierDashboard">
                 <div className="DashboardContent">
                     <h3 className="HeaderTitle">Supply Schedule</h3>
-                    {/* Update onClick handler to open modal */}
                     <Button className="AddButton" type="primary" onClick={handleOpen}>
                         + Add
                     </Button>
