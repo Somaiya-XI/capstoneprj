@@ -3,20 +3,12 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import SupplierLayout from '../Layout/SupplierLayout';
 import ScheduleCard from '../Schedule/ScheduleCard';
-import { useUserContext } from '../../../../Contexts';
+import { useUserContext, useCsrfContext } from '../../../../Contexts';
+import { API } from '../../../../backend';
 
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 6 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 14 },
-  },
-};
 
 const EditProduct = () => {
+  const {csrf,setCSRF} = useCsrfContext();
   const {user} = useUserContext();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -35,21 +27,31 @@ const EditProduct = () => {
     supplier: '',
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}get-user-products/${id}`);
-        setFormData(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(`${API}product/catalog//${id}/`, {
+        withCredentials: true,
+      });
+      let csrfToken = response.headers['x-csrftoken'];
+      setCSRF(csrfToken);
   
-    if (id) {
-      fetchData();
+      const productsWithKeys = response.data.map((product) => ({
+        ...product,
+        key: product.id, 
+      }));
+  
+      setFormData(productsWithKeys);
+    } catch (error) {
+      console.error(error);
     }
-  }, [id]);
+  };
+  
+  
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+  
+  
   
 
   const handleDateChange = (name, date) => {

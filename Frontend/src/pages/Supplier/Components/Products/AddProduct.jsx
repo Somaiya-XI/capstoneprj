@@ -1,17 +1,9 @@
-import React, { useState } from "react";
-import { PlusOutlined } from "@ant-design/icons";
-import {
-  Button,
-  Form,
-  Input,
-  Select,
-  DatePicker,
-  Upload,
-  InputNumber,
-} from "antd";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import SupplierLayout from "../Layout/SupplierLayout";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
+import SupplierLayout from '../Layout/SupplierLayout';
+import ScheduleCard from '../Schedule/ScheduleCard';
+import { useUserContext } from '../../../../Contexts';
 
 const formItemLayout = {
   labelCol: {
@@ -24,53 +16,47 @@ const formItemLayout = {
   },
 };
 
-const AddProduct = () => {
-  const [inputData, setInputData] = useState({
-    product_img: "",
-    product_name: "",
-    brand: "",
-    description: "",
-    category: "",
-    price: "",
-    discount_percentage: "",
-    quantity: "",
-    min_order_quantity: "",
+const EditProduct = () => {
+  const {user} = useUserContext();
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    product_img: '',
+    product_name: '',
+    brand: '',
+    description: '',
+    category: '',
+    price: '',
+    discount_percentage: '',
+    quantity: '',
+    min_order_quantity: '',
     production_date: null,
     expiry_date: null,
-    supplier: "",
+    supplier: '',
   });
 
-  const navigate = useNavigate();
-
-  const handleInputChange = (key, value) => {
-    if (key === "production_date" || key === "expiry_date") {
-      // Format date to YYYY-MM-DD
-      value = value ? value.toISOString().split("T")[0] : null;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}get-user-products/${id}`);
+        setFormData(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+  
+    if (id) {
+      fetchData();
     }
+  }, [id]);
+  
 
-    setInputData((prevState) => ({
-      ...prevState,
-      [key]: value,
-    }));
-  };
-
-  const handleSubmit = () => {
-    axios
-      .post(
-        `${import.meta.env.VITE_API_URL}product/catalog-product/create/`,
-        inputData
-      )
-      .then((res) => {
-        alert("Data Sent");
-        navigate("/supplier-dashboard/products");
-      })
-      .catch((err) => {
-        alert("Error:", err);
-        console.log("Error:", err);
-        if (err.response) {
-          console.log("Server Response Data:", err.response.data);
-        }
-      });
+  const handleDateChange = (name, date) => {
+    setFormData({
+      ...formData,
+      [name]: date
+    });
   };
 
   const handleImageChange = (name) => (event) => {
@@ -78,8 +64,8 @@ const AddProduct = () => {
       const img = event.target.files[0];
       const reader = new FileReader();
       reader.onload = () => {
-        setInputData({
-          ...inputData,
+        setFormData({
+          ...formData,
           product_img: reader.result,
         });
       };
@@ -88,176 +74,233 @@ const AddProduct = () => {
         reader.readAsDataURL(img);
       }
     } else {
-      setInputData((prevFormData) => ({
-        ...inputData,
+      setFormData({
+        ...formData,
         success: 'Successed!',
         [name]: event.target.value,
-      }));
+      });
     }
   };
 
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    axios.put(`${import.meta.env.VITE_API_URL}product/catalog-product/update/${id}/`, formData)
+      .then(res => {
+        alert("Data Sent Successfly Ms Bassant!");
+        navigate('/SupplierDashboard/Products');
+      })
+      .catch(err => {
+        console.log('Error!!:', err);
+        if (err.response) {
+          console.log('Server Response Data:', err.response.data);
+        }
+
+      });
+  };
 
   return (
     <SupplierLayout>
       <div className="SupplierDashboard">
         <div className="DashboardContent">
-          <h3 className="HeaderTitle">Add Product</h3>
+          <h3 className="HeaderTitle">Edit Product</h3>
         </div>
-        <Form
-          className="AddForm"
-          {...formItemLayout}
-          variant="filled"
-          style={{ maxWidth: 500, padding: 60 }}
-          onFinish={handleSubmit}
-          childrenColumnName="antdChildren"
+        <div
+          style={{
+            borderRadius: 24,
+            backgroundColor: 'white',
+            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+            padding: 5,
+            paddingLeft: 40,
+            maxWidth: 1555,
+            margin: '0 auto',
+            marginTop: 5,
+
+
+          }}
         >
-          <Form.Item
-            label="Upload Image"
-            name="product_img"
-            valuePropName="fileList"
-          >
-            <input
-              type="file"
-              className="form-control"
-              name="product_img"
-              accept="image/*"
-              onChange={(e) => handleImageChange("product_img")(e)}
-              style={{
-                background: "rgba(0, 0, 0, 0.04)",
-                borderWidth: "1px",
-                borderStyle: "solid",
-                borderColor: "transparent",
-              }}
-            />
+          <form onSubmit={handleSubmit} className="AddForm" style={{ maxWidth: 1000, padding: 60, borderRadius: 24 }}>
+          <div className="form-group mb-3 flex-row" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
+              <label htmlFor="brand" style={{ fontSize: 21, whiteSpace: 'nowrap', marginRight: 40 }}>Product Image</label>
+              <input
+                type='file'
+                className='form-control'
+                name='product_img'
+                accept='image/*'
+                onChange={(e) => handleImageChange("product_img")(e)}
+                style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
+              />
+            </div>
 
-          </Form.Item>
+            <div className="form-group mb-3 flex-row" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
+              <label htmlFor="product_name" style={{ fontSize: 21, whiteSpace: 'nowrap', marginRight: 40 }}>Product Name</label>
+              <input
+                type="text"
+                className="form-control"
+                id="product_name"
+                name="product_name"
+                value={formData.product_name}
+                onChange={e=>setFormData({...formData, product_name:e.target.value})}
+                required
+                style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
+              />
+            </div>
 
-          <Form.Item
-            label="Product Name"
-            name="product_name"
-            rules={[{ required: true, message: "Please Write Product Name!" }]}
-          >
-            <Input
-              onChange={(e) =>
-                handleInputChange("product_name", e.target.value)
-              }
-            />
-          </Form.Item>
+            
 
-          <Form.Item
-            label="Brand"
-            name="brand"
-            rules={[{ required: true, message: "Please enter Brand!" }]}
-          >
-            <Input
-              onChange={(e) => handleInputChange("brand", e.target.value)}
-            />
-          </Form.Item>
+            <div className="form-group mb-3 flex-row" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
+              <label htmlFor="brand" style={{ fontSize: 21, whiteSpace: 'nowrap', marginRight: 40 }}>Brand</label>
+              <input
+                type="text"
+                className="form-control"
+                id="brand"
+                name="brand"
+                value={formData.brand}
+                onChange={e=>setFormData({...formData, brand:e.target.value})}
+                required
+                style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
+              />
+            </div>
 
-          <Form.Item label="Description" name="description">
-            <Input.TextArea
-              onChange={(e) => handleInputChange("description", e.target.value)}
-            />
-          </Form.Item>
+            <div className="form-group mb-3 flex-row" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
+              <label htmlFor="description" style={{ fontSize: 21, whiteSpace: 'nowrap', marginRight: 40 }}>Description</label>
+              <textarea
+                className="form-control"
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={e=>setFormData({...formData, description:e.target.value})}
+                style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
+              />
+            </div>
 
-          <Form.Item
-            label="Select Category"
-            name="category"
-            rules={[{ required: true, message: "Please select category!" }]}
-          >
-            <Select onChange={(value) => handleInputChange("category", value)}>
-              <Select.Option value="Dairy">Dairy</Select.Option>
-            </Select>
-          </Form.Item>
+            <div className="form-group mb-3 flex-row" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
+              <label htmlFor="category" style={{ fontSize: 21, whiteSpace: 'nowrap', marginRight: 40 }}>Select Category</label>
+              <select
+                className="form-control"
+                id="category"
+                name="category"
+                value={formData.category}
+                onChange={e=>setFormData({...formData, category:e.target.value})}
+                required
+                style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
+              >
+                <option value="">Select Category</option>
+                <option value="Dairy">Dairy</option>
+                <option value="Fruit">Fruit</option>
+              </select>
+            </div>
 
-          <Form.Item
-            label="Product Price"
-            name="price"
-            rules={[{ required: true, message: "Please enter product price!" }]}
-          >
-            <InputNumber
-              onChange={(value) => handleInputChange("price", value)}
-            />
-          </Form.Item>
+            <div className="form-group mb-3 flex-row" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
+              <label htmlFor="price" style={{ fontSize: 21, whiteSpace: 'nowrap', marginRight: 40 }}>Product Price</label>
+              <input
+                type="number"
+                className="form-control"
+                id="price"
+                name="price"
+                value={formData.price}
+                onChange={e=>setFormData({...formData, price:e.target.value})}
+                required
+                style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
+              />
+            </div>
 
-          <Form.Item label="Discount %" name="discount_percentage">
-            <InputNumber
-              onChange={(value) =>
-                handleInputChange("discount_percentage", value)
-              }
-            />
-          </Form.Item>
+            <div className="form-group mb-3 flex-row" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
+              <label htmlFor="discount_percentage" style={{ fontSize: 21, whiteSpace: 'nowrap', marginRight: 40 }}>Discount %</label>
+              <input
+                type="number"
+                className="form-control"
+                id="discount_percentage"
+                name="discount_percentage"
+                value={formData.discount_percentage}
+                onChange={e=>setFormData({...formData, discount_percentage:e.target.value})}
+                style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
+              />
+            </div>
 
-          <Form.Item
-            label="Quantity"
-            name="quantity"
-            rules={[
-              { required: true, message: "Please enter product quantity!" },
-            ]}
-          >
-            <InputNumber
-              onChange={(value) => handleInputChange("quantity", value)}
-            />
-          </Form.Item>
+            <div className="form-group mb-3 flex-row" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
+              <label htmlFor="quantity" style={{ fontSize: 21, whiteSpace: 'nowrap', marginRight: 40 }}>Quantity</label>
+              <input
+                type="number"
+                className="form-control"
+                id="quantity"
+                name="quantity"
+                value={formData.quantity}
+                onChange={e=>setFormData({...formData, quantity:e.target.value})}
+                required
+                style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
+              />
+            </div>
 
-          <Form.Item
-            label="Minimum Order Quantity"
-            name="min_order_quantity"
-            rules={[
-              {
-                required: true,
-                message: "Please enter minimum order quantity!",
-              },
-            ]}
-          >
-            <InputNumber
-              onChange={(value) =>
-                handleInputChange("min_order_quantity", value)
-              }
-            />
-          </Form.Item>
+            <div className="form-group mb-3 flex-row" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
+              <label htmlFor="min_order_quantity" style={{ fontSize: 21, whiteSpace: 'nowrap', marginRight: 40 }}>Minimum Order Quantity</label>
+              <input
+                type="number"
+                className="form-control"
+                id="min_order_quantity"
+                name="min_order_quantity"
+                value={formData.min_order_quantity}
+                onChange={e=>setFormData({...formData, min_order_quantity:e.target.value})}
+                required
+                style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
+              />
+            </div>
 
-          <Form.Item
-            label="Production Date"
-            name="production_date"
-            rules={[
-              { required: true, message: "Please Select Production Date!" },
-            ]}
-          >
-            <DatePicker
-              onChange={(date) => handleInputChange("production_date", date)}
-            />
-          </Form.Item>
+            <div className="form-group mb-3 flex-row" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
+              <label htmlFor="production_date" style={{ fontSize: 21, whiteSpace: 'nowrap', marginRight: 40 }}>Production Date</label>
+              <input
+                type="date"
+                className="form-control"
+                id="production_date"
+                name="production_date"
+                value={formData.production_date}
+                onChange={(e) => handleDateChange('production_date', e.target.value)}
+                required
+                style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
+              />
+            </div>
 
-          <Form.Item
-            label="Expiry Date"
-            name="expiry_date"
-            rules={[{ required: true, message: "Please Select Expiry Date!" }]}
-          >
-            <DatePicker
-              onChange={(date) => handleInputChange("expiry_date", date)}
-            />
-          </Form.Item>
+            <div className="form-group mb-3 flex-row" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
+              <label htmlFor="expiry_date" style={{ fontSize: 21, whiteSpace: 'nowrap', marginRight: 40 }}>Expiry Date</label>
+              <input
+                type="date"
+                className="form-control"
+                id="expiry_date"
+                name="expiry_date"
+                value={formData.expiry_date}
+                onChange={(e) => handleDateChange('expiry_date', e.target.value)}
+                required
+                style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
+              />
+            </div>
 
-          <Form.Item
-            label="Supplier"
-            name="supplier"
-            rules={[{ required: true, message: "Please enter supplier!" }]}
-          >
-            <Input
-              onChange={(e) => handleInputChange("supplier", e.target.value)}
-            />
-          </Form.Item>
+            <div className="form-group mb-3 flex-row" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
+              <label htmlFor="supplier" style={{ fontSize: 21, whiteSpace: 'nowrap', marginRight: 40 }}>Supplier</label>
+              <input
+                type="text"
+                className="form-control"
+                id="supplier"
+                name="supplier"
+                value={formData.supplier}
+                onChange={e=>setFormData({...formData, upplier:e.target.value})}
+                required
+                disabled
+                style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
+              />
+            </div>
 
-          <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
-            <Button type="primary" className="AddButton2" htmlType="submit">
-              Submit
-            </Button>
-          </Form.Item>
-        </Form>
+            <div className="form-group" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
+              <button type="submit" className="AddButton2" >Submit</button>
+            </div>
+          </form>
+
+
+
+
+        </div>
       </div>
     </SupplierLayout>
   );
 };
 
-export default AddProduct;
+export default EditProduct;

@@ -45,7 +45,7 @@ function App() {
                   <Route path='/supplier-dashboard/products/edit/:id' element={<EditProduct />} />
                   <Route path='/supplier-dashboard/products/add' element={<AddProduct />}/>
                   <Route path='/supplier-dashboard/schedule' element={<Schedule/>} />
-                  <Route path='/supplier-dashboard/schedule:edit'element={<SupplierRoute></SupplierRoute>} /> 
+                 
                   
                   <Route path='/supplier-dashboard/orders' element={<Orders />} />
                 </Route>
