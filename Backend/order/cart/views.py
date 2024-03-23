@@ -24,7 +24,7 @@ import uuid
 
 def is_valid_uuid(string):
     try:
-        uuid_obj = uuid.UUID(string)
+        uuid.UUID(string)
         return True
     except ValueError:
         return False
@@ -37,7 +37,6 @@ def add_to_cart(request):
     if request.user.is_anonymous:
         return JsonResponse({'message': 'Unauthorized user! You cannot add to cart'})
     user = request.user
-    print('got user: ', user)
     product_id = request.data.get('product_id')
     quantity = request.data.get('quantity')
 
@@ -64,9 +63,7 @@ def add_to_cart(request):
         cart_serializer.instance = cart
         cart_serializer.save()
 
-    print('got cart: ', cart.cart_id)
     cart_item = CartItem.objects.filter(cart=cart, product=product).first()
-    print('got ITEM,: ', cart_item)
 
     if cart_item:
         if int(quantity) <= product.min_order_quantity:
@@ -112,17 +109,11 @@ def remove_from_cart(request):
     data = json.loads(request.body)
     headers = request.META
 
-    print(data)
     csrf_token = headers.get('HTTP_X_CSRFTOKEN')
 
-    print(request.user, 'trying to logg in')
-    print(csrf_token, 'is the current token')
     user = request.user
-    print('got user: ', user)
 
     product_id = data.get('product_id')
-
-    print('got id: ', product_id)
 
     product = get_object_or_404(ProductCatalog, product_id=product_id)
 
@@ -193,16 +184,15 @@ def view_cart(request):
         response_data['products'].append(item_data)
     resp = JsonResponse(response_data)
     resp['X-CSRFToken'] = get_token(request)
-    print('csrf in cart method', resp['X-CSRFToken'])
+    # print('csrf in cart method', resp['X-CSRFToken'])
     return resp
 
 
 @csrf_protect
 @require_POST
 def clear_cart(request):
-    headers = request.META
-
-    csrf_token = headers.get('HTTP_X_CSRFTOKEN')
+    if request.user.is_anonymous:
+        return JsonResponse({'message': 'You must be logged in to clear your cart'})
 
     user = request.user
 
