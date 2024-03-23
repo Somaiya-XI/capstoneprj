@@ -200,7 +200,7 @@ const Cart = () => {
                   </section>
                   <Button
                 className="bg-[#023c07] text-white"
-                onClick={navigate("/payment")}
+                onClick={() => navigate("/payment")}
               >
                 Checkout
               </Button>
