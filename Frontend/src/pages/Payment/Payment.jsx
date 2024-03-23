@@ -1,12 +1,23 @@
 import React, { useState, useEffect } from "react";
+import Header from "../Home/Components/Header/Header";
+import Navbar from "../Home/Components/Navbar/Navbar";
 import "./Payment.css";
 import axios from "axios";
+import Payby from "./Payby";
+import { Payby2 } from "./Payby";
+import visa from "./Images/visa.png";
+import { useUserContext } from "../../Contexts";
+import { toast } from "sonner";
+import { Button, ButtonGroup } from "@nextui-org/react";
 
 const ProductDisplay = () => {
+  const message = "Your payment is done successfully";
+  const { user } = useUserContext();
   const [balance, setBalance] = useState("");
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const id = 17;
+  
 
   const loadWalletBalance = async () => {
     const { data } = await axios.get(
@@ -49,29 +60,63 @@ const ProductDisplay = () => {
   }, []);
 
   return (
-    <section>
-      <h2>Payment Wallet Balance: {balance} $</h2>
-      {success === true ? (
-        <h2>Your payment is done successfully</h2>
-      ) : (
-        <h2> {error} </h2>
-      )}
-      <button type="submit" onClick={PayByWallet}>
-        Pay By Wallet
-      </button>
-      &nbsp;&nbsp;&nbsp;&nbsp;
-      <button type="submit" onClick={ChargeWallet}>
-        Charge The Wallet
-      </button>
-      <br />
-      <br />
-      <form
-        action={`${import.meta.env.VITE_API_URL}cart/create-checkout-session/`}
-        method="POST"
-      >
-        <button type="submit">Pay By Credit Card</button>
-      </form>
-    </section>
+    <div id="c">
+      <Header />
+      <div id="c" className="md:container md:mx-auto">
+        <Navbar />
+        <h1 className="display-5 fw-normal mb-4 ml-4">
+          {user.company_name}'s Order Checkout
+        </h1>
+        <section>
+          <Payby>
+            <h2>Balance: {balance} $</h2>
+            {success === true ? (
+              toast.info(message, {duration: 2500})
+            ) : (
+              toast.error("cannot perform this action, try again", { duration: 2500 })
+            )}
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <Button
+                type="submit"
+                className="bg-[#023c07] text-white"
+                onClick={PayByWallet}
+              >
+                Pay By Wallet
+              </Button>
+              <Button
+                type="submit"
+                className="bg-[#023c07] text-white"
+                onClick={ChargeWallet}
+              >
+                Charge The Wallet
+              </Button>
+            </div>
+
+            {/* <form
+            action={`${
+              import.meta.env.VITE_API_URL
+            }cart/create-checkout-session/`}
+            method="POST"
+          >
+            <button type="submit">Pay By Credit Card</button>
+          </form> */}
+          </Payby>
+        </section>
+        <br />
+        <section>
+          <Payby2>
+            <form
+              action={`${
+                import.meta.env.VITE_API_URL
+              }cart/create-checkout-session/`}
+              method="POST"
+            >
+              <img type="submit" alt="Card background" src={visa} width={270} />
+            </form>
+          </Payby2>
+        </section>
+      </div>
+    </div>
   );
 };
 

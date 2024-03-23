@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { Children, useEffect, useState } from "react";
 import "./Cart.css";
+import {useNavigate} from 'react-router-dom';
 import { LiaTrashAltSolid as TrashIcon } from "react-icons/lia";
 import { useCartContext, useCsrfContext, useUserContext } from "../../Contexts";
 import { API } from "../../backend";
@@ -23,6 +24,7 @@ const Cart = () => {
   const { csrf } = useCsrfContext();
   const { cart, UpdateCartContent, fetchCart, loading } = useCartContext();
   const [showSection, setShowSection] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCart();
@@ -92,6 +94,7 @@ const Cart = () => {
           <Navbar />
         </div>
       </div>
+
       <section className="mt-5 mb-5">
         <div className="container-fluid m-5">
           <div className="row">
@@ -173,34 +176,40 @@ const Cart = () => {
               <div className="d-flex justify-content-between">
                 <h5 className="ml-4"></h5>
                 <h5>
-                  <Button className="bg-[#023c07] text-white" onClick={displayCheckout}>
-                    Continue
+                  <Button
+                    className="bg-[#023c07] text-white"
+                    onClick={displayCheckout}
+                  >
+                    Shipping Address
                   </Button>
                 </h5>
               </div>
             </div>
           </div>
           <div className="mt-1 mb-1">
-            
-              <br />
-              <>
-                  {showSection && (
-                    <>
-                    <section className="mt-5 mb-5">
-                      <div className="container-fluid m-5">
-                        <div className="col-lg-8 mb-4">
-                          <Checkout />
-                        </div>
+            <br />
+            <>
+              {showSection && (
+                <>
+                  <section className="mt-5 mb-5">
+                    <div className="container-fluid m-5">
+                      <div className="col-lg-8 mb-4">
+                        <Checkout />
                       </div>
-                    </section>
-                  </>
-                  )}
-              </>
-              {}
-            </div>
-            
+                    </div>
+                  </section>
+                  <Button
+                className="bg-[#023c07] text-white"
+                onClick={navigate("/payment")}
+              >
+                Checkout
+              </Button>
+                </>
+              )}
+            </>
+            {}
           </div>
-        
+        </div>
       </section>
     </>
   );
