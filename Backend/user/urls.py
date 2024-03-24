@@ -10,8 +10,8 @@ router.register(r'', views.UserViewSet)
 urlpatterns = [
     path('activation/', views.activate_user_account, name='activate.user'),
     path('users/', views.users_api, name='users'),
-    path('csrf/', views.get_csrf, name='api-csrf'),
-    path('get-csrf/', views.get_new_csrf, name='csrf'),
+    # path('csrf/', views.get_csrf, name='api-csrf'),
+    path('get-csrf/', views.get_csrf, name='csrf'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('session/', views.session_view, name='session'),

@@ -104,7 +104,6 @@ def cancel_order(request):
         return JsonResponse({'message': 'Cannot cancel a shipped order'})
 
     order.order_status = 'cancelled'
-    ##DO REFUND IF POSSIBLE
     order.save()
 
     return JsonResponse({'message': 'Order cancelled successfully'}, status=200)
