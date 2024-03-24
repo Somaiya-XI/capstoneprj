@@ -158,13 +158,13 @@ const Cart = () => {
                 </>
               )}
             </div>
-            {/* <div className='container-fluid mt-4'>
+            <div className='container-fluid mt-4'>
               {cart?.products && (
                 <h5 className='text-muted' style={{textAlign: 'end'}}>
                   Total: {cart.total}
                 </h5>
               )}
-            </div> */}
+            </div>
           </div>
         </div>
       </section>
@@ -189,7 +189,7 @@ const Cart = () => {
           <div className="mt-1 mb-1">
             <br />
             <>
-              {showSection && (
+              { showSection && cart.products?.length > 0 && (
                 <>
                   <section className="mt-5 mb-5">
                     <div className="container-fluid m-5">

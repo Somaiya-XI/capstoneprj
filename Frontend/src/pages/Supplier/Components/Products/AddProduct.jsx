@@ -28,7 +28,7 @@ const formItemLayout = {
 };
 
 const AddProduct = () => {
-  const {csrf, getCsrfToken} = useCsrfContext();
+  const { csrf, getCsrfToken } = useCsrfContext();
   const [inputData, setInputData] = useState({
     product_img: "",
     product_name: "",
@@ -41,11 +41,9 @@ const AddProduct = () => {
     min_order_quantity: "",
     production_date: null,
     expiry_date: null,
-    supplier: "",
   });
 
   const navigate = useNavigate();
-  
 
   const handleInputChange = (key, value) => {
     if (key === "production_date" || key === "expiry_date") {
@@ -57,7 +55,10 @@ const AddProduct = () => {
       [key]: value,
     }));
   };
-  
+
+  useEffect(() => {
+    getCsrfToken();
+  }, []);
 
   const handleSubmit = async () => {
     try {
@@ -65,55 +66,38 @@ const AddProduct = () => {
         `${API}product/catalog/create/`,
         inputData,
         {
+          headers: {
+            "X-CSRFToken": csrf,
+          },
           withCredentials: true,
         }
-      ); 
-      let csrfToken = response.headers['x-csrftoken'];
-      setCSRF(csrfToken);
-      
-      console.log(response);
+      );
+
+      console.log(response.data);
       alert("Data Sent");
       navigate("/supplier-dashboard/products");
     } catch (err) {
       toastError();
       alert("Error occurred while submitting data. Please try again.");
-    }
-  };  
-
-  useEffect(() => {
-    getCsrfToken();
-  }, []);
-  
-  
-
-  
-  
-  
-  
-
-  const handleImageChange = (name) => (event) => {
-    if (name === 'product_img') {
-      const img = event.target.files[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        setInputData({
-          ...inputData,
-          product_img: reader.result,
-        });
-      };
-
-      if (img) {
-        reader.readAsDataURL(img);
-      }
-    } else {
-      setInputData((prevFormData) => ({
-        ...inputData,
-        success: 'Successed!',
-        [name]: event.target.value,
-      }));
+      console.log(err.response.data);
     }
   };
 
+  const handleImageChange = (event) => {
+    const img = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setInputData({
+        ...inputData,
+        product_img: reader.result,
+      });
+    };
+
+    if (img) {
+      reader.readAsDataURL(img);
+    }
+  };
 
   return (
     <SupplierLayout>
@@ -139,7 +123,7 @@ const AddProduct = () => {
               className="form-control"
               name="product_img"
               accept="image/*"
-              onChange={(e) => handleImageChange("product_img")(e)}
+              onChange={handleImageChange}
               style={{
                 background: "rgba(0, 0, 0, 0.04)",
                 borderWidth: "1px",
@@ -147,8 +131,10 @@ const AddProduct = () => {
                 borderColor: "transparent",
               }}
             />
-
           </Form.Item>
+          {inputData.product_img && (
+            <img src={inputData.product_img} alt="Product" />
+          )}
 
           <Form.Item
             label="Product Name"
@@ -254,16 +240,6 @@ const AddProduct = () => {
           >
             <DatePicker
               onChange={(date) => handleInputChange("expiry_date", date)}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Supplier"
-            name="supplier"
-            rules={[{ required: true, message: "Please enter supplier!" }]}
-          >
-            <Input
-              onChange={(e) => handleInputChange("supplier", e.target.value)}
             />
           </Form.Item>
 
