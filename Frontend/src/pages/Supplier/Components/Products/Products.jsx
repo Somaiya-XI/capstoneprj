@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import { useParams } from "react-router-dom";
 import {Link} from 'react-router-dom';
 import {Button, Table, Popconfirm, Card} from 'antd';
 import {DeleteOutlined, EditOutlined} from '@ant-design/icons';
@@ -9,6 +10,7 @@ import { API } from '../../../../backend';
 import axios from 'axios';
 
 const Products = () => {
+  const { id } = useParams();
   const [dataSource, setDataSource] = useState([]);
   const {user} = useUserContext();
   const {csrf, setCSRF, getCsrfToken} = useCsrfContext();
@@ -23,38 +25,49 @@ const Products = () => {
   
       const productsWithKeys = response.data.map((product) => ({
         ...product,
-        key: product.id, // Assign the `id` as the `key`
+        key: product.product_id, 
       }));
   
       setDataSource(productsWithKeys);
     } catch (error) {
-      console.error(error);
+      console.error(error.data);
     }
   };
   
   
   useEffect(() => {
     fetchProducts();
+    getCsrfToken();
   }, []);
   
   
   
 
-  const onDeleteProduct = async (id) => {
+  const onDeleteProduct = async (id, productName) => {
     try {
-      // Delete the product from the server
-      await axios.delete(`${import.meta.env.VITE_API_URL}product/catalog/update/${id}/`, {
-        withCredentials: true,
-      });
-  
-      // Update the local state to remove the deleted product
-      const newData = dataSource.filter((item) => item.key !== id);
-      setDataSource(newData);
+        await axios.delete(`${API}product/catalog/update/`, {
+            data: { id: id,  product_name: productName, }, 
+            
+            headers: {
+                'X-CSRFToken': csrf,
+            },
+            withCredentials: true,
+        });
+        const updatedData = dataSource.filter(item => item.key !== id);
+        setDataSource(updatedData);
     } catch (error) {
-      console.error('Error deleting product:', error);
-      // Handle error, e.g., show a notification to the user
+        if (error.response) {
+            // Handle error response
+        } else if (error.request) {
+            console.error('Error deleting product: No response received');
+        } else {
+            console.error(error.message);
+        }
     }
-  };
+};
+
+
+
   
 
   const columns = [
@@ -160,7 +173,7 @@ const Products = () => {
           bordered
           dataSource={dataSource}
           columns={columns}
-          key={dataSource.map((product) => product.key).join()}
+          key={dataSource.map((product) => product.key).join()} 
         ></Table>
       </div>
     </SupplierLayout>

@@ -5,8 +5,6 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie, csrf_protect
 from django.http import JsonResponse
-from django.middleware.csrf import get_token
-from django.views.decorators.http import require_POST
 import stripe, os
 
 # import stripe
@@ -24,9 +22,7 @@ stripe.api_key = os.environ['STRIPE_SECRET_KEY']
 def create_product(request):
 
     if request.user.is_anonymous:
-        return JsonResponse(
-            {'message': 'You are not authenticated, log in then try again'}, status=400
-        )
+        return JsonResponse({'message': 'You are not authenticated, log in then try again'}, status=400)
 
     data = request.data
     if request.user.is_authenticated:
@@ -56,9 +52,7 @@ def create_product(request):
 @permission_classes([AllowAny])
 def update_product(request):
     if request.user.is_anonymous:
-        return JsonResponse(
-            {'message': 'You are not authenticated, log in then try again'}, status=400
-        )
+        return JsonResponse({'message': 'You are not authenticated, log in then try again'}, status=400)
     print('the user updating is: ', request.user)
     data = json.loads(request.body)
     pk = data.get('id')
@@ -69,9 +63,7 @@ def update_product(request):
         return JsonResponse({'error': 'This Product does not exist'}, status=404)
 
     if product.supplier_id != request.user.id:
-        return JsonResponse(
-            {'message': 'You are not authorized to update this product'}
-        )
+        return JsonResponse({'message': 'You are not authorized to update this product'})
 
     if request.method == 'PUT':
         serializer = ProductCatalogSerializer(product, data=request.data, partial=True)
@@ -125,10 +117,7 @@ def view_user_products(request, supplier_id):
         product_serializer = ProductCatalogSerializer(instance=product)
         response_data.append(product_serializer.data)
 
-    resp = JsonResponse(response_data, safe=False)
-    resp['X-CSRFToken'] = get_token(request)
-    print('csrf in PRODUCT method', resp['X-CSRFToken'])
-    return resp
+    return JsonResponse(response_data, safe=False)
 
 
 # Create your views here.

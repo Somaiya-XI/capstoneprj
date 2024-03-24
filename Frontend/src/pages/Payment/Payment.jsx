@@ -6,7 +6,7 @@ import axios from "axios";
 import Payby from "./Payby";
 import { Payby2 } from "./Payby";
 import visa from "./Images/visa.png";
-import { useUserContext } from "../../Contexts";
+import { useCartContext, useUserContext } from "../../Contexts";
 import { toast } from "sonner";
 import { Button, ButtonGroup } from "@nextui-org/react";
 
@@ -16,6 +16,7 @@ const ProductDisplay = () => {
   const [balance, setBalance] = useState("");
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const {cart} = useCartContext();
   const id = 17;
   
 
@@ -28,20 +29,32 @@ const ProductDisplay = () => {
   };
 
   const PayByWallet = async () => {
-    const { data } = await axios.put(
-      `${import.meta.env.VITE_API_URL}payment/pay-by-wallet/`,
-      {
-        retailer: id,
+    try {
+      const { data } = await axios.put(
+        `${import.meta.env.VITE_API_URL}payment/pay-by-wallet/`,
+        { retailer: id }
+      );
+  
+      setSuccess(data.success);
+  
+      if (data.success === true) {
+        const deductBalance = data.payment_wallet - cart.total;
+        setBalance(deductBalance);
+  
+        if (cart.total > data.payment_wallet) {
+          toast.error("Insufficient transaction. Please recharge the wallet!", { duration: 2500 });
+        } else {
+          toast.success("Transaction is successful!", { duration: 2500 });
+        }
+      } else {
+        setError(data.error);
       }
-    );
-    console.log(data);
-    setSuccess(data.success);
-    if (data.success === true) {
-      setBalance(data.payment_wallet);
-    } else {
-      setError(data.error);
+    } catch (error) {
+      console.error('Error occurred while processing payment:', error);
+      setError('An error occurred while processing payment. Please try again later.');
     }
   };
+  
 
   const ChargeWallet = async () => {
     const { data } = await axios.put(
@@ -70,11 +83,11 @@ const ProductDisplay = () => {
         <section>
           <Payby>
             <h2>Balance: {balance} $</h2>
-            {success === true ? (
+            {/* {success === true ? (
               toast.info(message, {duration: 2500})
             ) : (
               toast.error("cannot perform this action, try again", { duration: 2500 })
-            )}
+            )} */}
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Button
                 type="submit"
