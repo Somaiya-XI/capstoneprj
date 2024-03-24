@@ -4,31 +4,58 @@ import {Button, Table, Popconfirm, Card} from 'antd';
 import {DeleteOutlined, EditOutlined} from '@ant-design/icons';
 import SearchField from '../Layout/SearchField';
 import SupplierLayout from '../Layout/SupplierLayout';
+import { useUserContext, useCsrfContext } from '../../../../Contexts';
+import { API } from '../../../../backend';
 import axios from 'axios';
 
 const Products = () => {
   const [dataSource, setDataSource] = useState([]);
+  const {user} = useUserContext();
+  const {csrf, setCSRF, getCsrfToken} = useCsrfContext();
 
-  useEffect(() => {
-    axios
-      .get(`${import.meta.env.VITE_API_URL}product/catalog-product`)
-      .then((result) => {
-        const productsWithKeys = result.data.map((product) => ({
-          ...product,
-          key: product.product_id,
-        }));
-        setDataSource(productsWithKeys);
-      })
-      .catch((err) => console.log(err));
-  }, []);
-
-  const onDeleteProduct = (key) => {
-    const newData = dataSource.filter((item) => item.key !== key);
-    setDataSource(newData);
-    axios.delete(`${import.meta.env.VITE_API_URL}product/catalog-product/update/`, {
-      data: {id: key},
-    });
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(`${API}product/get-user-products/${user.id}/`, {
+        withCredentials: true,
+      });
+      let csrfToken = response.headers['x-csrftoken'];
+      setCSRF(csrfToken);
+  
+      const productsWithKeys = response.data.map((product) => ({
+        ...product,
+        key: product.id, // Assign the `id` as the `key`
+      }));
+  
+      setDataSource(productsWithKeys);
+    } catch (error) {
+      console.error(error);
+    }
   };
+  
+  
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+  
+  
+  
+
+  const onDeleteProduct = async (id) => {
+    try {
+      // Delete the product from the server
+      await axios.delete(`${import.meta.env.VITE_API_URL}product/catalog/update/${id}/`, {
+        withCredentials: true,
+      });
+  
+      // Update the local state to remove the deleted product
+      const newData = dataSource.filter((item) => item.key !== id);
+      setDataSource(newData);
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      // Handle error, e.g., show a notification to the user
+    }
+  };
+  
 
   const columns = [
     {
@@ -102,7 +129,7 @@ const Products = () => {
       width: '5%',
       render: (_, record) => (
         <>
-          <Link to={`/supplier-dashboard/products:edit/${record.key}`}>
+          <Link to={`/supplier-dashboard/products/edit/${record.key}`}>
             <EditOutlined style={{fontSize: '20px', cursor: 'pointer'}} />
           </Link>
           {dataSource.length >= 1 ? (
@@ -123,10 +150,9 @@ const Products = () => {
             Products
           </h3>
           <Button className='AddButton' type='primary'>
-            <Link to='/supplier-dashboard/products:add'>+ Add </Link>
+            <Link to='/supplier-dashboard/products/add'>+ Add </Link>
           </Button>
         </div>
-        <SearchField />
 
         <Table
           data-testid='cypress-Product-table'

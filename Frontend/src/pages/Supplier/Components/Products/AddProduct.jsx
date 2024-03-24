@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import {
   Button,
@@ -12,6 +12,9 @@ import {
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import SupplierLayout from "../Layout/SupplierLayout";
+import { useCsrfContext } from "../../../../Contexts";
+import { API } from "../../../../backend";
+import { toastError } from "../Orders";
 
 const formItemLayout = {
   labelCol: {
@@ -25,6 +28,7 @@ const formItemLayout = {
 };
 
 const AddProduct = () => {
+  const {csrf, getCsrfToken} = useCsrfContext();
   const [inputData, setInputData] = useState({
     product_img: "",
     product_name: "",
@@ -41,10 +45,10 @@ const AddProduct = () => {
   });
 
   const navigate = useNavigate();
+  
 
   const handleInputChange = (key, value) => {
     if (key === "production_date" || key === "expiry_date") {
-      // Format date to YYYY-MM-DD
       value = value ? value.toISOString().split("T")[0] : null;
     }
 
@@ -53,25 +57,39 @@ const AddProduct = () => {
       [key]: value,
     }));
   };
+  
 
-  const handleSubmit = () => {
-    axios
-      .post(
-        `${import.meta.env.VITE_API_URL}product/catalog-product/create/`,
-        inputData
-      )
-      .then((res) => {
-        alert("Data Sent");
-        navigate("/supplier-dashboard/products");
-      })
-      .catch((err) => {
-        alert("Error:", err);
-        console.log("Error:", err);
-        if (err.response) {
-          console.log("Server Response Data:", err.response.data);
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post(
+        `${API}product/catalog/create/`,
+        inputData,
+        {
+          withCredentials: true,
         }
-      });
-  };
+      ); 
+      let csrfToken = response.headers['x-csrftoken'];
+      setCSRF(csrfToken);
+      
+      console.log(response);
+      alert("Data Sent");
+      navigate("/supplier-dashboard/products");
+    } catch (err) {
+      toastError();
+      alert("Error occurred while submitting data. Please try again.");
+    }
+  };  
+
+  useEffect(() => {
+    getCsrfToken();
+  }, []);
+  
+  
+
+  
+  
+  
+  
 
   const handleImageChange = (name) => (event) => {
     if (name === 'product_img') {

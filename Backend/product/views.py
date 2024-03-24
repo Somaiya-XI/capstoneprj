@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie, csrf_protect
 from django.http import JsonResponse
-
+import stripe, os
 
 # import stripe
 
@@ -13,7 +13,7 @@ from django.http import JsonResponse
 
 import json
 
-# stripe.api_key = os.environ['STRIPE_SECRET_KEY']
+stripe.api_key = os.environ['STRIPE_SECRET_KEY']
 
 
 @csrf_exempt
@@ -33,7 +33,15 @@ def create_product(request):
 
     if serializer.is_valid():
         serializer.save()
-        # stripe.Product.create(name=serializer.data.product_name, id=serializer.data.product_id)
+        stripe.Product.create(
+            id=serializer.data['product_id'],
+            name=serializer.data['product_name'],
+            default_price_data={
+                "currency": 'usd',
+                "unit_amount_decimal": serializer.data['new_price'] * 100,
+            },
+            images=[serializer.data['product_img']],
+        )
         return JsonResponse({'message': 'Product created successfully.'}, status=201)
     else:
         return JsonResponse(serializer.errors, status=400)
@@ -61,18 +69,28 @@ def update_product(request):
         serializer = ProductCatalogSerializer(product, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
+            new_price = stripe.Price.create(
+                currency="usd",
+                unit_amount_decimal=serializer.data['new_price'] * 100,
+                product=serializer.data['product_id'],
+            )
+            stripe.Product.modify(
+                serializer.data['product_id'],
+                name=serializer.data['product_name'],
+                images=[serializer.data['product_img']],
+                default_price=new_price.id,
+            )
             return JsonResponse({'message': f"Product {pk} updated"}, status=200)
-            # stripe.Product.modify(
-            #     serializer.data.product_id,
-            #     default_price=serializer.data.new_price,
-            # )
             return JsonResponse({'message': 'Product updated'}, status=200)
         else:
             return JsonResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
         product.delete()
-        # stripe.Product.delete(product.product_id)
+        stripe.Product.modify(
+            product.product_id,
+            active=False,
+        )
         return JsonResponse({'message': 'Product deleted'}, status=204)
 
 
@@ -91,9 +109,6 @@ def get_brands(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def view_user_products(request, supplier_id):
-
-    tok = request.user.session_token
-    print('csrf in saved of user Product method', tok)
 
     products = ProductCatalog.objects.filter(supplier=supplier_id)
     response_data = []

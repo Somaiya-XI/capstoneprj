@@ -5,6 +5,7 @@ from user.models import Supplier, Retailer
 
 from category.models import Category
 import datetime
+from decimal import Decimal
 
 # Create your models here.
 
@@ -44,7 +45,7 @@ class ProductCatalog(Product):
 
     @property
     def new_price(self):
-        return self.price - (self.price * (self.discount_percentage / 100))
+        return Decimal(self.price - (self.price * (self.discount_percentage / Decimal(100))))
 
     def __str__(self):
         return self.product_name
