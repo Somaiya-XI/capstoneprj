@@ -10,12 +10,7 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
-from django.db.models import Sum
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
 import json
-from django.middleware.csrf import get_token
-from django.conf import settings
 from django.shortcuts import redirect
 import stripe, os
 from dotenv import load_dotenv
@@ -104,7 +99,7 @@ def add_to_cart(request):
 
 
 @csrf_protect
-@require_POST
+@api_view(['POST'])
 def remove_from_cart(request):
     data = json.loads(request.body)
     headers = request.META
@@ -182,14 +177,11 @@ def view_cart(request):
         }
 
         response_data['products'].append(item_data)
-    resp = JsonResponse(response_data)
-    resp['X-CSRFToken'] = get_token(request)
-    # print('csrf in cart method', resp['X-CSRFToken'])
-    return resp
+    return JsonResponse(response_data)
 
 
 @csrf_protect
-@require_POST
+@api_view(['POST'])
 def clear_cart(request):
     if request.user.is_anonymous:
         return JsonResponse({'message': 'You must be logged in to clear your cart'})

@@ -7,17 +7,13 @@ import {toast} from 'sonner';
 import {Link} from 'react-router-dom';
 
 function CartButtons({id}) {
-  const {csrf, getCsrfToken} = useCsrfContext();
-  const {cart, getProductQuantity, UpdateCartContent, fetchCart} = useCartContext();
+  const {csrf} = useCsrfContext();
+  const {cart, getProductQuantity, setProductQuantity, UpdateCartContent, reloadCart} = useCartContext();
   const [quant, setQuant] = useState(0);
 
   useEffect(() => {
-    getCsrfToken();
-  }, []);
-
-  useEffect(() => {
     cart ? setQuant(getProductQuantity(id)) : setQuant(0);
-  }, [cart]);
+  }, []);
 
   const handleAddToCart = async () => {
     if (cart) {
@@ -55,8 +51,13 @@ function CartButtons({id}) {
       }
       console.log(`quant is${quant}`);
     } else {
-      toast.error('you have to login to add to cart');
+      toast.error('Please log in to add to cart', {
+        duration: 2300,
+        style: {background: '#fef2f2'},
+        className: 'text-dark',
+      });
     }
+    reloadCart();
   };
 
   return (

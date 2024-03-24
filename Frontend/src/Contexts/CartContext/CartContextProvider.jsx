@@ -3,18 +3,21 @@ import CartContext from './CartContext';
 import axios from 'axios';
 import {API} from '../../backend';
 import {useCsrfContext} from '../CsrfTokenContext/CsrfTokenContextProvider';
+import {useUserContext} from '../index';
 
 const CartContextProvider = ({children}) => {
-  const {csrf, setCSRF, getCsrfToken} = useCsrfContext();
+  const {csrf} = useCsrfContext();
+  const {user} = useUserContext();
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
+
   const fetchCart = async () => {
     try {
       const response = await axios.get(`${API}cart/view-cart/`, {
         withCredentials: true,
       });
-      let csrfToken = response.headers['x-csrftoken'];
-      setCSRF(csrfToken);
+      // let csrfToken = response.headers['x-csrftoken'];
+      // setCSRF(csrfToken);
       const {data} = response;
       console.log(data);
       setCart((cart) => data);
@@ -23,14 +26,19 @@ const CartContextProvider = ({children}) => {
       console.error(error);
     }
   };
+
   const reloadCart = () => {
-    fetchCart();
-  };
-  useEffect(() => {
-    if (!cart) {
+    if (user.role === 'RETAILER') {
       fetchCart();
     }
-  }, []);
+  };
+
+  useEffect(() => {
+    if (!cart && user.role == 'RETAILER') {
+      console.log('cart fetched');
+      fetchCart();
+    }
+  }, [user]);
 
   const getProductQuantity = (productId) => {
     const product = cart?.products?.find((item) => item.product_id === productId);

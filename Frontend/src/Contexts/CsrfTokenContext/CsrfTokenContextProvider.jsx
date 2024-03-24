@@ -4,7 +4,15 @@ import {useState, useContext, useEffect} from 'react';
 import {API} from '../../backend';
 
 const CsrfTokenContextProvider = ({children}) => {
-  const [csrf, setCSRF] = useState('');
+  const [csrf, setCSRF] = useState(() => {
+    const currentCsrf = localStorage.getItem('csrf');
+    try {
+      return currentCsrf ? currentCsrf : {};
+    } catch (error) {
+      console.error('Invalid JSON data:', error);
+      return {};
+    }
+  });
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     const localAuth = localStorage.getItem('auth');
     try {
@@ -18,7 +26,9 @@ const CsrfTokenContextProvider = ({children}) => {
   useEffect(() => {
     localStorage.setItem('auth', JSON.stringify(isAuthenticated));
   }, [isAuthenticated]);
-
+  useEffect(() => {
+    localStorage.setItem('csrf', csrf);
+  }, [csrf]);
   async function getCsrfToken() {
     let _csrfToken = null;
 

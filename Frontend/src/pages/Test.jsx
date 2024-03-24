@@ -13,18 +13,16 @@ const ApiTest = () => {
   }, []);
 
   const {user} = useUserContext();
-  const {csrf, setCSRF, getCsrfToken} = useCsrfContext();
+  const {csrf} = useCsrfContext();
   const [products, setProducts] = useState(null);
 
-  // option2:
+  // // option2:
 
   const fetchProducts = async () => {
     try {
       const response = await axios.get(`${API}product/get-user-products/${user.id}/`, {
         withCredentials: true,
       });
-      let csrfToken = response.headers['x-csrftoken'];
-      setCSRF(csrfToken);
       const {data} = response;
       console.log(data);
       setProducts(data);
@@ -32,7 +30,7 @@ const ApiTest = () => {
       console.error(error);
     }
   };
-  // option1:
+  // // option1:
   useEffect(() => {
     fetchProducts();
   }, []);

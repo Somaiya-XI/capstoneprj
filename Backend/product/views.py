@@ -5,8 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie, csrf_protect
 from django.http import JsonResponse
-from django.middleware.csrf import get_token
-from django.views.decorators.http import require_POST
+
 
 # import stripe
 
@@ -92,18 +91,18 @@ def get_brands(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def view_user_products(request, supplier_id):
- 
+
+    tok = request.user.session_token
+    print('csrf in saved of user Product method', tok)
+
     products = ProductCatalog.objects.filter(supplier=supplier_id)
     response_data = []
- 
+
     for product in products:
         product_serializer = ProductCatalogSerializer(instance=product)
         response_data.append(product_serializer.data)
 
-    resp = JsonResponse(response_data, safe=False)
-    resp['X-CSRFToken'] = get_token(request)
-    print('csrf in PRODUCT method', resp['X-CSRFToken'])
-    return resp
+    return JsonResponse(response_data, safe=False)
 
 
 # Create your views here.

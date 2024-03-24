@@ -23,19 +23,11 @@ import json
 import mimetypes
 from django.shortcuts import redirect
 
-from django.views.decorators.http import require_POST
 from django.middleware.csrf import get_token
 
 
 def get_csrf(request):
-    response = JsonResponse({'detail': 'CSRF cookie set'})
-    response['X-CSRFToken'] = get_token(request)
-    return response
-
-
-def get_new_csrf(request):
     token = get_token(request)
-    print('in login get: ', token)
     return JsonResponse({'csrfToken': token})
 
 
@@ -86,8 +78,6 @@ def login_view(request):
 
     if account:
         user = UserModel.objects.get(email=account)
-        user.session_token = csrf_token
-        user.save()
         login(request, user)
         resp = JsonResponse(
             {'message': 'Successfully logged in.', 'role': user_role, 'user': user_data},
@@ -95,6 +85,8 @@ def login_view(request):
         )
         resp['X-CSRFToken'] = get_token(request)
         print('csrf after login method', resp['X-CSRFToken'])
+        user.session_token = resp['X-CSRFToken']
+        user.save()
         return resp
         # return JsonResponse(
         #     {'message': 'Successfully logged in.', 'role': user_role, 'user': user_data},
