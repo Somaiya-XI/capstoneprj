@@ -8,7 +8,7 @@ import { API } from '../../../../backend';
 
 
 const EditProduct = () => {
-  const {csrf,setCSRF} = useCsrfContext();
+  const {csrf} = useCsrfContext();
   const {user} = useUserContext();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -29,20 +29,20 @@ const EditProduct = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${API}product/catalog//${id}/`, {
+      const response = await axios.get(`${API}product/get-user-products/${user.id}/`, {
         withCredentials: true,
       });
-      let csrfToken = response.headers['x-csrftoken'];
-      setCSRF(csrfToken);
+      console.log("Check it:",csrf)
   
       const productsWithKeys = response.data.map((product) => ({
         ...product,
-        key: product.id, 
+        key: product.product_id, 
       }));
   
-      setFormData(productsWithKeys);
+      setDataSource(productsWithKeys);
+      console.log(productsWithKeys)
     } catch (error) {
-      console.error(error);
+      console.error(error.data);
     }
   };
   
@@ -87,9 +87,19 @@ const EditProduct = () => {
 
   function handleSubmit(event) {
     event.preventDefault();
-    axios.put(`${import.meta.env.VITE_API_URL}product/catalog-product/update/${id}/`, formData)
-      .then(res => {
-        alert("Data Sent Successfly Ms Bassant!");
+    const requestData = {
+      ...formData,
+      data: { id: id }, 
+      headers: {
+        "X-CSRFToken": csrf,
+      },
+      withCredentials: true,
+    };
+    
+    console.log('Request Object:', requestData); // Log the request object
+    
+    axios.put(`${import.meta.env.VITE_API_URL}product/catalog/update/`, requestData)
+      .then(response => {
         navigate('/SupplierDashboard/Products');
       })
       .catch(err => {
@@ -97,9 +107,10 @@ const EditProduct = () => {
         if (err.response) {
           console.log('Server Response Data:', err.response.data);
         }
-
       });
-  };
+  }
+  
+  
 
   return (
     <SupplierLayout>
@@ -275,22 +286,6 @@ const EditProduct = () => {
                 style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
               />
             </div>
-
-            <div className="form-group mb-3 flex-row" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
-              <label htmlFor="supplier" style={{ fontSize: 21, whiteSpace: 'nowrap', marginRight: 40 }}>Supplier</label>
-              <input
-                type="text"
-                className="form-control"
-                id="supplier"
-                name="supplier"
-                value={formData.supplier}
-                onChange={e=>setFormData({...formData, upplier:e.target.value})}
-                required
-                disabled
-                style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
-              />
-            </div>
-
             <div className="form-group" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
               <button type="submit" className="AddButton2" >Submit</button>
             </div>

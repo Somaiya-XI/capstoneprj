@@ -279,7 +279,7 @@ const Test = () => {
   }, []);
 
   const {user} = useUserContext();
-  const {csrf, setCSRF, getCsrfToken} = useCsrfContext();
+  const {csrf} = useCsrfContext();
   const [products, setProducts] = useState(null);
 
   // option2:
@@ -289,8 +289,6 @@ const Test = () => {
       const response = await axios.get(`${API}product/get-user-products/${user.id}/`, {
         withCredentials: true,
       });
-      let csrfToken = response.headers['x-csrftoken'];
-      setCSRF(csrfToken);
       const {data} = response;
       console.log(data);
       setProducts(data);

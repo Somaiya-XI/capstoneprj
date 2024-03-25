@@ -35,12 +35,8 @@ const ScheduleCard = () => {
   const [editedData, setEditedData] = useState({ day: "", time: "" });
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const { setUser, user } = useUserContext();
+  const { user } = useUserContext();
   const {
-    getSession,
-    getCsrfToken,
-    isAuthenticated,
-    setIsAuthenticated,
     csrf,
   } = useCsrfContext();
   const { id } = useParams();
@@ -115,20 +111,12 @@ const ScheduleCard = () => {
         supplier_id: user.id,
       };
 
-      // Retrieve JWT token from local storage
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        console.error("Authentication token not found");
-        return;
-      }
-
       const response = await axios.put(
         `${import.meta.env.VITE_API_URL}schedule/create/${selectedKey}/`,
         dataWithSupplierId,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Include JWT token in the request headers
-            "X-CSRFToken": csrf, // Include CSRF token in the request headers
+            "X-CSRFToken": csrf, 
           },
         }
       );

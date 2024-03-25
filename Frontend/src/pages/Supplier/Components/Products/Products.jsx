@@ -13,15 +13,14 @@ const Products = () => {
   const { id } = useParams();
   const [dataSource, setDataSource] = useState([]);
   const {user} = useUserContext();
-  const {csrf, setCSRF, getCsrfToken} = useCsrfContext();
+  const {csrf} = useCsrfContext();
 
   const fetchProducts = async () => {
     try {
       const response = await axios.get(`${API}product/get-user-products/${user.id}/`, {
         withCredentials: true,
       });
-      let csrfToken = response.headers['x-csrftoken'];
-      setCSRF(csrfToken);
+      console.log("Check it:",csrf)
   
       const productsWithKeys = response.data.map((product) => ({
         ...product,
@@ -29,6 +28,7 @@ const Products = () => {
       }));
   
       setDataSource(productsWithKeys);
+      console.log(productsWithKeys)
     } catch (error) {
       console.error(error.data);
     }
@@ -37,34 +37,40 @@ const Products = () => {
   
   useEffect(() => {
     fetchProducts();
-    getCsrfToken();
+    
   }, []);
   
   
   
 
-  const onDeleteProduct = async (id, productName) => {
+  const onDeleteProduct = async (id) => {
     try {
+        console.log("Attempting to delete product with ID:", id);
+
+
         await axios.delete(`${API}product/catalog/update/`, {
-            data: { id: id,  product_name: productName, }, 
-            
+            data: { id: id }, 
             headers: {
-                'X-CSRFToken': csrf,
+              "X-CSRFToken": csrf,
             },
             withCredentials: true,
         });
+
+        console.log("Product deleted successfully:", id);
+
         const updatedData = dataSource.filter(item => item.key !== id);
         setDataSource(updatedData);
     } catch (error) {
         if (error.response) {
-            // Handle error response
+            console.error('Error deleting product:', error.response.data);
         } else if (error.request) {
             console.error('Error deleting product: No response received');
         } else {
-            console.error(error.message);
+            console.error('Error deleting product:', error.message);
         }
     }
 };
+
 
 
 
@@ -77,7 +83,19 @@ const Products = () => {
       width: 180,
       maxWidth: 80,
       editable: true,
-      render: (text, record) => <img src={record.product_img} alt='Product' />,
+      render: (text, record) => {
+        return (
+          <img 
+            src={dataSource.product_img}
+            alt="Product" 
+            style={{ maxWidth: '100%', maxHeight: '100%' }} 
+            onError={(e) => {
+              e.target.src; // Replace with your fallback image path
+              console.error('Error loading image:', e.target.src);
+            }}
+          />
+        );
+      }
     },
     {
       title: 'Product Name',

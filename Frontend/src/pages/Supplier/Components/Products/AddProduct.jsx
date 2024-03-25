@@ -28,7 +28,7 @@ const formItemLayout = {
 };
 
 const AddProduct = () => {
-  const { csrf, getCsrfToken } = useCsrfContext();
+  const {csrf} = useCsrfContext();
   const [inputData, setInputData] = useState({
     product_img: "",
     product_name: "",
@@ -57,7 +57,6 @@ const AddProduct = () => {
   };
 
   useEffect(() => {
-    getCsrfToken();
   }, []);
 
   const handleSubmit = async () => {
