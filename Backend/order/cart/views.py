@@ -15,6 +15,7 @@ from django.shortcuts import redirect
 import stripe, os
 from dotenv import load_dotenv
 import uuid
+from django.views.decorators.http import require_POST
 
 
 def is_valid_uuid(string):
@@ -99,7 +100,7 @@ def add_to_cart(request):
 
 
 @csrf_protect
-@api_view(['POST'])
+@require_POST
 def remove_from_cart(request):
     data = json.loads(request.body)
     headers = request.META
@@ -181,7 +182,7 @@ def view_cart(request):
 
 
 @csrf_protect
-@api_view(['POST'])
+@require_POST
 def clear_cart(request):
     if request.user.is_anonymous:
         return JsonResponse({'message': 'You must be logged in to clear your cart'})
@@ -200,8 +201,8 @@ def clear_cart(request):
         return JsonResponse({'message': 'Cart not found'})
 
 
-load_dotenv()
-stripe.api_key = os.environ['STRIPE_SECRET_KEY']
+# load_dotenv()
+# stripe.api_key = os.environ['STRIPE_SECRET_KEY']
 
 
 @csrf_exempt
@@ -236,8 +237,8 @@ def create_checkout_session(request):
     return redirect(checkout_session.url, code=303)
 
 
-load_dotenv()
-stripe.api_key = os.environ['STRIPE_SECRET_KEY']
+# load_dotenv()
+# stripe.api_key = os.environ['STRIPE_SECRET_KEY']
 
 
 @csrf_exempt

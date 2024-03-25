@@ -13,7 +13,7 @@ import stripe, os
 
 import json
 
-stripe.api_key = os.environ['STRIPE_SECRET_KEY']
+# stripe.api_key = os.environ['STRIPE_SECRET_KEY']
 
 
 @csrf_exempt
@@ -53,10 +53,12 @@ def create_product(request):
 def update_product(request):
     if request.user.is_anonymous:
         return JsonResponse({'message': 'You are not authenticated, log in then try again'}, status=400)
+
     print('the user updating is: ', request.user)
     data = json.loads(request.body)
     pk = data.get('id')
     print(pk)
+
     try:
         product = ProductCatalog.objects.get(pk=pk)
     except ProductCatalog.DoesNotExist:
