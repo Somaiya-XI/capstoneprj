@@ -109,6 +109,20 @@ def cancel_order(request):
     return JsonResponse({'message': 'Order cancelled successfully'}, status=200)
 
 
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def view_orders_history(request, id):
+    orders = Order.objects.filter(retailer=id)
+    if not orders:
+        return JsonResponse({'message': 'You do not have any orders'})
+    orders_list = []
+    for order in orders:
+        order_serialized = OrderSerializer(order)
+        orders_list.append(order_serialized.data)
+    return JsonResponse(orders_list, safe=False, status=200)
+
+
 # Create your views here.
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
