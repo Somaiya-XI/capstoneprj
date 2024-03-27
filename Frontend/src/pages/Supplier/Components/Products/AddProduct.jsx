@@ -15,6 +15,7 @@ import SupplierLayout from "../Layout/SupplierLayout";
 import { useCsrfContext } from "../../../../Contexts";
 import { API } from "../../../../backend";
 import { toastError } from "../Orders";
+import { toast } from "sonner";
 
 const formItemLayout = {
   labelCol: {
@@ -30,13 +31,13 @@ const formItemLayout = {
 const AddProduct = () => {
   const {csrf} = useCsrfContext();
   const [inputData, setInputData] = useState({
-    product_img: "",
+    product_img: null,
     product_name: "",
     brand: "",
     description: "",
     category: "",
     price: "",
-    discount_percentage: "",
+    discount_percentage: 0,
     quantity: "",
     min_order_quantity: "",
     production_date: null,
@@ -76,8 +77,8 @@ const AddProduct = () => {
       alert("Data Sent");
       navigate("/supplier-dashboard/products");
     } catch (err) {
-      toastError();
-      alert("Error occurred while submitting data. Please try again.");
+      toast.error('Error occurred while submitting data. Please try again.');
+      // alert("Error occurred while submitting data. Please try again.");
       console.log(err.response.data);
     }
   };
@@ -108,7 +109,7 @@ const AddProduct = () => {
           className="AddForm"
           {...formItemLayout}
           variant="filled"
-          style={{ maxWidth: 500, padding: 60 }}
+          style={{ maxWidth: 1500, padding: 60 }}
           onFinish={handleSubmit}
           childrenColumnName="antdChildren"
         >
