@@ -20,6 +20,7 @@ from django.urls import path, include
 
 from django.conf.urls.static import static
 from django.conf import settings
+from product.mqtt_subscribe import mqtt_subscribe
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,6 +28,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api/', include('api.urls')),
     path('api2/', include('user.urls')),
+    path('mqtt/subscribe/', mqtt_subscribe, name='mqtt_subscribe'),
     # custom apps urls:
     path('product/', include('product.urls')),
     path('category/', include('category.urls')),

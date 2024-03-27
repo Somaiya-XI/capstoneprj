@@ -9,4 +9,4 @@ class ScheduleSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = SupplyingSchedule
-        fields = '__all__'
+        fields = ['id', 'time', 'day', 'supplier_id']

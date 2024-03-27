@@ -86,7 +86,7 @@ const Products = () => {
       render: (text, record) => {
         return (
           <img 
-            src={dataSource.product_img}
+            src={`http://127.0.0.1:8000${record.product_img}`}
             alt="Product" 
             style={{ maxWidth: '100%', maxHeight: '100%' }} 
             onError={(e) => {

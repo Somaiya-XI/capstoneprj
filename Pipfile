@@ -11,6 +11,7 @@ pillow = "*"
 drf-extra-fields = "*"
 stripe = "*"
 python-dotenv = "*"
+paho-mqtt = "*"
 
 [dev-packages]
 

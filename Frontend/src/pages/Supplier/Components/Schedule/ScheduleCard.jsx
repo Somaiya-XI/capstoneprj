@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { FiTrash2 } from "react-icons/fi";
-import { CiEdit } from "react-icons/ci";
-import { useNavigate, useParams } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {FiTrash2} from "react-icons/fi";
+import {CiEdit} from "react-icons/ci";
+import {useNavigate, useParams} from "react-router-dom";
 import {
   Modal,
   ModalContent,
@@ -23,31 +23,31 @@ import {
   TableCell,
   Tooltip,
 } from "@nextui-org/react";
-import { Card, Popconfirm, TimePicker } from "antd";
-import { useUserContext, useCsrfContext } from "../../../../Contexts";
+import {Card, Popconfirm, TimePicker} from "antd";
+import {useUserContext, useCsrfContext} from "../../../../Contexts";
 
 import axios from "axios";
+import {API} from "../../../../backend";
+import {toast} from "sonner";
 
 const ScheduleCard = () => {
   const [dataForm, setFormData] = useState({});
   const [selectedKey, setSelectedKey] = useState(null);
 
-  const [editedData, setEditedData] = useState({ day: "", time: "" });
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [editedData, setEditedData] = useState({day: "", time: ""});
+  const {isOpen, onOpen, onClose} = useDisclosure();
 
-  const { user } = useUserContext();
-  const {
-    csrf,
-  } = useCsrfContext();
-  const { id } = useParams();
+  const {user} = useUserContext();
+  const {csrf} = useCsrfContext();
+  const {id} = useParams();
   const days = [
-    { value: "sun", label: "Sunday" },
-    { value: "mon", label: "Monday" },
-    { value: "tue", label: "Tuesday" },
-    { value: "wed", label: "Wednesday" },
-    { value: "thu", label: "Thursday" },
-    { value: "fri", label: "Friday" },
-    { value: "sat", label: "Saturday" },
+    {value: "sun", label: "Sunday"},
+    {value: "mon", label: "Monday"},
+    {value: "tue", label: "Tuesday"},
+    {value: "wed", label: "Wednesday"},
+    {value: "thu", label: "Thursday"},
+    {value: "fri", label: "Friday"},
+    {value: "sat", label: "Saturday"},
   ];
 
   const getFullWeekdayName = (abbreviation) => {
@@ -63,38 +63,39 @@ const ScheduleCard = () => {
     return days[abbreviation.toLowerCase()] || abbreviation;
   };
 
+  const fetchSchedules = async () => {
+    try {
+      const response = await axios.get(`${API}schedule/view/${user.id}`);
+      setFormData(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}schedule/`
-        );
-        setFormData(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, [id]);
+    fetchSchedules();
+  }, []);
 
   const onDeleteProduct = (key, selectedKey) => {
-    const newData = { ...dataForm };
+    const newData = {...dataForm};
     delete newData[key];
     setFormData(newData);
 
     axios
-      .delete(`${import.meta.env.VITE_API_URL}schedule/delete/${selectedKey}`, {
-        data: { id: key },
+      .delete(`${API}schedule/delete/`, {
+        data: {id: key},
         headers: {
           "X-CSRFToken": csrf,
         },
+        withCredentials: true,
       })
       .then((response) => {
-        console.log(response);
+        console.log(response.data);
+        toast.success(response.data.message);
       })
       .catch((error) => {
         console.error("Error deleting product:", error);
       });
+    fetchSchedules();
   };
 
   const handleEdit = (key) => {
@@ -105,29 +106,25 @@ const ScheduleCard = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    try {
-      const dataWithSupplierId = {
-        ...editedData,
-        supplier_id: user.id,
-      };
 
-      const response = await axios.put(
-        `${import.meta.env.VITE_API_URL}schedule/create/${selectedKey}/`,
-        dataWithSupplierId,
-        {
-          headers: {
-            "X-CSRFToken": csrf, 
-          },
-        }
-      );
+    try {
+      const response = await axios.put(`${API}schedule/update/`, editedData, {
+        headers: {
+          "X-CSRFToken": csrf,
+        },
+        withCredentials: true,
+      });
       console.log(response.data);
+      toast.success(response.data.message);
       onClose();
     } catch (error) {
-      console.log("Error!!:", error);
+      console.log("Error!!:", error.message);
       if (error.response) {
         console.log("Server Response Data:", error.response.data);
       }
     }
+    setEditedData({day: editedData.day, ...editedData});
+    fetchSchedules();
   };
 
   return (
@@ -148,23 +145,21 @@ const ScheduleCard = () => {
                   <div className="relative flex items-center gap-2">
                     <Popconfirm
                       title="Sure to delete?"
-                      onConfirm={() => onDeleteProduct(key, selectedKey)}
+                      onConfirm={() => onDeleteProduct(dataForm[key].id, selectedKey)}
                     >
-                      <Tooltip content="Delete user">
-                        <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                          <FiTrash2 />
-                        </span>
-                      </Tooltip>
+                      <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                        <FiTrash2 />
+                      </span>
                     </Popconfirm>
 
-                    <Tooltip content="Edit user">
-                      <span
-                        className="text-lg text-default-1000 cursor-pointer active:opacity-50"
-                        onClick={() => handleEdit(key)}
-                      >
-                        <CiEdit />
-                      </span>
-                    </Tooltip>
+                    {/* <Tooltip content="Edit user"> */}
+                    <span
+                      className="text-lg text-default-1000 cursor-pointer active:opacity-50"
+                      onClick={() => handleEdit(key)}
+                    >
+                      <CiEdit />
+                    </span>
+                    {/* </Tooltip>  this component has heavy animation, it causes errors {you can check it}*/}
                   </div>
                 </TableCell>
               </TableRow>
@@ -174,18 +169,17 @@ const ScheduleCard = () => {
       <Modal isOpen={isOpen} onOpenChange={onClose} placement="top-center">
         <ModalContent>
           <>
-            <ModalHeader className="flex flex-col gap-1">
-              Edit Schedule
-            </ModalHeader>
+            <ModalHeader className="flex flex-col gap-1">Edit Schedule</ModalHeader>
             <ModalBody>
               <ModalBody>
                 <Select
+                  required
                   items={days}
                   autoFocus
                   label="Day"
                   placeholder="Select day"
                   variant="bordered"
-                  value={dataForm.day}
+                  value={editedData.day}
                   onChange={(selectedDay) =>
                     setEditedData({
                       ...editedData,
@@ -193,20 +187,17 @@ const ScheduleCard = () => {
                     })
                   }
                 >
-                  {(days) => (
-                    <SelectItem key={days.value}>{days.label}</SelectItem>
-                  )}
+                  {(days) => <SelectItem key={days.value}>{days.label}</SelectItem>}
                 </Select>
 
                 <Input
+                  required
                   label="Time"
                   placeholder="Enter your time"
                   type="time"
                   variant="bordered"
                   value={editedData.time}
-                  onChange={(e) =>
-                    setEditedData({ ...editedData, time: e.target.value })
-                  }
+                  onChange={(e) => setEditedData({...editedData, time: e.target.value})}
                 />
               </ModalBody>
             </ModalBody>

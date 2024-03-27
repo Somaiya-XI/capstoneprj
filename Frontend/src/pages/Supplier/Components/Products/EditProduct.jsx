@@ -5,105 +5,98 @@ import SupplierLayout from '../Layout/SupplierLayout';
 import ScheduleCard from '../Schedule/ScheduleCard';
 import { useUserContext, useCsrfContext } from '../../../../Contexts';
 import { API } from '../../../../backend';
-
+import { fileToBase64, imgUrlToBase64 } from '../../../../Helpers';
 
 const EditProduct = () => {
   const {csrf} = useCsrfContext();
-  const {user} = useUserContext();
   const { id } = useParams();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     product_img: '',
+    product_id: '',
     product_name: '',
     brand: '',
     description: '',
     category: '',
     price: '',
+    new_price: '',
     discount_percentage: '',
     quantity: '',
     min_order_quantity: '',
     production_date: null,
     expiry_date: null,
-    supplier: '',
   });
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${API}product/get-user-products/${user.id}/`, {
-        withCredentials: true,
-      });
-      console.log("Check it:",csrf)
-  
-      const productsWithKeys = response.data.map((product) => ({
-        ...product,
-        key: product.product_id, 
-      }));
-  
-      setDataSource(productsWithKeys);
-      console.log(productsWithKeys)
+      const response = await axios.get(`${API}product/catalog-product/${id}/`);
+      console.log('Check it:', csrf);
+      const prod = response.data;
+      const {supplier, product_img, ...product} = prod;
+
+      if (product_img) {
+        const currentImg = await imgUrlToBase64(product_img);
+        product.product_img = currentImg;
+      }
+
+      setFormData(product);
     } catch (error) {
       console.error(error.data);
     }
   };
-  
-  
+
   useEffect(() => {
     fetchProducts();
   }, []);
-  
-  
-  
 
   const handleDateChange = (name, date) => {
     setFormData({
       ...formData,
-      [name]: date
+      [name]: date,
     });
   };
 
-  const handleImageChange = (name) => (event) => {
+  const handleChange = (name) => async (event) => {
     if (name === 'product_img') {
       const img = event.target.files[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        setFormData({
-          ...formData,
-          product_img: reader.result,
-        });
-      };
+      const image64 = await fileToBase64(img);
+      setFormData({
+        ...formData,
+        product_img: image64,
+      });
 
-      if (img) {
-        reader.readAsDataURL(img);
-      }
+      // if (img) {
+      //   reader.readAsDataURL(img);
+      // }
     } else {
       setFormData({
         ...formData,
-        success: 'Successed!',
         [name]: event.target.value,
       });
     }
   };
 
-
   function handleSubmit(event) {
     event.preventDefault();
     const requestData = {
       ...formData,
-      data: { id: id }, 
-      headers: {
-        "X-CSRFToken": csrf,
-      },
-      withCredentials: true,
+      id: id,
     };
-    
+
     console.log('Request Object:', requestData); // Log the request object
-    
-    axios.put(`${import.meta.env.VITE_API_URL}product/catalog/update/`, requestData)
-      .then(response => {
-        navigate('/SupplierDashboard/Products');
+
+    axios
+      .put(`${API}product/catalog/update/`, requestData, {
+        headers: {
+          'X-CSRFToken': csrf,
+        },
+        withCredentials: true,
       })
-      .catch(err => {
-        console.log('Error!!:', err);
+      .then((response) => {
+        navigate('/supplier-dashboard/products');
+      })
+      .catch((err) => {
+        console.log('Error!!:', err.message);
         if (err.response) {
           console.log('Server Response Data:', err.response.data);
         }
@@ -140,7 +133,7 @@ const EditProduct = () => {
                 className='form-control'
                 name='product_img'
                 accept='image/*'
-                onChange={(e) => handleImageChange("product_img")(e)}
+                onChange={handleChange("product_img")}
                 style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
               />
             </div>
@@ -153,7 +146,7 @@ const EditProduct = () => {
                 id="product_name"
                 name="product_name"
                 value={formData.product_name}
-                onChange={e=>setFormData({...formData, product_name:e.target.value})}
+                onChange={handleChange("product_name")}
                 required
                 style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
               />
@@ -169,7 +162,7 @@ const EditProduct = () => {
                 id="brand"
                 name="brand"
                 value={formData.brand}
-                onChange={e=>setFormData({...formData, brand:e.target.value})}
+                onChange={handleChange('brand')}
                 required
                 style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
               />
@@ -181,8 +174,8 @@ const EditProduct = () => {
                 className="form-control"
                 id="description"
                 name="description"
-                value={formData.description}
-                onChange={e=>setFormData({...formData, description:e.target.value})}
+                value={formData.description || ''}
+                onChange={handleChange('description')}
                 style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
               />
             </div>
@@ -194,7 +187,7 @@ const EditProduct = () => {
                 id="category"
                 name="category"
                 value={formData.category}
-                onChange={e=>setFormData({...formData, category:e.target.value})}
+                onChange={handleChange('category')}
                 required
                 style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
               >
@@ -212,7 +205,7 @@ const EditProduct = () => {
                 id="price"
                 name="price"
                 value={formData.price}
-                onChange={e=>setFormData({...formData, price:e.target.value})}
+                onChange={handleChange('price')}
                 required
                 style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
               />
@@ -226,7 +219,7 @@ const EditProduct = () => {
                 id="discount_percentage"
                 name="discount_percentage"
                 value={formData.discount_percentage}
-                onChange={e=>setFormData({...formData, discount_percentage:e.target.value})}
+                onChange={handleChange('discount_percentage')}
                 style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
               />
             </div>
@@ -239,7 +232,7 @@ const EditProduct = () => {
                 id="quantity"
                 name="quantity"
                 value={formData.quantity}
-                onChange={e=>setFormData({...formData, quantity:e.target.value})}
+                onChange={handleChange('quantity')}
                 required
                 style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
               />
@@ -253,7 +246,7 @@ const EditProduct = () => {
                 id="min_order_quantity"
                 name="min_order_quantity"
                 value={formData.min_order_quantity}
-                onChange={e=>setFormData({...formData, min_order_quantity:e.target.value})}
+                onChange={handleChange('min_order_quantity')}
                 required
                 style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
               />
@@ -266,7 +259,7 @@ const EditProduct = () => {
                 className="form-control"
                 id="production_date"
                 name="production_date"
-                value={formData.production_date}
+                value={formData.production_date || ""}
                 onChange={(e) => handleDateChange('production_date', e.target.value)}
                 required
                 style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
@@ -280,7 +273,7 @@ const EditProduct = () => {
                 className="form-control"
                 id="expiry_date"
                 name="expiry_date"
-                value={formData.expiry_date}
+                value={formData.expiry_date || ""}
                 onChange={(e) => handleDateChange('expiry_date', e.target.value)}
                 required
                 style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}

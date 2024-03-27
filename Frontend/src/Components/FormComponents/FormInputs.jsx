@@ -4,6 +4,8 @@ import {EmailIcon, PasswordIcon, UploadFileIcon} from './Icons.jsx';
 import '../../pages/Account/form.css';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/bootstrap.css';
+import { fileToBase64 } from '../../Helpers/Base64Converter.jsx';
+
 const IconedInput = ({
   icon: IconComponent,
   placeholder,
@@ -109,20 +111,19 @@ export const EmailFeild = ({placeholder = 'enter your email', onChange, value, r
 export const ImageField = ({text = 'upload file ~', dispatch = null}) => {
   const [fileName, setFileName] = useState(null);
 
-  const handleFileUpload = (event) => {
+  const handleFileUpload = async (event) => {
     const file = event.target.files[0];
-    const reader = new FileReader();
+    const file64 = await fileToBase64(file);
     if (dispatch) {
-      reader.onload = () => {
+      
         dispatch({
           type: 'input',
           field: 'commercial_reg',
-          value: reader.result,
+          value: file64,
         });
-      };
-      if (file) {
-        reader.readAsDataURL(file);
-      }
+      // if (file) {
+      //   reader.readAsDataURL(file);
+      // }
     }
     setFileName(file.name);
   };

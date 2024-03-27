@@ -25,6 +25,7 @@ import {
 } from './url.jsx';
 import {Toaster} from 'sonner';
 import ApiTest from './pages/Test.jsx';
+import HardwareTest from './pages/HDsimulation.jsx';
 
 function App() {
   return (
@@ -56,6 +57,7 @@ function App() {
                 <Route path='/reset-password/form/:uidb64/:token' element={<ResetPassword />} />
                 <Route path='/payment' element={<Payment />} />
                 <Route path='/test' element={<ApiTest />} />
+                <Route path='/hd-test' element={<HardwareTest />} />
               </Routes>
             </CartContextProvider>
           </CsrfTokenContextProvider>
