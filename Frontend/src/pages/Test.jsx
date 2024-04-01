@@ -61,7 +61,7 @@ const ApiTest = () => {
       return response;
     } catch (error) {
       toastError();
-      console.error(error.message);
+      console.error(error.response.data);
     }
   };
   const handleCreateSchedule = async () => {
@@ -85,7 +85,7 @@ const ApiTest = () => {
       return response;
     } catch (error) {
       toastError();
-      console.error(error.message);
+      console.error(error.response.data);
     }
   };
   const handleDeleteSchedule = async () => {
@@ -106,7 +106,7 @@ const ApiTest = () => {
       return response;
     } catch (error) {
       toastError();
-      console.error(error.message);
+      console.error(error.response.data);
     }
   };
   const handleUpdateProduct = async () => {
@@ -128,7 +128,7 @@ const ApiTest = () => {
       return response;
     } catch (error) {
       toastError();
-      console.error(error.message);
+      console.error(error.response.data);
     }
   };
 
@@ -145,7 +145,7 @@ const ApiTest = () => {
       return response;
     } catch (error) {
       toastError();
-      console.error(error.message);
+      console.error(error.response.data);
     }
   };
 
@@ -168,7 +168,7 @@ const ApiTest = () => {
       return response;
     } catch (error) {
       toastError();
-      console.error(error.message);
+      console.error(error.response.data);
     }
   };
 
@@ -190,7 +190,7 @@ const ApiTest = () => {
       return response;
     } catch (error) {
       toastError();
-      console.error(error.message);
+      console.error(error.response.data);
     }
   };
   return (

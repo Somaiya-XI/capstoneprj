@@ -70,14 +70,14 @@ ROOT_URLCONF = 'WiseR.urls'
 
 CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SAMESITE = 'Lax'
-CSRF_COOKIE_HTTPONLY = False
-SESSION_COOKIE_HTTPONLY = False
-CSRF_TRUSTED_ORIGINS = ['http://localhost:5173']
+# CSRF_COOKIE_HTTPONLY = False
+# SESSION_COOKIE_HTTPONLY = False
+CSRF_TRUSTED_ORIGINS = ['http://localhost:5173','http://127.0.0.1:5173' ]
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
 ]
-CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken', 'id']
+CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
     'accept',
@@ -89,7 +89,6 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
-    'id',
     'X-CSRFToken',
 ]
 
