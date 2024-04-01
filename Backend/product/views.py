@@ -47,6 +47,18 @@ def create_product(request):
         return JsonResponse(serializer.errors, status=400)
 
 
+def create_stripe_product():
+    stripe.Product.create(
+        id="45e6d19f-d900-427c-847e-a4966102c47e",
+        name="Passion Fruit Greek Yogurt",
+        default_price_data={
+            "currency": 'usd',
+            "unit_amount_decimal": 15.00 * 100,
+        },
+    )
+    return JsonResponse({'message': 'product created successfully'})
+
+
 @csrf_exempt
 @api_view(['PUT', 'DELETE'])
 @permission_classes([AllowAny])
