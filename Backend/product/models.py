@@ -25,7 +25,7 @@ class Product(models.Model):
 
 class ProductCatalog(Product):
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, verbose_name="Supplier")
-    product_img = models.ImageField("Product Image", upload_to='catalogImgs/', blank=True, null=False)
+    product_img = models.ImageField("Product Image", upload_to='catalogImgs/', blank=False, null=False)
     description = models.CharField("Description", max_length=250, blank=True, null=True)
     category = models.ForeignKey(
         Category,

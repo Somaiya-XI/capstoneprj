@@ -206,66 +206,29 @@ def clear_cart(request):
 
 
 @csrf_exempt
+@api_view(['POST'])
+@permission_classes([AllowAny])
 def create_checkout_session(request):
     # user = request.user.id
-    # cart = Cart.objects.filter(user=user)
-    # cart_items = CartItem.objects.filter(cart=cart.cart_id)
-    # items_details = []
-    # for cart_item in cart_items:
-    #     items_details.append(
-    #         {
-    #             'price': cart_item.product.product_id,
-    #             'quantity': cart_item.quantity,
-    #         }
-    #     )
+    user = 16
+    try:
+        cart = Cart.objects.get(user=user)
+    except:
+        return JsonResponse({'message':'You do not have cart'})
+    cart_items = CartItem.objects.filter(cart=cart.cart_id)
+    if not cart_items:
+        return JsonResponse({'message':'You do not have items in your cart'})
+    items_details = []
+    for cart_item in cart_items:
+        stripe_product = stripe.Product.retrieve(str(cart_item.product.product_id))
+        items_details.append(
+            {
+                'price': stripe_product.default_price,
+                'quantity': cart_item.quantity,
+            }
+        )
     checkout_session = stripe.checkout.Session.create(
-        # line_items=items_details,
-        line_items=[
-            {
-                'price': 'price_1OsWPPHFxZqMmcOBoEwYzFmN',
-                'quantity': 4,
-            },
-            {
-                'price': 'price_1OswRSHFxZqMmcOBqoxrN7T4',
-                'quantity': 3,
-            },
-        ],
-        mode='payment',
-        success_url=os.environ['URL'] + '?success=true',
-        cancel_url=os.environ['URL'] + '?canceled=true',
-    )
-    return redirect(checkout_session.url, code=303)
-
-
-# load_dotenv()
-# stripe.api_key = os.environ['STRIPE_SECRET_KEY']
-
-
-@csrf_exempt
-def create_checkout_session(request):
-    # user = request.user.id
-    # cart = Cart.objects.filter(user=user)
-    # cart_items = CartItem.objects.filter(cart=cart.cart_id)
-    # items_details = []
-    # for cart_item in cart_items:
-    #     items_details.append(
-    #         {
-    #             'price': cart_item.product.product_id,
-    #             'quantity': cart_item.quantity,
-    #         }
-    #     )
-    checkout_session = stripe.checkout.Session.create(
-        # line_items=items_details,
-        line_items=[
-            {
-                'price': 'price_1OsWPPHFxZqMmcOBoEwYzFmN',
-                'quantity': 4,
-            },
-            {
-                'price': 'price_1OswRSHFxZqMmcOBqoxrN7T4',
-                'quantity': 3,
-            },
-        ],
+        line_items=items_details,
         mode='payment',
         success_url=os.environ['URL'] + '?success=true',
         cancel_url=os.environ['URL'] + '?canceled=true',
