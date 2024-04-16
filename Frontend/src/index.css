@@ -1,6 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+a.custom-link:hover {
+  color: #cfcfcf !important;
+}
+a.custom-link {
+  color: white !important;
+}
+
 /* 
 :root {
   font-family: 'Poppins', sans-serif;

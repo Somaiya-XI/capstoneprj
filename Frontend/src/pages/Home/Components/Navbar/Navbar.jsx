@@ -20,7 +20,7 @@ const Navbar = ({children}) => {
         <div className='col-md-12 d-flex align-items-center justify-between'>
           <div className='logo'>
             <Link to='/'>
-              <img src={logo} alt='' />
+              <p className='font-bold text-[#023c07] text-center text-4xl logo'>WiseR</p>
             </Link>
           </div>
           <InputGroup />
@@ -37,9 +37,22 @@ const Navbar = ({children}) => {
               <>
                 <ButtonGroup icon='solar:cart-large-minimalistic-outline' buttonText={'  My Cart'} link='/cart' />
                 <div className='divider'></div>
-              </> // add to cart icon solar:cart-plus-outline solar:cart-large-2-bold-duotone solar:user-minus-broken
+                <ButtonGroup icon='carbon:dashboard' buttonText={'Dashboard'} link='/hardware-register' />
+                <div className='divider'></div>
+              </>
             )}
-
+            {isAuthenticated && user.role === 'ADMIN' && (
+              <>
+                <ButtonGroup
+                  icon='fluent:task-list-square-person-20-regular'
+                  buttonText={'Users List'}
+                  link='/user-activation'
+                  width='28'
+                  height='28'
+                />
+                <div className='divider'></div>
+              </>
+            )}
             {isAuthenticated && (
               <>
                 <ButtonGroup icon='solar:user-minus-broken' buttonText={'  Logout'} link='/' onClick={logUserOut} />

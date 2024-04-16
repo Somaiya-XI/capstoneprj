@@ -1,7 +1,7 @@
 import {NavLink} from 'react-router-dom';
 import './buttongroup.css';
 
-const ButtonGroup = ({icon, buttonText, link = '#', onClick}) => {
+const ButtonGroup = ({icon, buttonText, link = '#', onClick, width = '24', height = '24'}) => {
   // Absolutely cheap way but for now it's my only option ┗( T﹏T )┛
   const renderIcon = () => {
     if (typeof icon === 'string') {
@@ -12,13 +12,15 @@ const ButtonGroup = ({icon, buttonText, link = '#', onClick}) => {
               inline
               icon={icon}
               onClick={onClick}
-              width='24'
-              height='24'
+              width={width}
+              height={height}
               style={{color: '#8fdb6f'}}
             ></Iconify-icon>
           );
         } else {
-          return <Iconify-icon inline icon={icon} width='24' height='24' style={{color: '#8fdb6f'}}></Iconify-icon>;
+          return (
+            <Iconify-icon inline icon={icon} width={width} height={height} style={{color: '#8fdb6f'}}></Iconify-icon>
+          );
         }
       } else if (icon.includes('/') || icon.includes('.')) {
         if (onClick) {

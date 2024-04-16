@@ -1,9 +1,13 @@
 export {default as AdminRoute} from './Routes/AdminRoute';
 export {default as RetailerRoute} from './Routes/RetailerRoute';
 export {default as SupplierRoute} from './Routes/SupplierRoute';
-export {default as CartButtons} from './CartComponents/CartButtons';
+export {default as CartButton} from './CartComponents/CartButton.jsx';
 export {default as FormsContainer} from './FormComponents/FormsContainer.jsx';
-export {default as CustomErrorAlert, CustomSuccessToast as CustomSuccessToast} from './FormComponents/CustomAlerts';
+export {
+  default as CustomErrorAlert,
+  CustomSuccessToast as CustomSuccessToast,
+  CustomErrorToast,
+} from './BasicComponents/CustomAlerts';
 export {
   default as IconedInput,
   PasswordFeild,
@@ -25,6 +29,11 @@ export {
   CompIcon,
   AddressIcon,
   SimpleLogo,
-} from './FormComponents/Icons';
+  HardwareIcon,
+} from './Icons.jsx';
+
+export {default as SearchNav, BasicNav as BasicNav} from './BasicComponents/Nav.jsx';
+export {default as PriceCard} from './HardwareSetComponents/PriceCard.jsx';
+export {default as RegisterModal} from './HardwareSetComponents/RegisterModal.jsx';
 
 //export {default as xx} from './CartComponents/xx';

@@ -4,9 +4,11 @@ import axios from 'axios';
 import './ActivationPage.css';
 import {Avatar} from '@boringer-avatars/react';
 import {useNavigate} from 'react-router-dom';
+import {Switch, cn} from '@nextui-org/react';
+import {BasicNav} from '../../Components';
 
 const UserActivation = () => {
-  const navigate = useNavigate();
+  const [isActive, setIsActive] = useState(false);
   const [values, setValues] = useState({
     users: [],
     filteredUsers: [],
@@ -38,8 +40,14 @@ const UserActivation = () => {
       });
     }
   };
-  const activateUser = (userEmail) => {
-    changeUserActivationStatus(userEmail, true);
+  const onChange = (userEmail) => {
+    if (isActive) {
+      changeUserActivationStatus(userEmail, false);
+      setIsActive(false);
+    } else {
+      changeUserActivationStatus(userEmail, true);
+      setIsActive(true);
+    }
   };
 
   const deactivateUser = (userEmail) => {
@@ -55,9 +63,7 @@ const UserActivation = () => {
       })
       .then(() => {
         const updatedUsers = users.map((user) =>
-          user.fields.email === userEmail
-            ? {...user, fields: {...user.fields, is_active: shouldBeActive}}
-            : user
+          user.fields.email === userEmail ? {...user, fields: {...user.fields, is_active: shouldBeActive}} : user
         );
         setValues({
           ...values,
@@ -121,23 +127,19 @@ const UserActivation = () => {
 
   return (
     <div>
-      {errorMessage && (
-        <div className='alert alert-danger' role='alert'>
-          {errorMessage}
-        </div>
-      )}
-
+      <BasicNav></BasicNav>
       <div className='container page-container'>
+        {errorMessage && (
+          <div className='alert alert-danger w-[650px]' role='alert'>
+            {errorMessage}
+          </div>
+        )}
         <h2 className='text-center mt-4'>Accounts Management</h2>
         <div className='row'>
           <div className='col-sm-12'>
-            <div className='form-group'>
+            <div className='form-group mb-10'>
               <label htmlFor='filterSelect'>Filter By:</label>
-              <select
-                className='form-control'
-                id='filterSelect'
-                onChange={(e) => handleFilterChange(e.target.value)}
-              >
+              <select className='form-control' id='filterSelect' onChange={(e) => handleFilterChange(e.target.value)}>
                 <option value='all'>All</option>
                 <option value='active'>Active</option>
                 <option value='inactive'>Inactive</option>
@@ -198,21 +200,25 @@ const UserActivation = () => {
                       </button>
                     </td>
                     <td>
-                      {user.fields.is_active ? (
-                        <button
-                          className='btn deactivate-btn'
-                          onClick={() => deactivateUser(user.fields.email)}
-                        >
-                          Deactivate
-                        </button>
-                      ) : (
-                        <button
-                          className='btn activate-btn'
-                          onClick={() => activateUser(user.fields.email)}
-                        >
-                          Activate
-                        </button>
-                      )}
+                      <Switch
+                        className=''
+                        classNames={{
+                          wrapper:
+                            'p-0 h-4 overflow-visible group-data-[selected=true]:bg-[#2b572e] bg-[#666666] mx-9 my-2',
+                          thumb: cn(
+                            'w-6 h-6 border-3 shadow-lg',
+                            'border-[#666666]',
+                            'group-data-[hover=true]:border-[#2b572e]',
+                            //selected
+                            'group-data-[selected=true]:ml-6',
+                            'group-data-[selected=true]:border-[#2b572e]',
+                            // pressed
+                            'group-data-[selected]:group-data-[pressed]:ml-4'
+                          ),
+                        }}
+                        isSelected={user.fields.is_active}
+                        onValueChange={() => onChange(user.fields.email)}
+                      ></Switch>
                     </td>
                   </tr>
                 ))}

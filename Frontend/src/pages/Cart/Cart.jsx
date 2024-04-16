@@ -1,28 +1,29 @@
-import { Children, useEffect, useState } from "react";
-import "./Cart.css";
+import {Children, useEffect, useState} from 'react';
+import './Cart.css';
 import {useNavigate} from 'react-router-dom';
-import { LiaTrashAltSolid as TrashIcon } from "react-icons/lia";
-import { useCartContext, useCsrfContext, useUserContext } from "../../Contexts";
-import { API } from "../../backend";
-import axios from "axios";
-import { Link } from "react-router-dom";
-import ListHeader from "./ListHeader";
-import CartItem from "./CartItem";
-import BinIcon from "./BinIcon";
-import Checkout from "./Checkout";
-import { RiEmotionSadLine } from "react-icons/ri";
-import Navbar from "../Home/Components/Navbar/Navbar";
-import Header from "../Home/Components/Header/Header";
-import { toast } from "sonner";
-import { Button } from "@nextui-org/react";
+import {LiaTrashAltSolid as TrashIcon} from 'react-icons/lia';
+import {useCartContext, useCsrfContext, useUserContext} from '../../Contexts';
+import {API} from '../../backend';
+import axios from 'axios';
+import {Link} from 'react-router-dom';
+import ListHeader from './ListHeader';
+import CartItem from './CartItem';
+import BinIcon from './BinIcon';
+import Checkout from './Checkout';
+import {RiEmotionSadLine} from 'react-icons/ri';
+import Navbar from '../Home/Components/Navbar/Navbar';
+import Header from '../Home/Components/Header/Header';
+import {toast} from 'sonner';
+import {Button} from '@nextui-org/react';
+import {SearchNav} from '../../Components';
 
 const Cart = () => {
-  const text = ["Product", "Unit Price", "Quantity", "Subtotal", "Remove"];
+  const text = ['Product', 'Unit Price', 'Quantity', 'Subtotal', 'Remove'];
   const flex = [3];
 
-  const { user } = useUserContext();
-  const { csrf } = useCsrfContext();
-  const { cart, UpdateCartContent, fetchCart, loading } = useCartContext();
+  const {user} = useUserContext();
+  const {csrf} = useCsrfContext();
+  const {cart, UpdateCartContent, fetchCart, loading} = useCartContext();
   const [showSection, setShowSection] = useState(false);
   const navigate = useNavigate();
 
@@ -39,23 +40,23 @@ const Cart = () => {
       try {
         const response = await axios.post(
           `${API}cart/remove-from-cart/`,
-          { product_id: id },
+          {product_id: id},
           {
             headers: {
-              "X-CSRFToken": csrf,
+              'X-CSRFToken': csrf,
             },
             withCredentials: true,
           }
         );
-        console.log("Item removed:", id);
+        console.log('Item removed:', id);
         reloadCart();
-        console.log("response: ", response);
+        console.log('response: ', response);
         return response;
       } catch (error) {
         console.error(error.message);
       }
     } else {
-      toast.error("cannot perform this action, try again", { duration: 1500 });
+      toast.error('cannot perform this action, try again', {duration: 1500});
     }
   };
 
@@ -67,18 +68,18 @@ const Cart = () => {
           {},
           {
             headers: {
-              "X-CSRFToken": csrf,
+              'X-CSRFToken': csrf,
             },
             withCredentials: true,
           }
         );
-        console.log("Cart cleared");
+        console.log('Cart cleared');
         reloadCart();
       } catch (error) {
         console.error(error.message);
       }
     } else {
-      toast.warning("your cart is empty", { duration: 1500 });
+      toast.warning('your cart is empty', {duration: 1500});
     }
   };
 
@@ -88,41 +89,28 @@ const Cart = () => {
 
   return (
     <>
-      <div id="c">
-        <Header />
-        <div id="c" className="md:container md:mx-auto mt-5">
-          <Navbar />
-        </div>
-      </div>
+      <SearchNav />
 
-      <section className="mt-5 mb-5">
-        <div className="container-fluid m-5">
-          <div className="row">
-            <div className="col-lg-8 mb-4">
-              <h1 className="display-5 fw-normal mb-4 ml-4">
-                {user.company_name}'s Cart
-              </h1>
-              <div className="d-flex justify-content-between">
-                <h5 className="ml-4">
-                  Carefully check the information before checkout
-                </h5>
+      <section className='mt-5 mb-5'>
+        <div className='container-fluid m-5'>
+          <div className='row'>
+            <div className='col-lg-8 mb-4'>
+              <h1 className='display-5 fw-normal mb-4 ml-4'>{user.company_name}'s Cart</h1>
+              <div className='d-flex justify-content-between'>
+                <h5 className='ml-4'>Carefully check the information before checkout</h5>
                 <h5>
-                  <Link
-                    onClick={clearCart}
-                    className="text-muted d-flex align-items-center"
-                  >
-                    <span className="mr-1">Clear Cart</span>{" "}
-                    <BinIcon height="1.5rem" width="1.5rem" className="mr-4" />
+                  <Link onClick={clearCart} className='text-muted d-flex align-items-center'>
+                    <span className='mr-1'>Clear Cart</span> <BinIcon height='1.5rem' width='1.5rem' className='mr-4' />
                   </Link>
                 </h5>
               </div>
             </div>
           </div>
-          <div className="col-lg-8">
-            <div className="cart-items">
+          <div className='col-lg-8'>
+            <div className='cart-items'>
               <ListHeader text={text} flexStyles={flex} /> <br />
               {loading ? (
-                <h4 className="m-4">Loading cart...</h4>
+                <h4 className='m-4'>Loading cart...</h4>
               ) : (
                 <>
                   {cart && cart.products?.length > 0 ? (
@@ -143,16 +131,13 @@ const Cart = () => {
                     ))
                   ) : (
                     <div
-                      className="text-muted d-flex align-items-center justify-content-center w-100"
-                      style={{ marginTop: "200px", marginLeft: "auto" }}
+                      className='text-muted d-flex align-items-center justify-content-center w-100'
+                      style={{marginTop: '200px', marginLeft: 'auto'}}
                     >
-                      <span className="display-6 d-flex align-items-center justify-content-center">
+                      <span className='display-6 d-flex align-items-center justify-content-center'>
                         Your Cart is empty
                       </span>
-                      <RiEmotionSadLine
-                        className="ml-2 d-flex align-items-center justify-content-center"
-                        size={40}
-                      />
+                      <RiEmotionSadLine className='ml-2 d-flex align-items-center justify-content-center' size={40} />
                     </div>
                   )}
                 </>
@@ -169,41 +154,35 @@ const Cart = () => {
         </div>
       </section>
 
-      <section className="mt-5 mb-5">
-        <div className="container-fluid m-5">
-          <div className="row">
-            <div className="col-lg-8 mb-4">
-              <div className="d-flex justify-content-between">
-                <h5 className="ml-4"></h5>
+      <section className='mt-5 mb-5'>
+        <div className='container-fluid m-5'>
+          <div className='row'>
+            <div className='col-lg-8 mb-4'>
+              <div className='d-flex justify-content-between'>
+                <h5 className='ml-4'></h5>
                 <h5>
-                  <Button
-                    className="bg-[#023c07] text-white"
-                    onClick={displayCheckout}
-                  >
+                  <Button className='bg-[#023c07] text-white' onClick={displayCheckout}>
                     Shipping Address
                   </Button>
                 </h5>
               </div>
             </div>
           </div>
-          <div className="mt-1 mb-1">
+          <div className='mt-1 mb-1'>
             <br />
             <>
-              { showSection && cart.products?.length > 0 && (
+              {showSection && cart.products?.length > 0 && (
                 <>
-                  <section className="mt-5 mb-5">
-                    <div className="container-fluid m-5">
-                      <div className="col-lg-8 mb-4">
+                  <section className='mt-5 mb-5'>
+                    <div className='container-fluid m-5'>
+                      <div className='col-lg-8 mb-4'>
                         <Checkout />
                       </div>
                     </div>
                   </section>
-                  <Button
-                className="bg-[#023c07] text-white"
-                onClick={() => navigate("/payment")}
-              >
-                Checkout
-              </Button>
+                  <Button className='bg-[#023c07] text-white' onClick={() => navigate('/payment')}>
+                    Checkout
+                  </Button>
                 </>
               )}
             </>

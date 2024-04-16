@@ -6,12 +6,11 @@ import axios from 'axios';
 import {useCsrfContext} from '../../Contexts';
 import BinIcon from './BinIcon';
 import {toast} from 'sonner';
-import {Icon} from '@iconify/react';
+import {CustomErrorToast} from '../../Components';
 
 const CartItem = ({image, id, product_name, unit_price, subtotal, quantity, min_qyt, stock, remove, add}) => {
   const [qty, setQty] = useState(quantity);
   const [subTot, setSubTot] = useState(subtotal);
-  const [alertMessage, setAlertMessage] = useState('');
   const {csrf} = useCsrfContext();
 
   useEffect(() => {
@@ -28,8 +27,15 @@ const CartItem = ({image, id, product_name, unit_price, subtotal, quantity, min_
   };
   const decreaseQuantity = () => {
     const newQuantity = qty - 1;
-    if (newQuantity >= 1) {
+    if (newQuantity >= min_qyt) {
       handleQuantityChange(newQuantity);
+    }
+    if (newQuantity < min_qyt) {
+      CustomErrorToast({
+        msg: `You cannot add less than ${min_qyt} of this product`,
+        position: 'top-right',
+        shiftStart: 'ms-0',
+      });
     }
   };
 
@@ -39,7 +45,11 @@ const CartItem = ({image, id, product_name, unit_price, subtotal, quantity, min_
       handleQuantityChange(newQuantity);
     }
     if (newQuantity > stock) {
-      // alert Over the stock
+      CustomErrorToast({
+        msg: `Over the stock, you cannot add more than ${stock}`,
+        position: 'top-right',
+        shiftStart: 'ms-0',
+      });
     }
   };
 
@@ -66,8 +76,7 @@ const CartItem = ({image, id, product_name, unit_price, subtotal, quantity, min_
     console.log('res: ', res);
     const message = res.data.message;
 
-
-    toast.info(message, {duration: 1500}); 
+    toast.info(message, {duration: 1500});
   };
 
   return (

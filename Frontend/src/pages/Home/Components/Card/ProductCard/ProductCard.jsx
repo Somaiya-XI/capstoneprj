@@ -1,7 +1,7 @@
 import './productcard.css';
 import {AiOutlineShoppingCart} from 'react-icons/ai';
 import {Link} from 'react-router-dom';
-import {CartButtons} from '../../../../../Components';
+import {CartButton} from '../../../../../Components';
 const ProductCard = ({customClass, productID, productImage, productName, seller, price, oldPrice, discount}) => {
   return (
     <div id={customClass} className='col-lg-1-5 col-md-4 col-12 col-sm-6'>
@@ -36,7 +36,7 @@ const ProductCard = ({customClass, productID, productImage, productName, seller,
               ) : null}
               <span>{'$' + price}</span>
             </div>
-            <CartButtons id={productID} />
+            <CartButton id={productID} />
             {/* <div className="add-cart">
               <a className="add" href="#">
                 <AiOutlineShoppingCart /> Add{" "}

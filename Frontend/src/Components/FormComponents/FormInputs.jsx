@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import {EmailIcon, PasswordIcon, UploadFileIcon} from './Icons.jsx';
+import {EmailIcon, PasswordIcon, UploadFileIcon} from '../Icons.jsx';
 import '../../pages/Account/form.css';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/bootstrap.css';

@@ -8,14 +8,22 @@ const Header = ({children}) => {
       <div id='header'>
         <div id='f-section'>
           <Link to='/'>
-            <span id='link'>About Us</span>
+            <span className='text-[#eeeeee] hover:text-zinc-300'>About Us</span>
           </Link>
-          <span id='customDivider'>|</span>
-          <span id='link'>Order Tracking</span>
+          <span className='text-[#eeeeee] mx-3'>|</span>
+          <Link to='/'>
+            <span className='text-[#eeeeee] hover:text-zinc-300'>Support</span>
+          </Link>
         </div>
         <div id='s-section'>
-          <img id='iimg' src={earth} />
-          <p id='para'>English</p>
+          <Iconify-icon
+            className='inline'
+            icon='gravity-ui:planet-earth'
+            width='16'
+            height='16'
+            style={{color: ' #eeeeee'}}
+          />
+          <p id='para' className='text-[#eeeeee]'>English</p>
         </div>
       </div>
       {children}

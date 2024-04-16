@@ -55,23 +55,26 @@ class ProductCatalog(Product):
 
 
 class SupermarketProduct(Product):
-    Retailer = models.ForeignKey(Retailer, on_delete=models.CASCADE, verbose_name="Retailer")
+    retailer = models.ForeignKey(Retailer, on_delete=models.CASCADE, verbose_name="Retailer")
     product_img = models.ImageField("Product Image", upload_to='marketProductImgs/', blank=True, null=True)
+    tag_id = models.CharField(max_length=13, blank=True, null=True)
 
     def __str__(self):
         return self.product_name
 
     class Meta:
         db_table = "Supermarket Product"
+        unique_together = (('tag_id', 'retailer'),)
 
 
-class ProductBulks(Product):
-    bulk_id = models.IntegerField("Bulk ID")
-    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, verbose_name="Brand")
 
+class ProductBulk(models.Model):
+    product = models.ForeignKey(SupermarketProduct, on_delete=models.CASCADE)
+    expiry_date = models.DateField("Expiry Date", null=False, blank=False)
+    bulk_qyt = models.IntegerField()
+    
     def __str__(self):
-        return self.product_name
-
+        return self.product.product_name
     class Meta:
         db_table = "Product Bulk"
-        unique_together = (('product_id', 'bulk_id'),)
+        unique_together = (('id', 'product'),)

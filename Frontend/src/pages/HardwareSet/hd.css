@@ -1,0 +1,57 @@
+.simulation-section-wrapper {
+  display: flex;
+  flex-flow: row;
+  text-align: center;
+  background-color: white;
+  width: 100%;
+  margin: 0%;
+}
+.simulation-section-wrapper > * {
+  flex: 1 100%;
+  margin: 0%;
+  margin-left: 10px;
+  padding: 0%;
+  min-height: fit-content;
+}
+
+.sim-content-wrapper {
+  /* #353535;
+  f2f6fc
+  333333*/
+  border-radius: 30px;
+  margin: 60px 0% 0% 0%;
+  /* top | right | bottom | left */
+  min-height: 93vh;
+}
+
+.sim-secondry-content-wrapper {
+  border-radius: 30px;
+  margin: 60px 0% 0% 0%;
+  min-height: 93vh;
+}
+
+.lottie-title {
+  position: relative;
+}
+
+.sim-logo-btn {
+  position: absolute;
+  cursor: pointer;
+  z-index: 1;
+  margin-top: 1rem;
+  margin-right: 2rem;
+  margin-left: 2rem;
+  opacity: 0.4;
+}
+
+.sim-pattern {
+  position: absolute;
+  z-index: 1;
+  margin-top: 60px;
+  opacity: 0.5;
+}
+
+.sim-content-wrapper .bg-divider {
+  background-color: #f9f9f9;
+  height: 1px;
+}

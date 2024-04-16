@@ -20,15 +20,12 @@ from django.urls import path, include
 
 from django.conf.urls.static import static
 from django.conf import settings
-from product.mqtt_subscribe import mqtt_subscribe
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # rest api urls handled by:
     path('api-auth/', include('rest_framework.urls')),
-    path('api/', include('api.urls')),
     path('api2/', include('user.urls')),
-    path('mqtt/subscribe/', mqtt_subscribe, name='mqtt_subscribe'),
     # custom apps urls:
     path('product/', include('product.urls')),
     path('category/', include('category.urls')),
@@ -38,6 +35,7 @@ urlpatterns = [
     path('schedule/', include('supplyschedule.urls')),
     path('cart/', include('order.cart.urls')),
     path('payment/', include('order.paymentwallet.urls')),
+    path('device/', include('user.retailer.hardware_set.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

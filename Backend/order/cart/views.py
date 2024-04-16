@@ -62,30 +62,28 @@ def add_to_cart(request):
     cart_item = CartItem.objects.filter(cart=cart, product=product).first()
 
     if cart_item:
-        if int(quantity) <= product.min_order_quantity:
-            return JsonResponse(
-                {'message': f'Minimum quantity of this product is {product.min_order_quantity}'}
-            )
-
         if int(quantity) <= product.quantity:
             cart_item.quantity = int(quantity)
             cart_item.save()
             cart_item_serializer = CartItemSerializer(instance=cart_item)
             message = 'Cart item updated'
+            status = 200
         else:
-            message = f'Over the stock, you cannot add more than {product.quantity} piece of this item'
+            message = f'Over the stock, you cannot add more than {product.quantity}'
             cart_item_serializer = None
+            status = 400
     else:
         cart_item_serializer = CartItemSerializer(
             data={
                 'cart': cart.cart_id,
                 'product': product.product_id,
-                'quantity': quantity,
+                'quantity': product.min_order_quantity,
             }
         )
         cart_item_serializer.is_valid(raise_exception=True)
         cart_item = cart_item_serializer.save(product=product)
         message = 'Product added to cart'
+        status = 200
 
     calculate_cart_total(cart)
     cart.save()
@@ -95,8 +93,7 @@ def add_to_cart(request):
         'cart_item': cart_item_serializer.data if cart_item_serializer else [],
         'cart': cart_serializer.data,
     }
-
-    return JsonResponse(response_data)
+    return JsonResponse(response_data, status=status)
 
 
 @csrf_protect
@@ -245,3 +242,4 @@ class CartViewSet(viewsets.ModelViewSet):
 class CartItemViewSet(viewsets.ModelViewSet):
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
+    

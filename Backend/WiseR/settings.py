@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+
+# Loading all application's env vars [NO NEED TO LOAD THEM AGAIN ENTERNALLY]
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-fy+9%rogiu5g_5i5ge&q)nq6l0zxj8v)4&r!!ari9bwtyz3=k='
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -42,7 +47,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     # Custom Apps
-    'api',
     'product',
     'order',
     'order.cart.apps',
@@ -51,6 +55,7 @@ INSTALLED_APPS = [
     'category',
     'user',
     'supplyschedule',
+    'user.retailer.hardware_set',
 ]
 
 MIDDLEWARE = [
@@ -72,11 +77,9 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SAMESITE = 'Lax'
 # CSRF_COOKIE_HTTPONLY = False
 # SESSION_COOKIE_HTTPONLY = False
-CSRF_TRUSTED_ORIGINS = ['http://localhost:5173','http://127.0.0.1:5173' ]
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-]
+FRONTEND_HOST = os.getenv('FRONTEND_HOST')
+CSRF_TRUSTED_ORIGINS = FRONTEND_HOST.split(',')
+CORS_ALLOWED_ORIGINS = FRONTEND_HOST.split(',')
 CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
@@ -160,11 +163,11 @@ USE_TZ = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
+EMAIL_PORT = int(os.getenv('EMAIL_PORT'))
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'WiseR'
-EMAIL_HOST_USER = 'Wiser.application@gmail.com'  # shall be hidden in production
-EMAIL_HOST_PASSWORD = 'ihufkweeamirusvl'  # shall be hidden in production
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/

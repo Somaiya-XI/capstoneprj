@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import ProductCatalog, SupermarketProduct
 from drf_extra_fields.fields import Base64ImageField
-from user.models import Supplier
+from user.models import Supplier, Retailer
 from category.models import Category
 from user.serializers import UserSerializer
 
@@ -42,6 +42,19 @@ class CartProductSerializer(serializers.HyperlinkedModelSerializer):
 
 # send all data as jason
 class SupermarketProductSerializer(serializers.HyperlinkedModelSerializer):
+    retailer = serializers.PrimaryKeyRelatedField(queryset=Retailer.objects.all())
+
     class Meta:
         model = SupermarketProduct
-        fields = '__all__'
+        fields = ['retailer', 'product_id', 'product_name', 'brand', 'price', 'quantity', 'expiry_date', 'product_img']
+
+
+class SupermarketSpecialSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = SupermarketProduct
+        fields = [
+            'product_id',
+            'product_name',
+            'quantity',
+            'expiry_date',
+        ]

@@ -12,6 +12,7 @@ drf-extra-fields = "*"
 stripe = "*"
 python-dotenv = "*"
 paho-mqtt = "*"
+beautifulsoup4 = "*"
 
 [dev-packages]
 

@@ -25,7 +25,7 @@ import {
 } from './url.jsx';
 import {Toaster} from 'sonner';
 import ApiTest from './pages/Test.jsx';
-import HardwareTest from './pages/HDsimulation.jsx';
+import {HardwareSimulation, HardwareRegister} from './pages/index.jsx';
 
 function App() {
   return (
@@ -57,8 +57,8 @@ function App() {
                 <Route path='/reset-password/form/:uidb64/:token' element={<ResetPassword />} />
                 <Route path='/payment' element={<Payment />} />
                 <Route path='/test' element={<ApiTest />} />
-                <Route path='/hd-test' element={<HardwareTest />} />
-              </Routes>
+                <Route path='/simulation' element={<HardwareSimulation />} />
+                <Route path='/hardware-register' element={<HardwareRegister/>}/>              </Routes>
             </CartContextProvider>
           </CsrfTokenContextProvider>
         </UserContextProvider>

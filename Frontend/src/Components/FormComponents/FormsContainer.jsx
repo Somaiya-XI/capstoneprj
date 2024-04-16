@@ -1,7 +1,7 @@
 import {Link} from 'react-router-dom';
 import '../../pages/Account/form.css';
-import {SimpleLogo} from './Icons.jsx';
-import CustomErrorAlert from './CustomAlerts.jsx';
+import {SimpleLogo} from '../Icons.jsx';
+import {CustomErrorAlert} from '../../Components/index.jsx';
 
 const FormsContainer = ({
   formIcon: IconComponent,
