@@ -15,7 +15,7 @@ const HardwareRegister = () => {
       <BasicNav />
       <div className='px-3 py-3 mx-auto text-center'>
         <h1 className='display-4'>Pricing</h1>
-        <p className='lead'>Start now by ordering your prefered set </p>
+        <p className='lead'>Start now by ordering your preferred set </p>
       </div>
       <div className='container '>
         <div className='px-3 py-2  mx-auto text-center justify-between flex'>

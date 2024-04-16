@@ -47,6 +47,7 @@ const HardwareSimulation = () => {
         console.log(error);
       });
   };
+  const reset = <span class='icon-[mdi--loop] text-white ml-2 cursor-pointer' onClick={handleReset}></span>;
 
   useEffect(() => {
     fetchProducts();
@@ -124,6 +125,7 @@ const HardwareSimulation = () => {
                       <Button className='bg-[#617F62] text-white' onClick={() => handleUpdateQuantity('new', 1)}>
                         Add new product
                       </Button>
+                      {reset}
                     </div>
                   </Tab>
                   <Tab key='2' title='Add' className=' px-2 text-center'>
@@ -132,6 +134,7 @@ const HardwareSimulation = () => {
                       <Button className='bg-[#617F62] text-white' onClick={() => handleUpdateQuantity('add', 1)}>
                         Add more to shelf
                       </Button>
+                      {reset}
                     </div>
                   </Tab>
                   <Tab key='3' title='Remove' className=' px-2 text-center'>
@@ -146,14 +149,10 @@ const HardwareSimulation = () => {
                       >
                         Reach 0
                       </Button>
+                      {reset}
                     </div>
                   </Tab>
                 </Tabs>
-                <div className='flex items-end justify-end h-[550px] '>
-                  <Button isIconOnly variant='faded' onClick={handleReset}>
-                    <iconify-icon icon='mdi:loop' width={18}></iconify-icon>
-                  </Button>
-                </div>
               </CardBody>
             </Card>
           </div>
