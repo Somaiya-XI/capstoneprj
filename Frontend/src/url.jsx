@@ -2,6 +2,7 @@ import Products from './pages/Supplier/Components/Products/Products';
 import AddProduct from './pages/Supplier/Components/Products/AddProduct';
 import EditProduct from './pages/Supplier/Components/Products/EditProduct';
 import Orders from './pages/Supplier/Components/Orders';
+import RetailerLayout from './pages/Retailer/RetailerLayout';
 
 import Home from './pages/Home/Home.jsx';
 import ProductDetail from './pages/ProductDetail/ProductDetail.jsx';
@@ -21,6 +22,7 @@ import Schedule from './pages/Supplier/Components/Schedule/Schedule';
 
 
 export {
+  RetailerLayout,
   AddProduct,
   Schedule,
   Products,
