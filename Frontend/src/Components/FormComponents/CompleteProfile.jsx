@@ -111,19 +111,19 @@ export function ProfileSheet() {
         <NavLink className='btn_row d-flex justify-between px-3 gap-md-1'>
           <Iconify-icon
             inline
-            icon='fa-solid:user-edit'
+            icon='lets-icons:file-dock-add'
             width='24'
             height='24'
             style={{color: '#8fdb6f'}}
           ></Iconify-icon>
           <button variant='outline' className='text-sm'>
-            complete profile
+            Complete profile
           </button>
         </NavLink>
       </SheetTrigger>
       <SheetContent className='z-[100]'>
         <SheetHeader>
-          <SheetTitle>Complete Your Profile to access all app features!</SheetTitle>
+          <SheetTitle>Complete Your Profile to Access All Features!</SheetTitle>
         </SheetHeader>
         <div className='grid gap-4 py-4'>
           <IconedInput

@@ -26,6 +26,8 @@ import {
 import {Toaster} from 'sonner';
 import ApiTest from './pages/Test.jsx';
 import {HardwareSimulation, HardwareRegister} from './pages/index.jsx';
+import FourOhFour from './pages/FourOhFour.jsx';
+
 function App() {
   return (
     <>
@@ -37,7 +39,7 @@ function App() {
               <Routes>
                 <Route path='/' element={<Home />} />
                 <Route path='/cart' element={<Cart />} />
-                <Route path='/:id' element={<ProductDetail />} />
+                <Route path='/product/:id' element={<ProductDetail />} />
                 <Route path='/login' element={<Login />} />
                 <Route path='/user-activation'element={  <AdminRoute> <UserActivation /></AdminRoute>} />
                 <Route>
@@ -56,6 +58,7 @@ function App() {
                 <Route path='/test' element={<ApiTest />} />
                 <Route path='/simulation' element={<HardwareSimulation />} />
                 <Route path='/hardware-register' element={<HardwareRegister />} />
+                <Route path='/*' element={<FourOhFour></FourOhFour>}></Route>
               </Routes>
             </CartContextProvider>
           </CsrfTokenContextProvider>

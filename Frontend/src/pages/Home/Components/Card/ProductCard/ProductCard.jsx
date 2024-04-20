@@ -8,7 +8,7 @@ const ProductCard = ({customClass, productID, productImage, productName, seller,
       <div className='product-cart-wrap mb-30 wow animate__ animate__fadeIn animated' data-wow-delay='.1s'>
         <div className='product-img-action-wrap'>
           <div className='product-img product-img-zoom'>
-            <Link to={`/${productID}`}>
+            <Link to={`/product/${productID}`}>
               <img className='default-img' src={productImage} alt='' />
             </Link>
           </div>

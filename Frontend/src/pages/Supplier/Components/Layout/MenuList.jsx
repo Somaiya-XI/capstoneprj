@@ -1,7 +1,6 @@
 import { Menu } from 'antd';
 import "./Supplier.css";
 import { Link } from 'react-router-dom';
-import { logout } from '../../../Account/AuthHelpers';
 
 
 import {
