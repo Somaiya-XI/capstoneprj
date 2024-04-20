@@ -27,8 +27,6 @@ class ProductCatalogSerializer(serializers.HyperlinkedModelSerializer):
             'new_price',
             'quantity',
             'min_order_quantity',
-            'expiry_date',
-            'production_date',
         )
 
 
@@ -46,15 +44,18 @@ class SupermarketProductSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = SupermarketProduct
-        fields = ['retailer', 'product_id', 'product_name', 'brand', 'price', 'quantity', 'expiry_date', 'product_img']
+        fields = [
+            'retailer',
+            'product_id',
+            'product_name',
+            'brand',
+            'price',
+            'quantity',
+            'product_img',
+        ]
 
 
 class SupermarketSpecialSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = SupermarketProduct
-        fields = [
-            'product_id',
-            'product_name',
-            'quantity',
-            'expiry_date',
-        ]
+        fields = ['product_id', 'product_name', 'quantity', ' days_to_expiry']

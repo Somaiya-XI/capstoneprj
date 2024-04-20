@@ -1,6 +1,6 @@
 from rest_framework import routers
 from django.urls import path, include
-from . import views, views_retailer
+from . import views, views_retailer, views_simulation
 
 ## Imported here rather than init.py cuz it uses django models
 ## thus we shall wait for django apps to load before importing the models
@@ -19,7 +19,7 @@ urlpatterns = [
     path('get-user-products/<int:supplier_id>/', views.view_user_products),
     ### RETAILER CONTROLLER URLS ###
     path('get-ret-products/<int:retailer_id>/', views_retailer.view_user_products),
-    path('get-simulation/', views_retailer.get_simulation_list),
-    path('reset-simulation/', views_retailer.reset_simulation),
+    path('get-simulation/', views_simulation.get_simulation_list),
+    path('reset-simulation/', views_simulation.reset_simulation),
     path('', include(router.urls)),
 ]

@@ -15,8 +15,6 @@ class Product(models.Model):
     product_name = models.CharField("Name", max_length=50)
     price = models.DecimalField("Price", max_digits=5, decimal_places=2)
     quantity = models.IntegerField("Quantity")
-    expiry_date = models.DateField("Expiry Date", null=False, blank=False)
-
     brand = models.CharField("Brand", max_length=50, blank=True, null=True)
 
     class Meta:
@@ -41,7 +39,6 @@ class ProductCatalog(Product):
         default=0,
     )
     min_order_quantity = models.IntegerField("Min Allowed", default=1)
-    production_date = models.DateField("Production Date", null=False, blank=False)
 
     @property
     def new_price(self):
@@ -58,6 +55,7 @@ class SupermarketProduct(Product):
     retailer = models.ForeignKey(Retailer, on_delete=models.CASCADE, verbose_name="Retailer")
     product_img = models.ImageField("Product Image", upload_to='marketProductImgs/', blank=True, null=True)
     tag_id = models.CharField(max_length=13, blank=True, null=True)
+    days_to_expiry = models.IntegerField()
 
     def __str__(self):
         return self.product_name
@@ -67,14 +65,14 @@ class SupermarketProduct(Product):
         unique_together = (('tag_id', 'retailer'),)
 
 
-
 class ProductBulk(models.Model):
     product = models.ForeignKey(SupermarketProduct, on_delete=models.CASCADE)
     expiry_date = models.DateField("Expiry Date", null=False, blank=False)
     bulk_qyt = models.IntegerField()
-    
+
     def __str__(self):
         return self.product.product_name
+
     class Meta:
         db_table = "Product Bulk"
         unique_together = (('id', 'product'),)

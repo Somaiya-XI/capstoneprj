@@ -23,8 +23,8 @@ const EditProduct = () => {
     discount_percentage: '',
     quantity: '',
     min_order_quantity: '',
-    production_date: null,
-    expiry_date: null,
+    // production_date: null,
+    // expiry_date: null,
   });
 
   const fetchProducts = async () => {
@@ -252,7 +252,7 @@ const EditProduct = () => {
               />
             </div>
 
-            <div className="form-group mb-3 flex-row" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
+            {/* <div className="form-group mb-3 flex-row" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
               <label htmlFor="production_date" style={{ fontSize: 21, whiteSpace: 'nowrap', marginRight: 40 }}>Production Date</label>
               <input
                 type="date"
@@ -278,7 +278,7 @@ const EditProduct = () => {
                 required
                 style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
               />
-            </div>
+            </div> */}
             <div className="form-group" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
               <button type="submit" className="AddButton2" >Submit</button>
             </div>

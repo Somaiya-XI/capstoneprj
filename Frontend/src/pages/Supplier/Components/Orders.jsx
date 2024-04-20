@@ -313,8 +313,8 @@ const Test = () => {
           product_img: '',
           brand: 'Almarai',
           category: 'Dairy',
-          expiry_date: '2024-11-11',
-          production_date: '2024-11-11',
+          // expiry_date: '2024-11-11',
+          // production_date: '2024-11-11',
         },
         {
           headers: {
