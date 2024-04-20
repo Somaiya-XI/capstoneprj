@@ -4,7 +4,7 @@ import {EmailIcon, PasswordIcon, UploadFileIcon} from '../Icons.jsx';
 import '../../pages/Account/form.css';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/bootstrap.css';
-import { fileToBase64 } from '../../Helpers/Base64Converter.jsx';
+import {fileToBase64} from '../../Helpers/Base64Converter.jsx';
 
 const IconedInput = ({
   icon: IconComponent,
@@ -108,19 +108,18 @@ export const EmailFeild = ({placeholder = 'enter your email', onChange, value, r
   );
 };
 
-export const ImageField = ({text = 'upload file ~', dispatch = null}) => {
+export const ImageField = ({text = 'upload file ~', dispatch = null, ...props}) => {
   const [fileName, setFileName] = useState(null);
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     const file64 = await fileToBase64(file);
     if (dispatch) {
-      
-        dispatch({
-          type: 'input',
-          field: 'commercial_reg',
-          value: file64,
-        });
+      dispatch({
+        type: 'input',
+        field: 'commercial_reg',
+        value: file64,
+      });
       // if (file) {
       //   reader.readAsDataURL(file);
       // }
@@ -129,7 +128,10 @@ export const ImageField = ({text = 'upload file ~', dispatch = null}) => {
   };
 
   return (
-    <label className='flex items-center px-3 py-3 mx-auto mt-6 mb-6 text-center bg-white border-2 border-dashed rounded-lg cursor-pointer'>
+    <label
+      className='flex items-center px-3 py-3 my-6 text-center bg-white border-2 border-dashed rounded-lg cursor-pointer'
+      {...props}
+    >
       <UploadFileIcon fontSize='20px' style={{position: 'absolute'}} />
 
       <span className='fw-normal' style={{paddingLeft: '2.2rem', fontSize: '12px'}}>

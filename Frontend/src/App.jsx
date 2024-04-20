@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import {
   Products,
   AddProduct,
@@ -26,7 +26,6 @@ import {
 import {Toaster} from 'sonner';
 import ApiTest from './pages/Test.jsx';
 import {HardwareSimulation, HardwareRegister} from './pages/index.jsx';
-
 function App() {
   return (
     <>
@@ -45,10 +44,8 @@ function App() {
                   {/* <Route path='/SupplierDashboard' element={<SupplierRoute><SupplierDashboard /> </SupplierRoute>} /> */}
                   <Route path='/supplier-dashboard/products' element={<SupplierRoute><Products /></SupplierRoute>} />
                   <Route path='/supplier-dashboard/products/edit/:id' element={<EditProduct />} />
-                  <Route path='/supplier-dashboard/products/add' element={<AddProduct />}/>
-                  <Route path='/supplier-dashboard/schedule' element={<Schedule/>} />
-                 
-                  
+                  <Route path='/supplier-dashboard/products/add' element={<AddProduct />} />
+                  <Route path='/supplier-dashboard/schedule' element={<Schedule />} />
                   <Route path='/supplier-dashboard/orders' element={<Orders />} />
                 </Route>
                 <Route path='/profile' element={<Profile />} />
@@ -58,7 +55,8 @@ function App() {
                 <Route path='/payment' element={<Payment />} />
                 <Route path='/test' element={<ApiTest />} />
                 <Route path='/simulation' element={<HardwareSimulation />} />
-                <Route path='/hardware-register' element={<HardwareRegister/>}/>              </Routes>
+                <Route path='/hardware-register' element={<HardwareRegister />} />
+              </Routes>
             </CartContextProvider>
           </CsrfTokenContextProvider>
         </UserContextProvider>
@@ -68,4 +66,3 @@ function App() {
 }
 
 export default App;
-

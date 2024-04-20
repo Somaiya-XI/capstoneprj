@@ -1,7 +1,7 @@
 from rest_framework import routers
 from django.urls import path, include
 from . import views
-
+from .google_auth.views import GoogleOauthSignInview
 
 router = routers.DefaultRouter()
 
@@ -29,5 +29,6 @@ urlpatterns = [
         name='reset_password',
     ),
     path('set-new-password/', views.set_new_password, name='set_new_password'),
+    path('google/', GoogleOauthSignInview.as_view(), name='google'),
     path('', include(router.urls)),
 ]

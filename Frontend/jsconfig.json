@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "lib": ["es2022", "DOM"],
+    "moduleResolution": "node",
+    "target": "es2022",
+    "checkJs": false,
+    "jsx": "react",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["*.jsx", "*.js", "src/**/*.js", "src/**/*.jsx", "cypress/**/*.js"],
+  "exclude": ["node_modules"]
+}

@@ -24,6 +24,9 @@ import mimetypes
 from django.shortcuts import redirect
 
 from django.middleware.csrf import get_token
+import os
+
+SOCIAL_AUTH_PWD = os.getenv('SOCIAL_AUTH_PWD')
 
 
 def get_csrf(request):
@@ -34,65 +37,52 @@ def get_csrf(request):
 @csrf_protect
 def login_view(request):
 
-    data = json.loads(request.body)
-    headers = request.META
-
-    print(data)
-    email = data.get('email')
-    password = data.pop('password')
-    csrf_token = headers.get('HTTP_X_CSRFTOKEN')
-
-    print(request.user, 'trying to logg in')
-    print(csrf_token, 'is the current token')
     UserModel = get_user_model()
+    data = json.loads(request.body)
+
+    email = data.get('email')
+
+    try:
+        user = UserModel.objects.get(email=email)
+    except UserModel.DoesNotExist:
+        return JsonResponse({'error': 'This email address does not exist'}, status=400)
 
     if not email and not password:
         return JsonResponse({'error': 'please fill all the required feilds'}, status=400)
     if not email:
         return JsonResponse({'error': 'Email field is required'}, status=400)
-
-    if not password:
-        return JsonResponse({'error': 'Password field is required'}, status=400)
-
     if not re.match('^[\w\.\+\-]+@[\w]+\.[a-z]{2,3}$', email):
         return JsonResponse({'error': 'Please enter a valid email address'}, status=400)
+
     try:
-        user = UserModel.objects.get(email=email)
-        print(user)
-        user_role = user.role
-        print(user_role)
+        password = data.pop('password')
+        if user.auth_provider != 'email':
+            return JsonResponse({'error': 'Please use the correct method to login!'}, status=400)
+
+        if not user.is_active:
+            return JsonResponse({'error': 'your account has not been activated'}, status=400)
+    except KeyError as e:
+        print('except entered!')
+        password = SOCIAL_AUTH_PWD
+
+    account = authenticate(email=email, password=password)
+
+    if account:
         user_data = {
             'id': user.id,
             'email': user.email,
             'company_name': user.company_name,
             'role': user.role,
         }
-
-        if not user.is_active:
-            return JsonResponse({'error': 'your account has not been activated'}, status=400)
-
-    except UserModel.DoesNotExist:
-        return JsonResponse({'error': 'This email address does not exist'}, status=400)
-
-    account = authenticate(email=email, password=password)
-
-    if account:
-        user = UserModel.objects.get(email=account)
         login(request, user)
         resp = JsonResponse(
-            {'message': 'Successfully logged in.', 'role': user_role, 'user': user_data},
+            {'message': 'Successfully logged in.', 'user': user_data},
             status=200,
         )
         resp['X-CSRFToken'] = get_token(request)
-        print('csrf after login method', resp['X-CSRFToken'])
         user.session_token = resp['X-CSRFToken']
         user.save()
         return resp
-        # return JsonResponse(
-        #     {'message': 'Successfully logged in.', 'role': user_role, 'user': user_data},
-        #     status=200,
-        # )
-
     return JsonResponse({'error': 'The password you entered is incorrect'}, status=400)
 
 

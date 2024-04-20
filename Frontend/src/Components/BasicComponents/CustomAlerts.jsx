@@ -77,6 +77,7 @@ export function CustomErrorToast({
   colorClass = 'bg-red-50',
   shiftStart = 'ms-16',
   position = 'top-left',
+  icon = 'line-md:alert-twotone',
 }) {
   toast(msg, {
     unstyled: true,
@@ -84,7 +85,7 @@ export function CustomErrorToast({
     icon: (
       <Iconify-icon
         className='inline'
-        icon='line-md:alert-twotone'
+        icon={icon}
         width='24'
         height='24'
         begin='0.8s'

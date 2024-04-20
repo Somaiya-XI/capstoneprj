@@ -103,6 +103,8 @@ const Login = () => {
   }
   if (isAuthenticated && user.role === 'RETAILER') {
     return <Navigate to='/' />;
+  } else {
+    return <Navigate to='/' />;
   }
 };
 

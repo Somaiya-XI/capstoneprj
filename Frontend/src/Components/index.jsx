@@ -1,3 +1,5 @@
+import exp from 'constants';
+
 export {default as AdminRoute} from './Routes/AdminRoute';
 export {default as RetailerRoute} from './Routes/RetailerRoute';
 export {default as SupplierRoute} from './Routes/SupplierRoute';
@@ -35,5 +37,6 @@ export {
 export {default as SearchNav, BasicNav as BasicNav} from './BasicComponents/Nav.jsx';
 export {default as PriceCard} from './HardwareSetComponents/PriceCard.jsx';
 export {default as RegisterModal} from './HardwareSetComponents/RegisterModal.jsx';
-
+export {default as GoogleButton} from './FormComponents/GoogleButton.jsx';
+export {ProfileSheet} from './FormComponents/CompleteProfile.jsx';
 //export {default as xx} from './CartComponents/xx';

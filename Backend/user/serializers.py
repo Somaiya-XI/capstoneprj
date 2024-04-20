@@ -7,7 +7,7 @@ import re
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    commercial_reg = Base64ImageField()
+    commercial_reg = Base64ImageField(required=False)
     profile_picture = Base64ImageField(required=False)
 
     def validate_password(self, value):
@@ -28,8 +28,9 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         password = validated_data.pop('password', None)
         email = validated_data.get("email")
         commercial_reg = validated_data.get('commercial_reg')
+        provider = validated_data.get('provider')
 
-        if commercial_reg is None:
+        if provider == 'email' and commercial_reg is None:
             raise ValidationError('Commercial Register is required')
 
         if not re.match('^[\w\.\+\-]+@[\w]+\.[a-z]{2,3}$', email):
@@ -40,6 +41,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             validated_data['password'] = self.validate_password(password)
             instance = self.Meta.model(**validated_data)
             instance.set_password(password)
+        if provider == 'email':
             instance.is_active = False
 
         instance.save()
@@ -76,4 +78,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             'role',
             'profile_picture',
             'session_token',
+            'auth_provider',
+            'is_authenticated',
+            "is_active",
         )
