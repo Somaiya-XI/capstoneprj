@@ -10,7 +10,9 @@ class ProductCatalogSerializer(serializers.HyperlinkedModelSerializer):
     product_img = Base64ImageField(required=True)
     supplier = serializers.PrimaryKeyRelatedField(queryset=Supplier.objects.all())
     # supplier = UserSerializer()
-    category = serializers.SlugRelatedField(slug_field='name', queryset=Category.objects.all())
+    category = serializers.SlugRelatedField(
+        slug_field='name', queryset=Category.objects.all()
+    )
 
     class Meta:
         model = ProductCatalog
@@ -31,11 +33,19 @@ class ProductCatalogSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CartProductSerializer(serializers.HyperlinkedModelSerializer):
-    unit_price = serializers.DecimalField(source='new_price', max_digits=8, decimal_places=2)
+    unit_price = serializers.DecimalField(
+        source='new_price', max_digits=8, decimal_places=2
+    )
 
     class Meta:
         model = ProductCatalog
         fields = ['product_id', 'product_name', 'unit_price']
+
+
+class OrderProductSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ProductCatalog
+        fields = ['product_id', 'product_name', 'new_price']
 
 
 # send all data as jason

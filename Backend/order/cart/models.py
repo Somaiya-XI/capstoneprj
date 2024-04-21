@@ -8,7 +8,9 @@ from user.models import Retailer
 
 # Create your models here.
 class Cart(models.Model):
-    cart_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
+    cart_id = models.UUIDField(
+        default=uuid.uuid4, editable=False, unique=True, primary_key=True
+    )
     user = models.ForeignKey(Retailer, on_delete=models.CASCADE)
     products = models.ManyToManyField(ProductCatalog, through='CartItem')
     total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
