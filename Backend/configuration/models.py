@@ -6,15 +6,13 @@ from user.models import Retailer
 
 # Create your models here.
 class AutoOrderConfig(models.Model):
-    CONFIRMATION_STATUS = [
-        ('required', 'Required'),
-        ('not_required', 'Not Required'),
-    ]
-    # product = models.ForeignKey(SupermarketProduct, on_delete=models.CASCADE)
+    TYPE = [('DEFAULT', 'Default'),('SPECIAL', 'Special'),]
+    
+    retailer = models.ForeignKey(Retailer, on_delete=models.CASCADE, verbose_name="Retailer")
+    type = models.CharField(choices=TYPE, default='DEFAULT', max_length=15)
     qunt_reach_level = models.IntegerField("Reach Level", default=0)
     ordering_amount = models.IntegerField("Ordering Amount")
     confirmation_status = models.BooleanField("Requires Confirmation", default=False)
-    # auto_order_time = models.TimeField("Ordering Time")
 
     class Meta:
         db_table = "Auto Ordering Config"
