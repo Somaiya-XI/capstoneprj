@@ -10,8 +10,7 @@ class AutoOrderConfig(models.Model):
         ('required', 'Required'),
         ('not_required', 'Not Required'),
     ]
-    # products = models.ManyToManyField(SupermarketProduct)
-    # retailer = models.ForeignKey(retailer, on_delete=models.CASCADE, verbose_name="Retailer")
+    # product = models.ForeignKey(SupermarketProduct, on_delete=models.CASCADE)
     qunt_reach_level = models.IntegerField("Reach Level", default=0)
     ordering_amount = models.IntegerField("Ordering Amount")
     confirmation_status = models.BooleanField("Requires Confirmation", default=False)
@@ -35,3 +34,4 @@ class NotificationConfig(models.Model):
 
     class Meta:
         db_table = "Notification Config"
+        unique_together = ['retailer', 'notification_method']

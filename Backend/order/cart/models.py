@@ -8,19 +8,22 @@ from user.models import Retailer
 
 # Create your models here.
 class Cart(models.Model):
-    cart_id = models.UUIDField(
-        default=uuid.uuid4, editable=False, unique=True, primary_key=True
-    )
+    CART_TYPE = [
+        ("BASIC", "BASIC"),
+        ("SMART", "SMART"),
+    ]
+    cart_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     user = models.ForeignKey(Retailer, on_delete=models.CASCADE)
     products = models.ManyToManyField(ProductCatalog, through='CartItem')
     total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    type = models.CharField(choices=CART_TYPE, max_length=20)
 
     class Meta:
         db_table = "Cart"
-        unique_together = ('cart_id', 'user')
+        unique_together = ('type', 'user')
 
     def __str__(self):
-        return f"{self.user.company_name.capitalize()}'s Cart"
+        return f"{self.type.capitalize()} Cart of {self.user.company_name.capitalize()} Retailer"
 
 
 class CartItem(models.Model):
@@ -37,7 +40,7 @@ class CartItem(models.Model):
         return self.subtotal
 
     def __str__(self):
-        return f"{self.product} of {self.cart.user.company_name.capitalize()}'s Cart "
+        return f"{self.product} of {self.cart.user.company_name.capitalize()}'s {self.cart.type.capitalize()} Cart "
 
     class Meta:
         db_table = "Cart Item"

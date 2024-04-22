@@ -16,8 +16,6 @@ const CartContextProvider = ({children}) => {
       const response = await axios.get(`${API}cart/view-cart/`, {
         withCredentials: true,
       });
-      // let csrfToken = response.headers['x-csrftoken'];
-      // setCSRF(csrfToken);
       const {data} = response;
       console.log(data);
       setCart((cart) => data);

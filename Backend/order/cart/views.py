@@ -49,8 +49,8 @@ def add_to_cart(request):
         return JsonResponse({'message': 'Please enter a quantity'})
 
     product = get_object_or_404(ProductCatalog, product_id=product_id)
-    cart = Cart.objects.filter(user=user).first()
-    cart_serializer = CartSerializer(data={'user': user})
+    cart = Cart.objects.filter(user=user, type='BASIC').first()
+    cart_serializer = CartSerializer(data={'user': user, 'type': 'BASIC'})
     cart_serializer.is_valid(raise_exception=True)
 
     if not cart:
@@ -146,7 +146,7 @@ def view_cart(request):
 
     user = request.user
 
-    cart = Cart.objects.filter(user=user).first()
+    cart = Cart.objects.filter(user=user, type='BASIC').first()
 
     if not cart:
         return JsonResponse({'message': 'You have no cart'})
@@ -211,10 +211,10 @@ def create_checkout_session(request):
     try:
         cart = Cart.objects.get(user=user)
     except:
-        return JsonResponse({'message':'You do not have cart'})
+        return JsonResponse({'message': 'You do not have cart'})
     cart_items = CartItem.objects.filter(cart=cart.cart_id)
     if not cart_items:
-        return JsonResponse({'message':'You do not have items in your cart'})
+        return JsonResponse({'message': 'You do not have items in your cart'})
     items_details = []
     for cart_item in cart_items:
         stripe_product = stripe.Product.retrieve(str(cart_item.product.product_id))
@@ -242,4 +242,3 @@ class CartViewSet(viewsets.ModelViewSet):
 class CartItemViewSet(viewsets.ModelViewSet):
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
-    

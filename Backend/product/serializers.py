@@ -4,15 +4,14 @@ from drf_extra_fields.fields import Base64ImageField
 from user.models import Supplier, Retailer
 from category.models import Category
 from user.serializers import UserSerializer
+from configuration.models import AutoOrderConfig
 
 
 class ProductCatalogSerializer(serializers.HyperlinkedModelSerializer):
     product_img = Base64ImageField(required=True)
     supplier = serializers.PrimaryKeyRelatedField(queryset=Supplier.objects.all())
     # supplier = UserSerializer()
-    category = serializers.SlugRelatedField(
-        slug_field='name', queryset=Category.objects.all()
-    )
+    category = serializers.SlugRelatedField(slug_field='name', queryset=Category.objects.all())
 
     class Meta:
         model = ProductCatalog
@@ -33,9 +32,7 @@ class ProductCatalogSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CartProductSerializer(serializers.HyperlinkedModelSerializer):
-    unit_price = serializers.DecimalField(
-        source='new_price', max_digits=8, decimal_places=2
-    )
+    unit_price = serializers.DecimalField(source='new_price', max_digits=8, decimal_places=2)
 
     class Meta:
         model = ProductCatalog
@@ -51,6 +48,7 @@ class OrderProductSerializer(serializers.HyperlinkedModelSerializer):
 # send all data as jason
 class SupermarketProductSerializer(serializers.HyperlinkedModelSerializer):
     retailer = serializers.PrimaryKeyRelatedField(queryset=Retailer.objects.all())
+    order_config = serializers.PrimaryKeyRelatedField(queryset=AutoOrderConfig.objects.all())
 
     class Meta:
         model = SupermarketProduct
@@ -62,10 +60,12 @@ class SupermarketProductSerializer(serializers.HyperlinkedModelSerializer):
             'price',
             'quantity',
             'product_img',
+            'order_config',
         ]
 
 
+## Let it be the bulk serializer for the simulation!
 class SupermarketSpecialSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = SupermarketProduct
-        fields = ['product_id', 'product_name', 'quantity', ' days_to_expiry']
+        fields = ['product_id', 'product_name', 'quantity']

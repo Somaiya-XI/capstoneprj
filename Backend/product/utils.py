@@ -5,28 +5,27 @@ import json
 import os
 import re
 import requests
+import time
+from datetime import date, datetime, time
 
 from user.retailer.hardware_set.models import HardwareSet
 from .models import SupermarketProduct, ProductBulk
 from bs4 import BeautifulSoup
+from django.dispatch import receiver
+from django.db.models.signals import pre_save, post_save
+
+from configuration.models import NotificationConfig
+from configuration.utils import AutoOrderConfigManager
+
+from .signals import product_removed, date_updated
 
 
-class MqttManager:
+class SupermarketProductManager:
     def __init__(self):
-        # MQTT broker configuration
-        self.mqtt_broker = os.getenv("MQTT_BROKER")
-        self.mqtt_port = int(os.getenv("MQTT_PORT"))
-        self.mqtt_username = os.getenv("MQTT_USERNAME")
-        self.mqtt_password = os.getenv("MQTT_PASSWORD")
-        self.mqtt_topics = ['gateway_0001/#']
-
-        self.connected = 0
-
-        # run MQTT subscriber in a thread
-        self.run_mqtt_subscriber()
+        pass
 
     ## Processing of recieved msgs to create/add/remove:
-    def message_manager(self, payload, topic):
+    def products_reciever(self, payload, topic):
         try:
             data = json.loads(payload)
             p = SupermarketProductManager()
@@ -61,68 +60,6 @@ class MqttManager:
         except json.JSONDecodeError as e:
             return "Error decoding JSON payload:", e
 
-    ## Managing The Communication Over MQTT Protocol:
-    def on_connect(self, client, userdata, flags, rc, properties=None):
-        self.connected = 1
-        # client_subscribe(client)
-        print("Connected to MQTT server with code %s." % rc)
-
-    def on_disconnect(self, client, userdata, flags, rc, properties=None):
-        self.connected = 0
-        print("Disconnected from MQTT server")
-
-    def on_publish(self, client, userdata, mid, rc, properties=None):
-        print("Published, mid: " + str(mid))
-
-    def on_subscribe(self, client, userdata, mid, granted_qos, properties=None):
-        print("Subscribed: " + str(granted_qos))
-
-    def client_subscribe(self, client):
-        for topic in self.mqtt_topics:
-            client.subscribe(topic, qos=1)
-
-    # whenever a message arrives, this method is executed
-    def on_message(self, client, userdata, message):
-        topic = message.topic
-        payload = message.payload.decode("utf-8")
-        print("Received message:", payload, 'from:', topic)
-        state = self.message_manager(payload, topic)
-        print(state)
-
-
-    # connect to the MQTT broker, subscribe to the topic, and wait for any message
-    def mqtt_subscribe(self):
-        client = paho.Client(paho.CallbackAPIVersion.VERSION2, client_id="", userdata=None, protocol=paho.MQTTv5)
-        client.on_connect = self.on_connect
-        client.on_disconnect = self.on_disconnect
-        client.tls_set(tls_version=mqtt.client.ssl.PROTOCOL_TLS)
-        client.username_pw_set(self.mqtt_username, self.mqtt_password)
-
-        # connecting to MQTT broker
-        client.connect(self.mqtt_broker, self.mqtt_port)
-
-        client.on_subscribe = self.on_subscribe
-
-        # can be extended to have topic-specific functions, currently the registered topic is generic
-        for topic in self.mqtt_topics:
-            client.message_callback_add(topic, self.on_message)
-
-        self.client_subscribe(client)
-        client.loop_start()
-
-    # run MQTT subscriber in a thread to avoid interference with running server
-    def run_mqtt_subscriber(self):
-        mqtt_thread = threading.Thread(target=self.mqtt_subscribe)
-        mqtt_thread.start()
-
-
-mqttObj = MqttManager()
-
-
-class SupermarketProductManager:
-    def __init__(self):
-        pass
-
     ## extract data from the api
     def extract_API_data(self, data):
         english_data = {}
@@ -151,7 +88,7 @@ class SupermarketProductManager:
             else:
                 english_data["brand"] = None
                 arabic_data["brand"] = brand
-            
+
             size_matches = re.search(r'(\d+\.?\d*)\s*([a-zA-Z]+)', size)
             if size_matches:
                 size_number = float(size_matches.group(1))
@@ -163,29 +100,13 @@ class SupermarketProductManager:
                 english_data["size"] = None
         return english_data, arabic_data
 
-    ## request to limited access database if not found on 1st##
-    def get_details_API(self, tag_id):
-        APIKEY = os.getenv("LOOKUP_KEY")
-
-        url = f"https://api.barcodelookup.com/v3/products?barcode={tag_id}&key={APIKEY}"
-
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            data = response.json()
-            print('data: ', data)
-            english_data, arabic_data = self.extract_API_data(data=data)
-            return english_data, arabic_data
-        else:
-            return "Error:", response.status_code
-
     ## request to external database to get product details ##
     def get_product_details(self, tag_id):
-        
+
         brand_name = None
         english_name = None
         arabic_name = None
-        english_data ={}
+        english_data = {}
         arabic_data = {}
 
         url = f"https://barcode-list.com/barcode/EN/Search.htm?barcode={tag_id}"
@@ -200,7 +121,7 @@ class SupermarketProductManager:
 
         content = meta_tag['content']
 
-        if (content):
+        if content:
             items_list = content.split('following products:')[1].strip().split(';')
 
             items_list = [item.strip() for item in items_list]
@@ -220,17 +141,37 @@ class SupermarketProductManager:
             arabic_data = {"product_name": arabic_name, "brand": '--'}
         else:
             english_data, arabic_data = self.get_details_API(tag_id)
-        print(english_data, arabic_data)
-        return english_data, arabic_data
 
-    ## create the product  
+        if english_data or arabic_data:
+            print(english_data, arabic_data)
+            return english_data, arabic_data
+        else:
+            return "Error: Data Retrieve Failed"
+
+    ## request to limited access database if not found on 1st##
+    def get_details_API(self, tag_id):
+        # APIKEY = os.getenv("LOOKUP_KEY")
+        APIKEY = "333"
+        url = f"https://api.barcodelookup.com/v3/products?barcode={tag_id}&key={APIKEY}"
+
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
+            print('data: ', data)
+            english_data, arabic_data = self.extract_API_data(data=data)
+            return english_data, arabic_data
+        else:
+            return "Error:", response.status_code
+
+    ## create the product
     def create_new(self, retailer_id, tag_id, exp_date):
         product = SupermarketProduct()
         bulk = ProductBulk()
         eng_product_data, ara_product_data = self.get_product_details(tag_id)
-            
+        if not eng_product_data or ara_product_data:
+            return {'Error': 'Creation Failed'}
         product.tag_id = tag_id
-        product.expiry_date = exp_date
         product.retailer = retailer_id
         product.price = 00
         product.quantity = 1
@@ -243,14 +184,15 @@ class SupermarketProductManager:
             product.brand = eng_product_data.get('brand')
         else:
             product.brand = ara_product_data.get('brand')
-        
+
         product.save()
+
         bulk.product = product
         bulk.expiry_date = exp_date
         bulk.bulk_qyt = 1
         bulk.save()
         return product
-    
+
     def add_to_shelf(self, product, bulk):
         product.quantity = product.quantity + 1
         product.save()
@@ -260,24 +202,59 @@ class SupermarketProductManager:
     def remove_from_shelf(self, product, bulk):
         if product.quantity == 0:
             return
+        current_q = product.quantity
         product.quantity = product.quantity - 1
         product.save()
         if bulk:
             self.remove_from_bulk(bulk)
-    
+        product_removed.send(sender=self.__class__, product=product, quantity=current_q)
+
     def add_to_bulk(self, bulk):
         bulk.bulk_qyt = bulk.bulk_qyt + 1
         bulk.save()
-        
+
     def remove_from_bulk(self, bulk):
         bulk.bulk_qyt = bulk.bulk_qyt - 1
         bulk.save()
 
+    @staticmethod
+    @receiver(pre_save, sender=ProductBulk)
+    def calculate_days_to_exp(sender, instance, *args, **kwargs):
+        if not instance.id:  # if id is None == New Bulk
+            current_date = date.today()
+            expiry = datetime.strptime(instance.expiry_date, '%Y-%m-%d').date()
+            instance.days_to_expiry = (expiry - current_date).days
 
+    @staticmethod
+    @receiver(product_removed)  ## Better offloaded tasks to celery!
+    def track_product_quantity(sender, **kwargs):
+        product = kwargs['product']
+        old_quant = kwargs['quantity']
+        quant = product.quantity
+        if old_quant != quant:  # check if old_q changed or not
+            order_config = product.order_config
+            print(order_config)
+            notification_config = NotificationConfig.objects.filter(retailer=product.retailer)
+            (
+                AutoOrderConfigManager.add_to_auto_order_list_task(order_config, product)
+                if order_config and quant <= order_config.qunt_reach_level
+                else None
+            )
 
+            [
+                print('NOTIFY!')
+                for config in notification_config
+                if notification_config.exists() and quant <= config.low_quantity_threshold
+            ]
 
-
-
-
-
-
+    @staticmethod
+    @receiver(date_updated)
+    def track_expiry_date(sender, **kwargs):
+        bulks = kwargs['bulks']
+        for bulk in bulks:
+            notification_config = NotificationConfig.objects.filter(retailer=bulk.product.retailer)
+        [
+            print('NOTIFY!')
+            for config in notification_config
+            if notification_config.exists() and bulk.days_to_expiry == config.near_expiry_days
+        ]

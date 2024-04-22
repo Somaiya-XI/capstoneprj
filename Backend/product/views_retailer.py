@@ -6,9 +6,40 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie, csrf_protect
 from django.http import JsonResponse
 
+from .utils import SupermarketProductManager
+from user.models import User
+
+manager = SupermarketProductManager()
+
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def create_product(request):
+
+    if request.user.is_anonymous:
+        return JsonResponse({'message': 'You are not authenticated, log in then try again'}, status=400)
+
+    data = request.data
+    retailer = request.user
+    print('retailer is: ', retailer)
+    if not isinstance(retailer, User):
+        return 'not retailer'
+    tag_id = data.get('tag_id')
+    exp = data.get('expiry_date')
+
+    prod = SupermarketProduct.objects.filter(retailer=retailer, tag_id=tag_id)
+    if prod.exists():
+        return JsonResponse({'error': 'This Item is already in inventory'}, status=400)
+
+    product = manager.create_new(retailer, tag_id, exp)
+    if isinstance(product, SupermarketProduct):
+        return JsonResponse({'message': 'Product created successfully.'}, status=201)
+    else:
+        return JsonResponse({'error': 'Failed'}, status=400)
+
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
 def view_user_products(request, retailer_id):
 
     products = SupermarketProduct.objects.filter(retailer=retailer_id)
@@ -19,42 +50,6 @@ def view_user_products(request, retailer_id):
         response_data.append(product_serializer.data)
 
     return JsonResponse(response_data, safe=False)
-
-
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def get_simulation_list(request):
-    retailer_id = 17
-    products = SupermarketProduct.objects.filter(retailer=retailer_id)
-    response_data = []
-
-    for product in products:
-        product_serializer = SupermarketSpecialSerializer(instance=product)
-        response_data.append(product_serializer.data)
-
-    return JsonResponse(response_data, safe=False)
-
-
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def reset_simulation(request):
-    retailer_id = 17
-    SupermarketProduct.objects.filter(retailer=retailer_id, tag_id="6281007026819").delete()
-    SupermarketProduct.objects.filter(retailer=retailer_id, tag_id="4104220122057").delete()
-    SupermarketProduct.objects.filter(retailer=retailer_id, tag_id="6281007036849").delete()
-    added = ["6281011111457", "6281007036849"]
-    removed = ["6281013151024", "6281007032131", "6281039701012"]
-    added_products = SupermarketProduct.objects.filter(retailer=retailer_id, tag_id__in=added)
-    removed_products = SupermarketProduct.objects.filter(retailer=retailer_id, tag_id__in=removed)
-
-    for p in added_products:
-        p.quantity = 3
-        p.save()
-    for p in removed_products:
-        p.quantity = 7
-        p.save()
-    return JsonResponse({"message": "reset!"})
-
 
 
 class SupermarketViewSet(viewsets.ModelViewSet):
