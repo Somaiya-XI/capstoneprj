@@ -6,9 +6,14 @@ from user.models import Retailer
 
 # Create your models here.
 class AutoOrderConfig(models.Model):
-    TYPE = [('DEFAULT', 'Default'),('SPECIAL', 'Special'),]
-    
-    retailer = models.ForeignKey(Retailer, on_delete=models.CASCADE, verbose_name="Retailer")
+    TYPE = [
+        ('DEFAULT', 'Default'),
+        ('SPECIAL', 'Special'),
+    ]
+
+    retailer = models.ForeignKey(
+        Retailer, on_delete=models.CASCADE, verbose_name="Retailer"
+    )
     type = models.CharField(choices=TYPE, default='DEFAULT', max_length=15)
     qunt_reach_level = models.IntegerField("Reach Level", default=0)
     ordering_amount = models.IntegerField("Ordering Amount")
@@ -24,7 +29,9 @@ class NotificationConfig(models.Model):
         ('in_app', 'In-App'),
     ]
 
-    retailer = models.ForeignKey(Retailer, on_delete=models.CASCADE, verbose_name="Retailer")
+    retailer = models.ForeignKey(
+        Retailer, on_delete=models.CASCADE, verbose_name="Retailer"
+    )
     activation_status = models.BooleanField(default=True)
     near_expiry_days = models.IntegerField()
     low_quantity_threshold = models.IntegerField()

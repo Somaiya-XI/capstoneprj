@@ -352,12 +352,13 @@ def view_order_summary(request, order_id):
         item_serialized.pop('order_id', None)
         ordered_items_serialized.append(item_serialized)
 
-    data = {
+    # prepare the response data
+    response_data = {
         'order_data': order_serialized,
         'ordered_items': ordered_items_serialized,
     }
 
-    return JsonResponse(data, status=200)
+    return JsonResponse(response_data, status=200)
 
 
 @csrf_exempt

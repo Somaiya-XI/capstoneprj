@@ -112,8 +112,14 @@ def pay_by_wallet(request):
     # get the total price to pay
     amount = cart.total
 
+    # get the user object
+    try:
+        retailer = Retailer.objects.get(id=id)
+    except Retailer.DoesNotExist:
+        return JsonResponse({'message': 'please send a valid request'})
+
     # get the user payment wallet or create a new one if it doesn't exist
-    payment_wallet = PaymentWallet.objects.get_or_create(retailer=user)
+    payment_wallet = PaymentWallet.objects.get_or_create(retailer=retailer)
 
     # update the payment wallet balance
     payment_wallet[0].balance = Decimal(payment_wallet[0].balance) - Decimal(amount)
