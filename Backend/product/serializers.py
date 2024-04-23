@@ -53,6 +53,7 @@ class SupermarketProductSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = SupermarketProduct
         fields = [
+            'tag_id',
             'retailer',
             'product_id',
             'product_name',

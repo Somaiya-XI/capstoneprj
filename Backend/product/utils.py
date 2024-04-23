@@ -1,21 +1,18 @@
-import threading
-import paho.mqtt.client as paho
-from paho import mqtt
 import json
-import os
 import re
 import requests
-import time
-from datetime import date, datetime, time
+from datetime import date, datetime
 
 from user.retailer.hardware_set.models import HardwareSet
 from .models import SupermarketProduct, ProductBulk
+from .serializers import SupermarketProductSerializer
+from configuration.serializers import AutoOrderConfigSerializer
 from bs4 import BeautifulSoup
 from django.dispatch import receiver
-from django.db.models.signals import pre_save, post_save
+from django.db.models.signals import pre_save
 
 from configuration.models import NotificationConfig
-from configuration.utils import AutoOrderConfigManager
+from configuration.tasks import add_to_auto_order_list_task
 
 from .signals import product_removed, date_updated
 
@@ -220,29 +217,35 @@ class SupermarketProductManager:
     @staticmethod
     @receiver(pre_save, sender=ProductBulk)
     def calculate_days_to_exp(sender, instance, *args, **kwargs):
-        if not instance.id:  # if id is None == New Bulk
-            current_date = date.today()
-            expiry = datetime.strptime(instance.expiry_date, '%Y-%m-%d').date()
-            instance.days_to_expiry = (expiry - current_date).days
+        if not instance.pk:
+            instance.days_to_expiry = (instance.expiry_date - date.today()).days
+        if instance.pk:
+            original_instance = sender.objects.get(pk=instance.pk)
+            old_exp = original_instance.expiry_date
+            if old_exp != instance.expiry_date:
+                instance.days_to_expiry = (instance.expiry_date - date.today()).days
 
     @staticmethod
-    @receiver(product_removed)  ## Better offloaded tasks to celery!
+    @receiver(product_removed)
     def track_product_quantity(sender, **kwargs):
         product = kwargs['product']
         old_quant = kwargs['quantity']
         quant = product.quantity
         if old_quant != quant:  # check if old_q changed or not
             order_config = product.order_config
-            print(order_config)
             notification_config = NotificationConfig.objects.filter(retailer=product.retailer)
-            (
-                AutoOrderConfigManager.add_to_auto_order_list_task(order_config, product)
-                if order_config and quant <= order_config.qunt_reach_level
-                else None
-            )
+
+            if order_config and quant <= order_config.qunt_reach_level:
+                serialized_order_config = AutoOrderConfigSerializer(instance=order_config)
+                serialized_product = SupermarketProductSerializer(instance=product)
+                serialized_order_config = json.dumps(serialized_order_config.data)
+                serialized_product = json.dumps(serialized_product.data)
+                add_to_auto_order_list_task.delay(
+                    serialized_order_config, serialized_product
+                )  ## execution in celery
 
             [
-                print('NOTIFY!')
+                print('NOTIFY!')  ## replace with PUSH Notification Method as Celery Worker ##
                 for config in notification_config
                 if notification_config.exists() and quant <= config.low_quantity_threshold
             ]
@@ -254,7 +257,7 @@ class SupermarketProductManager:
         for bulk in bulks:
             notification_config = NotificationConfig.objects.filter(retailer=bulk.product.retailer)
         [
-            print('NOTIFY!')
+            print('NOTIFY!')  ## replace with PUSH Notification Method as Celery Worker ##
             for config in notification_config
             if notification_config.exists() and bulk.days_to_expiry == config.near_expiry_days
         ]

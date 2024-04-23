@@ -2,7 +2,7 @@ from rest_framework import routers
 from django.urls import path, include
 from . import views, views_retailer, views_simulation
 
-
+from .tasks import * ## running mqtt subscribe thread after fully running the server
 
 router = routers.DefaultRouter()
 

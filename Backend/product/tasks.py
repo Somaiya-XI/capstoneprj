@@ -4,7 +4,7 @@ from paho import mqtt
 import os
 import time
 from datetime import datetime
-
+import sys
 from .models import ProductBulk
 from .utils import SupermarketProductManager
 from .signals import date_updated
@@ -78,30 +78,24 @@ class MqttTasks:
     # run MQTT subscriber in a thread to avoid interference with running server
     @staticmethod
     def run_mqtt_subscriber():
-        mqttObj = MqttTasks()
-        mqtt_thread = threading.Thread(target=mqttObj.mqtt_subscribe)
-        mqtt_thread.daemon = True
-        mqtt_thread.start()
+        if 'runserver' in sys.argv:
+            mqttObj = MqttTasks()
+            mqtt_thread = threading.Thread(target=mqttObj.mqtt_subscribe)
+            mqtt_thread.daemon = True
+            mqtt_thread.start()
 
 
-class ExpDateTasks:
-    def reduce_remaining_days(self):
-        while True:
-            now = datetime.now().time()
+MqttTasks.run_mqtt_subscriber()
 
-            if now.hour == 0 and now.minute == 0:
-                bulks = ProductBulk.objects.all()
 
-                for bulk in bulks:
-                    if bulk.days_to_expiry > 0:
-                        bulk.days_to_expiry -= 1
-                        bulk.save()
-                date_updated.send(sender=self.__class__, bulks=bulks)
-            time.sleep(60)
+from celery import shared_task
+from django.db.models import F
 
-    @staticmethod
-    def run_reduce_remaining_days():
-        taskObj = ExpDateTasks()
-        thread = threading.Thread(target=taskObj.reduce_remaining_days)
-        thread.daemon = True
-        thread.start()
+
+@shared_task
+def reduce_days_to_expiry():
+    ProductBulk.objects.filter(days_to_expiry__gt=0).update(days_to_expiry=F('days_to_expiry') - 1)
+
+    bulks = ProductBulk.objects.all()
+
+    date_updated.send(sender=reduce_days_to_expiry, bulks=bulks)

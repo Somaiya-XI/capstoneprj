@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     # Apps to handle react
     'rest_framework',
     'rest_framework.authtoken',
+    # Scheduler app
+    'django_celery_beat',
     # Custom Apps
     'product',
     'order',
@@ -187,9 +189,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "user.User"
 
 
-# corsheader config
-# CORS_ALLOW_ALL_ORIGINS = True
-
 # Custom users config
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
@@ -206,3 +205,10 @@ REST_FRAMEWORK = {
         #'rest_framework.permissions.IsAuthenticated'
     ],
 }
+
+
+# Celery Config:
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Riyadh'
