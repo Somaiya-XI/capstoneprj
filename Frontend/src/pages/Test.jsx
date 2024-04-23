@@ -13,9 +13,8 @@ const ApiTest = () => {
   }, []);
 
   const {user} = useUserContext();
-  const {csrf} = useCsrfContext();
+  const {ax} = useCsrfContext();
   const [products, setProducts] = useState(null);
-
   // // option2:
 
   const fetchProducts = async () => {
@@ -37,115 +36,74 @@ const ApiTest = () => {
 
   const handleCreateProduct = async () => {
     try {
-      const response = await axios.post(
-        `${API}product/catalog/create/`,
-        {
-          product_name: 'Passion Fruit Yogurt',
-          price: 15,
-          quantity: 120,
-          description: ' ',
-          product_img: '',
-          brand: 'Almarai',
-          category: 'Dairy',
-          expiry_date: '2024-11-11',
-          production_date: '2024-11-11',
-        },
-        {
-          headers: {
-            'X-CSRFToken': csrf,
-          },
-          withCredentials: true,
-        }
-      );
-      console.log('response: ', response);
-      return response;
-    } catch (error) {
-      toastError();
-      console.error(error.response.data);
-    }
-  };
-  const handleCreateSchedule = async () => {
-    console.log('csrf is: ', csrf);
-    console.log('user id: ', user.id);
-    try {
-      const response = await axios.post(
-        `${API}schedule/create/`,
-        {
-          day: 'tue',
-          time: '01:03:04',
-        },
-        {
-          headers: {
-            'X-CSRFToken': csrf,
-          },
-          withCredentials: true,
-        }
-      );
-      console.log('response: ', response);
-      return response;
-    } catch (error) {
-      toastError();
-      console.error(error.response.data);
-    }
-  };
-  const handleDeleteSchedule = async () => {
-    try {
-      const response = await axios.post(
-        `${API}schedule/delete/`,
-        {
-          id: 5,
-        },
-        {
-          headers: {
-            'X-CSRFToken': csrf,
-          },
-          withCredentials: true,
-        }
-      );
-      console.log('response: ', response);
-      return response;
-    } catch (error) {
-      toastError();
-      console.error(error.response.data);
-    }
-  };
-  const handleUpdateProduct = async () => {
-    try {
-      const response = await axios.put(
-        `${API}product/catalog/update/`,
-        {
-          id: 'ab3c743a-76f4-46cf-9f75-b8188bd7c642',
-          product_name: 'Product Upadte Name',
-        },
-        {
-          headers: {
-            'X-CSRFToken': csrf,
-          },
-          withCredentials: true,
-        }
-      );
-      console.log('response: ', response);
-      return response;
-    } catch (error) {
-      toastError();
-      console.error(error.response.data);
-    }
-  };
-
-  const handleDeleteProduct = async () => {
-    try {
-      const response = await axios.delete(`${API}product/catalog/update/`, {
-        data: {id: '0dc08b83-f9d3-4f61-9bcb-a8f4db6f1bfc'},
-        headers: {
-          'X-CSRFToken': csrf,
-        },
-        withCredentials: true,
+      const response = await ax.post(`${API}product/catalog/create/`, {
+        product_name: 'Passion Fruit Yogurt',
+        price: 15,
+        quantity: 120,
+        description: ' ',
+        product_img: '',
+        brand: 'Almarai',
+        category: 'Dairy',
+        expiry_date: '2024-11-11',
+        production_date: '2024-11-11',
       });
       console.log('response: ', response);
       return response;
     } catch (error) {
       toastError();
-      console.error(error.response.data);
+      console.error(error);
+    }
+  };
+  const handleCreateSchedule = async () => {
+    console.log('user id: ', user.id);
+    try {
+      const response = await ax.post(`${API}schedule/create/`, {
+        day: 'tue',
+        time: '01:03:04',
+      });
+      console.log('response: ', response);
+      return response;
+    } catch (error) {
+      toastError();
+      console.error(error);
+    }
+  };
+  const handleDeleteSchedule = async () => {
+    try {
+      const response = await ax.post(`${API}schedule/delete/`, {
+        id: 7,
+      });
+      console.log('response: ', response);
+      return response;
+    } catch (error) {
+      toastError();
+      console.error(error);
+    }
+  };
+  const handleUpdateProduct = async () => {
+    try {
+      const response = await ax.put(`${API}product/catalog/update/`, {
+        id: '07886aed-2e38-4d72-aea9-5439279bbb52',
+        product_name: 'Product Upadte Name',
+      });
+      console.log('response: ', response);
+      return response;
+    } catch (error) {
+      toastError();
+      console.error(error);
+    }
+  };
+
+  const handleDeleteProduct = async () => {
+    try {
+      const response = await ax.delete(`${API}product/catalog/update/`, {
+        data: {id: '07886aed-2e38-4d72-aea9-5439279bbb52'},
+      });
+      console.log('response: ', response);
+      return response;
+    } catch (error) {
+      toastError();
+      console.error(error);
     }
   };
 
@@ -168,7 +126,7 @@ const ApiTest = () => {
       return response;
     } catch (error) {
       toastError();
-      console.error(error.response.data);
+      console.error(error);
     }
   };
 
@@ -190,7 +148,7 @@ const ApiTest = () => {
       return response;
     } catch (error) {
       toastError();
-      console.error(error.response.data);
+      console.error(error);
     }
   };
   return (

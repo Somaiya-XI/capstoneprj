@@ -9,7 +9,6 @@ import {
   Upload,
   InputNumber,
 } from "antd";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import SupplierLayout from "../Layout/SupplierLayout";
 import { useCsrfContext } from "../../../../Contexts";
@@ -29,7 +28,7 @@ const formItemLayout = {
 };
 
 const AddProduct = () => {
-  const {csrf} = useCsrfContext();
+  const {ax} = useCsrfContext();
   const [inputData, setInputData] = useState({
     product_img: null,
     product_name: "",
@@ -62,15 +61,9 @@ const AddProduct = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post(
+      const response = await ax.post(
         `${API}product/catalog/create/`,
-        inputData,
-        {
-          headers: {
-            "X-CSRFToken": csrf,
-          },
-          withCredentials: true,
-        }
+        inputData
       );
 
       console.log(response.data);

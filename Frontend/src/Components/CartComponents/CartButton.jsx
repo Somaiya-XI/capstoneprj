@@ -1,5 +1,3 @@
-import axios from 'axios';
-import {AiOutlineShoppingCart} from 'react-icons/ai';
 import {API} from '../../backend';
 import {useCsrfContext, useCartContext, useUserContext} from '../../Contexts';
 import {useEffect, useState} from 'react';
@@ -8,7 +6,7 @@ import {Link} from 'react-router-dom';
 import {CustomSuccessToast, CustomErrorToast} from '../index';
 
 function CartButton({id}) {
-  const {csrf, isAuthenticated} = useCsrfContext();
+  const {isAuthenticated, ax} = useCsrfContext();
   const {cart, getProductQuantity, setProductQuantity, UpdateCartContent, reloadCart} = useCartContext();
   const [quant, setQuant] = useState(0);
 
@@ -19,16 +17,7 @@ function CartButton({id}) {
   const handleAddToCart = async () => {
     if (cart) {
       try {
-        const resp = await axios.post(
-          `${API}cart/add-to-cart/`,
-          {product_id: id, quantity: quant + 1},
-          {
-            headers: {
-              'X-CSRFToken': csrf,
-            },
-            withCredentials: true,
-          }
-        );
+        const resp = await ax.post(`${API}cart/add-to-cart/`, {product_id: id, quantity: quant + 1});
         CustomSuccessToast({msg: 'item added to cart!', position: 'top-right', shiftStart: 'ms-0'});
         console.log(resp.data);
       } catch (error) {
