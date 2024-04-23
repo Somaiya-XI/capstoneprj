@@ -28,6 +28,7 @@ import ApiTest from './pages/Test.jsx';
 import {HardwareSimulation, HardwareRegister} from './pages/index.jsx';
 import FourOhFour from './pages/FourOhFour.jsx';
 
+
 function App() {
   return (
     <>

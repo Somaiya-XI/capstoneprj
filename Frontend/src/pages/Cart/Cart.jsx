@@ -27,10 +27,6 @@ const Cart = () => {
   const [showSection, setShowSection] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchCart();
-  }, []);
-
   const reloadCart = () => {
     fetchCart();
   };

@@ -107,7 +107,7 @@ def remove_from_cart(request):
 
     product = get_object_or_404(ProductCatalog, product_id=product_id)
 
-    cart = Cart.objects.filter(user=user).first()
+    cart = Cart.objects.filter(user=user, type='BASIC').first()
 
     if cart:
         cart_item = CartItem.objects.filter(cart=cart, product=product).first()
@@ -183,7 +183,7 @@ def clear_cart(request):
 
     user = request.user
 
-    cart = Cart.objects.filter(user=user).first()
+    cart = Cart.objects.filter(user=user, type='BASIC').first()
 
     if cart:
         cart_items = CartItem.objects.filter(cart=cart)
