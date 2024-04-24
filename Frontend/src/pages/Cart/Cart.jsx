@@ -9,7 +9,7 @@ import {Link} from 'react-router-dom';
 import ListHeader from './ListHeader';
 import CartItem from './CartItem';
 import BinIcon from './BinIcon';
-import Checkout from './Checkout';
+import Checkout from './Shipment';
 import {RiEmotionSadLine} from 'react-icons/ri';
 import Navbar from '../Home/Components/Navbar/Navbar';
 import Header from '../Home/Components/Header/Header';
@@ -150,46 +150,14 @@ const Cart = () => {
                 </h5>
               )}
             </div>
+            <Button className='bg-[#023c07] text-white' onClick={() => navigate('/payment')}>
+                    Checkout
+                  </Button>
           </div>
         </div>
       </section>
 
-      <section className='mt-5 mb-5'>
-        <div className='container-fluid m-5'>
-          <div className='row'>
-            <div className='col-lg-8 mb-4'>
-              <div className='d-flex justify-content-between'>
-                <h5 className='ml-4'></h5>
-                <h5>
-                  <Button className='bg-[#023c07] text-white' onClick={displayCheckout}>
-                    Shipping Address
-                  </Button>
-                </h5>
-              </div>
-            </div>
-          </div>
-          <div className='mt-1 mb-1'>
-            <br />
-            <>
-              {showSection && cart.products?.length > 0 && (
-                <>
-                  <section className='mt-5 mb-5'>
-                    <div className='container-fluid m-5'>
-                      <div className='col-lg-8 mb-4'>
-                        <Checkout />
-                      </div>
-                    </div>
-                  </section>
-                  <Button className='bg-[#023c07] text-white' onClick={() => navigate('/payment')}>
-                    Checkout
-                  </Button>
-                </>
-              )}
-            </>
-            {}
-          </div>
-        </div>
-      </section>
+      
     </>
   );
 };
