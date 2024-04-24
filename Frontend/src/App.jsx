@@ -8,26 +8,13 @@ import {
   Home,
   ProductDetail,
   Profile,
-  UserActivation,
-  ForgotPassword,
-  ResetPassword,
-  Register,
-  Login,
-  AdminRoute,
-  SupplierRoute,
-  Cart,
-  Navbar,
-  Header,
-  UserContextProvider,
-  CsrfTokenContextProvider,
-  CartContextProvider,
   Payment,
 } from './url.jsx';
 import {Toaster} from 'sonner';
 import ApiTest from './pages/Test.jsx';
-import {HardwareSimulation, HardwareRegister} from './pages/index.jsx';
-import FourOhFour from './pages/FourOhFour.jsx';
-
+import {AdminRoute, SupplierRoute, RetailerRoute} from "@/Components"
+import {Register, Login, UserActivation, ForgotPassword, ResetPassword, Cart, HardwareSimulation, HardwareRegister, FourOhFour, RetDashboard} from '@/pages';
+import {UserContextProvider,CsrfTokenContextProvider,CartContextProvider} from '@/Contexts'
 
 function App() {
   return (
@@ -59,6 +46,7 @@ function App() {
                 <Route path='/test' element={<ApiTest />} />
                 <Route path='/simulation' element={<HardwareSimulation />} />
                 <Route path='/hardware-register' element={<HardwareRegister />} />
+                <Route path='/retailer-dashboard' element={<RetDashboard/>}></Route>
                 <Route path='/*' element={<FourOhFour></FourOhFour>}></Route>
               </Routes>
             </CartContextProvider>
