@@ -16,7 +16,7 @@ class AutoOrderConfig(models.Model):
     )
     type = models.CharField(choices=TYPE, default='DEFAULT', max_length=15)
     qunt_reach_level = models.IntegerField("Reach Level", default=0)
-    ordering_amount = models.IntegerField("Ordering Amount")
+    ordering_amount = models.IntegerField("Ordering Amount", default=1)
     confirmation_status = models.BooleanField("Requires Confirmation", default=False)
 
     class Meta:
