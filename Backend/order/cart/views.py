@@ -11,9 +11,6 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 import json
-from django.shortcuts import redirect
-import stripe, os
-from dotenv import load_dotenv
 import uuid
 from django.views.decorators.http import require_POST
 
@@ -49,8 +46,8 @@ def add_to_cart(request):
         return JsonResponse({'message': 'Please enter a quantity'})
 
     product = get_object_or_404(ProductCatalog, product_id=product_id)
-    cart = Cart.objects.filter(user=user).first()
-    cart_serializer = CartSerializer(data={'user': user})
+    cart = Cart.objects.filter(user=user, type='BASIC').first()
+    cart_serializer = CartSerializer(data={'user': user, 'type': 'BASIC'})
     cart_serializer.is_valid(raise_exception=True)
 
     if not cart:
@@ -110,7 +107,7 @@ def remove_from_cart(request):
 
     product = get_object_or_404(ProductCatalog, product_id=product_id)
 
-    cart = Cart.objects.filter(user=user).first()
+    cart = Cart.objects.filter(user=user, type='BASIC').first()
 
     if cart:
         cart_item = CartItem.objects.filter(cart=cart, product=product).first()
@@ -146,7 +143,7 @@ def view_cart(request):
 
     user = request.user
 
-    cart = Cart.objects.filter(user=user).first()
+    cart = Cart.objects.filter(user=user, type='BASIC').first()
 
     if not cart:
         return JsonResponse({'message': 'You have no cart'})
@@ -186,7 +183,7 @@ def clear_cart(request):
 
     user = request.user
 
-    cart = Cart.objects.filter(user=user).first()
+    cart = Cart.objects.filter(user=user, type='BASIC').first()
 
     if cart:
         cart_items = CartItem.objects.filter(cart=cart)
@@ -198,41 +195,6 @@ def clear_cart(request):
         return JsonResponse({'message': 'Cart not found'})
 
 
-# load_dotenv()
-# stripe.api_key = os.environ['STRIPE_SECRET_KEY']
-
-
-@csrf_exempt
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def create_checkout_session(request):
-    # user = request.user.id
-    user = 16
-    try:
-        cart = Cart.objects.get(user=user)
-    except:
-        return JsonResponse({'message':'You do not have cart'})
-    cart_items = CartItem.objects.filter(cart=cart.cart_id)
-    if not cart_items:
-        return JsonResponse({'message':'You do not have items in your cart'})
-    items_details = []
-    for cart_item in cart_items:
-        stripe_product = stripe.Product.retrieve(str(cart_item.product.product_id))
-        items_details.append(
-            {
-                'price': stripe_product.default_price,
-                'quantity': cart_item.quantity,
-            }
-        )
-    checkout_session = stripe.checkout.Session.create(
-        line_items=items_details,
-        mode='payment',
-        success_url=os.environ['URL'] + '?success=true',
-        cancel_url=os.environ['URL'] + '?canceled=true',
-    )
-    return redirect(checkout_session.url, code=303)
-
-
 # Create your views here.
 class CartViewSet(viewsets.ModelViewSet):
     queryset = Cart.objects.all()
@@ -242,4 +204,3 @@ class CartViewSet(viewsets.ModelViewSet):
 class CartItemViewSet(viewsets.ModelViewSet):
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
-    

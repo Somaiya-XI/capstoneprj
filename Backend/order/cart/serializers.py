@@ -7,7 +7,9 @@ from user.models import Retailer
 
 class CartItemSerializer(serializers.HyperlinkedModelSerializer):
     product = CartProductSerializer(read_only=True)
-    cart = serializers.SlugRelatedField(slug_field='cart_id', queryset=Cart.objects.all())
+    cart = serializers.SlugRelatedField(
+        slug_field='cart_id', queryset=Cart.objects.all()
+    )
     subtotal = serializers.SerializerMethodField()
 
     def get_subtotal(self, obj):
@@ -20,7 +22,9 @@ class CartItemSerializer(serializers.HyperlinkedModelSerializer):
 
 class CartSerializer(serializers.HyperlinkedModelSerializer):
     products = CartProductSerializer(many=True, read_only=True)
-    user = serializers.SlugRelatedField(slug_field='email', queryset=Retailer.objects.all())
+    user = serializers.SlugRelatedField(
+        slug_field='email', queryset=Retailer.objects.all()
+    )
 
     class Meta:
         model = Cart

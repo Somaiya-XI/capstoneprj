@@ -1,0 +1,18 @@
+.retailer-link a:hover {
+  color: #002603 !important;
+}
+.retailer-link a {
+  color: white !important;
+}
+.retailer-link-btn a {
+  color: white !important;
+}
+.retailer-dashboard-cont {
+  margin-top: 2.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.retailer-link-drop a:hover {
+  color: currentColor !important;
+}

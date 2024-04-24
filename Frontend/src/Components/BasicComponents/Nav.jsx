@@ -6,6 +6,7 @@ import {Link} from 'react-router-dom';
 import Header from '../../pages/Home/Components/Header/Header';
 import {useCsrfContext, useUserContext} from '../../Contexts';
 import ButtonGroup from '../../pages/Home/Components/Form/ButtonGroup/ButtonGroup';
+import {ProfileSheet} from '../FormComponents/CompleteProfile';
 
 const SearchNav = ({children}) => {
   const {user} = useUserContext();
@@ -39,9 +40,26 @@ const SearchNav = ({children}) => {
                     <div className='divider'></div>
                     <ButtonGroup icon='carbon:dashboard' buttonText={'Dashboard'} link='/hardware-register' />
                     <div className='divider'></div>
-                  </> // add to cart icon solar:cart-plus-outline solar:cart-large-2-bold-duotone solar:user-minus-broken
+                  </>
                 )}
-
+                {isAuthenticated && user.role === 'ADMIN' && (
+                  <>
+                    <ButtonGroup
+                      icon='fluent:task-list-square-person-20-regular'
+                      buttonText={'Users List'}
+                      link='/user-activation'
+                      width='28'
+                      height='28'
+                    />
+                    <div className='divider'></div>
+                  </>
+                )}
+                {isAuthenticated && user.role === 'UNDEFIEND' && (
+                  <>
+                    <ProfileSheet></ProfileSheet>
+                    <div className='divider'></div>
+                  </>
+                )}
                 {isAuthenticated && (
                   <>
                     <ButtonGroup icon='solar:user-minus-broken' buttonText={'  Logout'} link='/' onClick={logUserOut} />
@@ -105,7 +123,12 @@ export const BasicNav = ({children}) => {
                     <div className='divider'></div>
                   </>
                 )}
-
+                {isAuthenticated && user.role === 'UNDEFIEND' && (
+                  <>
+                    <ProfileSheet></ProfileSheet>
+                    <div className='divider'></div>
+                  </>
+                )}
                 {isAuthenticated && (
                   <>
                     <ButtonGroup icon='solar:user-minus-broken' buttonText={'  Logout'} link='/' onClick={logUserOut} />

@@ -1,23 +1,17 @@
 import {useState, useContext, useEffect} from 'react';
 import CartContext from './CartContext';
-import axios from 'axios';
 import {API} from '../../backend';
-import {useCsrfContext} from '../CsrfTokenContext/CsrfTokenContextProvider';
-import {useUserContext} from '../index';
+import {useCsrfContext, useUserContext} from '../index';
 
 const CartContextProvider = ({children}) => {
-  const {csrf} = useCsrfContext();
+  const {ax} = useCsrfContext();
   const {user} = useUserContext();
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const fetchCart = async () => {
     try {
-      const response = await axios.get(`${API}cart/view-cart/`, {
-        withCredentials: true,
-      });
-      // let csrfToken = response.headers['x-csrftoken'];
-      // setCSRF(csrfToken);
+      const response = await ax.get(`${API}cart/view-cart/`);
       const {data} = response;
       console.log(data);
       setCart((cart) => data);
@@ -61,16 +55,7 @@ const CartContextProvider = ({children}) => {
   const UpdateCartContent = async (id, quantity) => {
     try {
       setProductQuantity(id, quantity);
-      await axios.post(
-        `${API}cart/add-to-cart/`,
-        {product_id: id, quantity: quantity},
-        {
-          headers: {
-            'X-CSRFToken': csrf,
-          },
-          withCredentials: true,
-        }
-      );
+      await ax.post(`${API}cart/add-to-cart/`, {product_id: id, quantity: quantity});
       console.log('Item updated:', id);
     } catch (error) {
       console.error(error);

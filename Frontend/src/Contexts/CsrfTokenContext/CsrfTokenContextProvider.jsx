@@ -43,6 +43,18 @@ const CsrfTokenContextProvider = ({children}) => {
     return _csrfToken;
   }
 
+  // Initialize Axios instance with default configuration
+  const ax = axios.create({
+    withCredentials: true, // Always include credentials
+  });
+
+  // Add a request interceptor to set CSRF token in headers
+  ax.interceptors.request.use((config) => {
+    // Set CSRF token in the request headers
+    config.headers['X-CSRFToken'] = csrf;
+    return config;
+  });
+
   async function getSession() {
     try {
       const response = await axios.get(`${API}user/session/`, {
@@ -103,6 +115,7 @@ const CsrfTokenContextProvider = ({children}) => {
   };
 
   const authValues = {
+    ax,
     csrf,
     setCSRF,
     isAuthenticated,

@@ -30,8 +30,8 @@ const ProductDetail = () => {
       <h4>Supplier: {SupplierData.company_name}</h4>
       <h4>Price: {ProductData.new_price}</h4>
       <h4>Minimum Order Quantity: {ProductData.min_order_quantity}</h4>
-      <h4>Expiry Date: {ProductData.expiry_date}</h4>
-      <h4>Production Date: {ProductData.production_date}</h4>
+      {/* <h4>Expiry Date: {ProductData.expiry_date}</h4>
+      <h4>Production Date: {ProductData.production_date}</h4> */}
     </div>
   );
 };

@@ -1,9 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap');
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 body {
-  font-family: 'Poppins', 'Karla', sans-serif;
   min-height: 100vh;
 }
 .clear-styles {
@@ -143,6 +138,15 @@ body {
   border-radius: 8px;
   padding: 10px 10px;
   min-height: 55px;
+  /* font-size: 12px;
+  font-weight: normal; */
+}
+
+.profile-sheet.form-control {
+  border: 0.2em solid #e8e8e8;
+  /* border-bottom: 1px solid #e7e7e7; */
+  border-radius: 8px;
+  padding: 10px 10px;
+  min-height: 55px;
   font-size: 12px;
-  font-weight: normal;
 }

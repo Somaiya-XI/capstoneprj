@@ -1,17 +1,14 @@
 import {API} from '../../backend';
 import {Link} from 'react-router-dom';
 import './CartItem.css';
-import {useEffect, useState, useRef} from 'react';
-import axios from 'axios';
-import {useCsrfContext} from '../../Contexts';
+import {useEffect, useState} from 'react';
 import BinIcon from './BinIcon';
 import {toast} from 'sonner';
-import {CustomErrorToast} from '../../Components';
+import {CustomErrorToast} from '@/Components';
 
 const CartItem = ({image, id, product_name, unit_price, subtotal, quantity, min_qyt, stock, remove, add}) => {
   const [qty, setQty] = useState(quantity);
   const [subTot, setSubTot] = useState(subtotal);
-  const {csrf} = useCsrfContext();
 
   useEffect(() => {
     const newSubtotal = qty * unit_price;
@@ -70,8 +67,6 @@ const CartItem = ({image, id, product_name, unit_price, subtotal, quantity, min_
   };
 
   const handleRemoveItem = async () => {
-    console.log('Item:', id);
-    console.log('csrf:', csrf);
     const res = await remove(id);
     console.log('res: ', res);
     const message = res.data.message;

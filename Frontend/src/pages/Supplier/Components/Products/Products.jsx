@@ -142,17 +142,17 @@ const Products = () => {
       editable: true,
       width: '7%',
     },
-    {
-      title: 'Production Date',
-      dataIndex: 'production_date',
-      width: '10%',
-      editable: true,
-    },
-    {
-      title: 'Expiry date',
-      dataIndex: 'expiry_date',
-      editable: true,
-    },
+    // {
+    //   title: 'Production Date',
+    //   dataIndex: 'production_date',
+    //   width: '10%',
+    //   editable: true,
+    // },
+    // {
+    //   title: 'Expiry date',
+    //   dataIndex: 'expiry_date',
+    //   editable: true,
+    // },
 
     {
       title: 'Operation',

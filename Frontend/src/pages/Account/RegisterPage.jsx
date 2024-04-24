@@ -130,7 +130,7 @@ const Register = () => {
         <EmailFeild value={state.email} onChange={handleChange('email')} />
         <PasswordFeild value={state.password} onChange={handleChange('password')} />
         <ImageField text='upload commercial register' dispatch={dispatch} />
-        <PhoneField value={state.phone} onChange={handleChange('phone')} />{' '}
+        <PhoneField value={state.phone} onChange={handleChange('phone')} />
         <IconedInput
           type='textarea'
           value={state.address}

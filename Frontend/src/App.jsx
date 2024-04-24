@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import {
   Products,
   AddProduct,
@@ -8,24 +8,13 @@ import {
   Home,
   ProductDetail,
   Profile,
-  UserActivation,
-  ForgotPassword,
-  ResetPassword,
-  Register,
-  Login,
-  AdminRoute,
-  SupplierRoute,
-  Cart,
-  Navbar,
-  Header,
-  UserContextProvider,
-  CsrfTokenContextProvider,
-  CartContextProvider,
   Payment,
 } from './url.jsx';
 import {Toaster} from 'sonner';
 import ApiTest from './pages/Test.jsx';
-import {HardwareSimulation, HardwareRegister} from './pages/index.jsx';
+import {AdminRoute, SupplierRoute, RetailerRoute} from "@/Components"
+import {Register, Login, UserActivation, ForgotPassword, ResetPassword, Cart, HardwareSimulation, HardwareRegister, FourOhFour, RetDashboard} from '@/pages';
+import {UserContextProvider,CsrfTokenContextProvider,CartContextProvider} from '@/Contexts'
 
 function App() {
   return (
@@ -38,17 +27,15 @@ function App() {
               <Routes>
                 <Route path='/' element={<Home />} />
                 <Route path='/cart' element={<Cart />} />
-                <Route path='/:id' element={<ProductDetail />} />
+                <Route path='/product/:id' element={<ProductDetail />} />
                 <Route path='/login' element={<Login />} />
                 <Route path='/user-activation'element={  <AdminRoute> <UserActivation /></AdminRoute>} />
                 <Route>
                   {/* <Route path='/SupplierDashboard' element={<SupplierRoute><SupplierDashboard /> </SupplierRoute>} /> */}
                   <Route path='/supplier-dashboard/products' element={<SupplierRoute><Products /></SupplierRoute>} />
                   <Route path='/supplier-dashboard/products/edit/:id' element={<EditProduct />} />
-                  <Route path='/supplier-dashboard/products/add' element={<AddProduct />}/>
-                  <Route path='/supplier-dashboard/schedule' element={<Schedule/>} />
-                 
-                  
+                  <Route path='/supplier-dashboard/products/add' element={<AddProduct />} />
+                  <Route path='/supplier-dashboard/schedule' element={<Schedule />} />
                   <Route path='/supplier-dashboard/orders' element={<Orders />} />
                 </Route>
                 <Route path='/profile' element={<Profile />} />
@@ -58,7 +45,10 @@ function App() {
                 <Route path='/payment' element={<Payment />} />
                 <Route path='/test' element={<ApiTest />} />
                 <Route path='/simulation' element={<HardwareSimulation />} />
-                <Route path='/hardware-register' element={<HardwareRegister/>}/>              </Routes>
+                <Route path='/hardware-register' element={<HardwareRegister />} />
+                <Route path='/retailer-dashboard' element={<RetDashboard/>}></Route>
+                <Route path='/*' element={<FourOhFour></FourOhFour>}></Route>
+              </Routes>
             </CartContextProvider>
           </CsrfTokenContextProvider>
         </UserContextProvider>
@@ -68,4 +58,3 @@ function App() {
 }
 
 export default App;
-

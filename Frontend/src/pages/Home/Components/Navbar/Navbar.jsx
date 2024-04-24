@@ -8,6 +8,7 @@ import {useContext} from 'react';
 import {useUserContext, useCsrfContext} from '../../../../Contexts';
 import {useEffect} from 'react';
 import {Link} from 'react-router-dom';
+import {ProfileSheet} from '@/Components';
 
 const Navbar = ({children}) => {
   const options = ['Your Location', 'New york', 'albania'];
@@ -50,6 +51,12 @@ const Navbar = ({children}) => {
                   width='28'
                   height='28'
                 />
+                <div className='divider'></div>
+              </>
+            )}
+            {isAuthenticated && user.role === 'UNDEFIEND' && (
+              <>
+                <ProfileSheet></ProfileSheet>
                 <div className='divider'></div>
               </>
             )}

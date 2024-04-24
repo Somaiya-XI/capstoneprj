@@ -2,6 +2,7 @@ import {Link} from 'react-router-dom';
 import '../../pages/Account/form.css';
 import {SimpleLogo} from '../Icons.jsx';
 import {CustomErrorAlert} from '../../Components/index.jsx';
+import GoogleButton from './GoogleButton.jsx';
 
 const FormsContainer = ({
   formIcon: IconComponent,
@@ -13,6 +14,10 @@ const FormsContainer = ({
   errors,
   children,
 }) => {
+  const isLoginPage = formTitle.toLowerCase().includes('log in');
+  const isRegisterPage = formTitle.toLowerCase().includes('register');
+
+  const showGoogle = isLoginPage || isRegisterPage;
   return (
     <div className='clear-styles container-fluid'>
       <div className='form-logo-btn'>
@@ -35,6 +40,7 @@ const FormsContainer = ({
                   {link.text}
                 </Link>
               ))}
+            {showGoogle && <GoogleButton />}
           </div>
         </div>
         <div

@@ -5,6 +5,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 import uuid
 
+AUTH_PROVIDERS = {'email': 'email', 'google': 'google'}
+
 
 # Create your models here.
 class User(AbstractUser):
@@ -22,6 +24,7 @@ class User(AbstractUser):
     )
     profile_picture = models.ImageField("profile picture", upload_to='profile_imgs/', blank=True, null=True)
     session_token = models.CharField(max_length=100, default=0)
+    auth_provider = models.CharField(max_length=50, default=AUTH_PROVIDERS.get('email'))
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -30,6 +33,7 @@ class User(AbstractUser):
         ADMIN = "ADMIN", "Admin"
         SUPPLIER = "SUPPLIER", "Supplier"
         RETAILER = "RETAILER", "Retailer"
+        NO_ROLE = 'UNDEFIEND', 'Undefined'
 
     role = models.CharField(max_length=50, choices=Role.choices, blank=False, null=False)
 

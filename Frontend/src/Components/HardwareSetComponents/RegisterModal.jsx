@@ -1,14 +1,13 @@
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from '@nextui-org/react';
 import {IconedInput, CustomErrorToast, CustomSuccessToast, HardwareIcon} from '../../Components/index.jsx';
 import {useState} from 'react';
-import axios from 'axios';
 import {useCsrfContext} from '../../Contexts';
 import {API} from '../../backend.jsx';
 
 const RegisterModal = () => {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
   const [deviceId, setDeviceId] = useState('');
-  const {csrf} = useCsrfContext();
+  const {ax} = useCsrfContext();
 
   const handleChange = (e) => {
     setDeviceId((i) => e.target.value);
@@ -16,18 +15,9 @@ const RegisterModal = () => {
 
   const onConfirm = async (Close) => {
     try {
-      const response = await axios.post(
-        `${API}device-register/`,
-        {
-          gateway_id: deviceId,
-        },
-        {
-          headers: {
-            'X-CSRFToken': csrf,
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await ax.post(`${API}device/device-register/`, {
+        gateway_id: deviceId,
+      });
       console.log('response: ', response);
       Close();
       CustomSuccessToast({msg: 'Device Registered!', position: 'top-right', shiftStart: 'ms-0'});

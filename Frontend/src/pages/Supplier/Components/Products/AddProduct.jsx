@@ -9,7 +9,6 @@ import {
   Upload,
   InputNumber,
 } from "antd";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import SupplierLayout from "../Layout/SupplierLayout";
 import { useCsrfContext } from "../../../../Contexts";
@@ -29,7 +28,7 @@ const formItemLayout = {
 };
 
 const AddProduct = () => {
-  const {csrf} = useCsrfContext();
+  const {ax} = useCsrfContext();
   const [inputData, setInputData] = useState({
     product_img: null,
     product_name: "",
@@ -40,16 +39,16 @@ const AddProduct = () => {
     discount_percentage: 0,
     quantity: "",
     min_order_quantity: "",
-    production_date: null,
-    expiry_date: null,
+    // production_date: null,
+    // expiry_date: null,
   });
 
   const navigate = useNavigate();
 
   const handleInputChange = (key, value) => {
-    if (key === "production_date" || key === "expiry_date") {
-      value = value ? value.toISOString().split("T")[0] : null;
-    }
+    // if (key === "production_date" || key === "expiry_date") {
+    //   value = value ? value.toISOString().split("T")[0] : null;
+    // }
 
     setInputData((prevState) => ({
       ...prevState,
@@ -62,15 +61,9 @@ const AddProduct = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post(
+      const response = await ax.post(
         `${API}product/catalog/create/`,
-        inputData,
-        {
-          headers: {
-            "X-CSRFToken": csrf,
-          },
-          withCredentials: true,
-        }
+        inputData
       );
 
       console.log(response.data);
@@ -221,7 +214,7 @@ const AddProduct = () => {
             />
           </Form.Item>
 
-          <Form.Item
+          {/* <Form.Item
             label="Production Date"
             name="production_date"
             rules={[
@@ -241,7 +234,7 @@ const AddProduct = () => {
             <DatePicker
               onChange={(date) => handleInputChange("expiry_date", date)}
             />
-          </Form.Item>
+          </Form.Item> */}
 
           <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
             <Button type="primary" className="AddButton2" htmlType="submit">

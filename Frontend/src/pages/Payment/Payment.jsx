@@ -53,9 +53,9 @@ const ProductDisplay = () => {
     try {
       const { data } = await axios.put(
         `${import.meta.env.VITE_API_URL}payment/pay-by-wallet/`,
-        {
-          retailer: id,
-        }
+        { retailer: id,
+          shipping_address: "JJ",
+         }
       );
       
       // Step 1: Log the received data
@@ -292,13 +292,12 @@ export default function App() {
     // Check to see if this is a redirect back from Checkout
     const query = new URLSearchParams(window.location.search);
 
-    if (query.get("session_id")) {
+    if (query.get("session_id")){
       //s_id = query.get("session_id")
       //setMessage("Order placed! You will receive an email confirmation.");
       const s = query.get("session_id")
-      setMessage("s_id: " + s);
+      setMessage("s_id: "+s);
     }
-
 
     // if (query.get("canceled")) {
     //   setMessage(

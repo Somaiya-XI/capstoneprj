@@ -4,32 +4,25 @@ import {useNavigate} from 'react-router-dom';
 import {LiaTrashAltSolid as TrashIcon} from 'react-icons/lia';
 import {useCartContext, useCsrfContext, useUserContext} from '../../Contexts';
 import {API} from '../../backend';
-import axios from 'axios';
 import {Link} from 'react-router-dom';
 import ListHeader from './ListHeader';
 import CartItem from './CartItem';
 import BinIcon from './BinIcon';
 import Checkout from './Shipment';
 import {RiEmotionSadLine} from 'react-icons/ri';
-import Navbar from '../Home/Components/Navbar/Navbar';
-import Header from '../Home/Components/Header/Header';
 import {toast} from 'sonner';
 import {Button} from '@nextui-org/react';
-import {SearchNav} from '../../Components';
+import {SearchNav} from '@/Components';
 
 const Cart = () => {
   const text = ['Product', 'Unit Price', 'Quantity', 'Subtotal', 'Remove'];
   const flex = [3];
 
   const {user} = useUserContext();
-  const {csrf} = useCsrfContext();
+  const {ax} = useCsrfContext();
   const {cart, UpdateCartContent, fetchCart, loading} = useCartContext();
   const [showSection, setShowSection] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    fetchCart();
-  }, []);
 
   const reloadCart = () => {
     fetchCart();
@@ -38,16 +31,7 @@ const Cart = () => {
   const removeFromCart = async (id) => {
     if (cart) {
       try {
-        const response = await axios.post(
-          `${API}cart/remove-from-cart/`,
-          {product_id: id},
-          {
-            headers: {
-              'X-CSRFToken': csrf,
-            },
-            withCredentials: true,
-          }
-        );
+        const response = await ax.post(`${API}cart/remove-from-cart/`, {product_id: id});
         console.log('Item removed:', id);
         reloadCart();
         console.log('response: ', response);
@@ -63,16 +47,7 @@ const Cart = () => {
   const clearCart = async () => {
     if (cart) {
       try {
-        await axios.post(
-          `${API}cart/clear-cart/`,
-          {},
-          {
-            headers: {
-              'X-CSRFToken': csrf,
-            },
-            withCredentials: true,
-          }
-        );
+        await ax.post(`${API}cart/clear-cart/`, {});
         console.log('Cart cleared');
         reloadCart();
       } catch (error) {

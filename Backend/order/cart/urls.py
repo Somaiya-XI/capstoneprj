@@ -12,10 +12,5 @@ urlpatterns = [
     path('remove-from-cart/', views.remove_from_cart, name='remove_from_cart'),
     path('view-cart/', views.view_cart, name='view_cart'),
     path('clear-cart/', views.clear_cart, name='clear_cart'),
-    path(
-        'create-checkout-session/',
-        views.create_checkout_session,
-        name='create_checkout_session',
-    ),
     path("", include(router.urls)),
 ]

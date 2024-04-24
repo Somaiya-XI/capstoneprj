@@ -4,6 +4,7 @@ from drf_extra_fields.fields import Base64ImageField
 from user.models import Supplier, Retailer
 from category.models import Category
 from user.serializers import UserSerializer
+from configuration.models import AutoOrderConfig
 
 
 class ProductCatalogSerializer(serializers.HyperlinkedModelSerializer):
@@ -27,8 +28,6 @@ class ProductCatalogSerializer(serializers.HyperlinkedModelSerializer):
             'new_price',
             'quantity',
             'min_order_quantity',
-            'expiry_date',
-            'production_date',
         )
 
 
@@ -40,21 +39,34 @@ class CartProductSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['product_id', 'product_name', 'unit_price']
 
 
+class OrderProductSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ProductCatalog
+        fields = ['product_id', 'product_name', 'new_price']
+
+
 # send all data as jason
 class SupermarketProductSerializer(serializers.HyperlinkedModelSerializer):
     retailer = serializers.PrimaryKeyRelatedField(queryset=Retailer.objects.all())
+    order_config = serializers.PrimaryKeyRelatedField(queryset=AutoOrderConfig.objects.all())
 
-    class Meta:
-        model = SupermarketProduct
-        fields = ['retailer', 'product_id', 'product_name', 'brand', 'price', 'quantity', 'expiry_date', 'product_img']
-
-
-class SupermarketSpecialSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = SupermarketProduct
         fields = [
+            'tag_id',
+            'retailer',
             'product_id',
             'product_name',
+            'brand',
+            'price',
             'quantity',
-            'expiry_date',
+            'product_img',
+            'order_config',
         ]
+
+
+## Let it be the bulk serializer for the simulation!
+class SupermarketSpecialSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = SupermarketProduct
+        fields = ['product_id', 'product_name', 'quantity']
