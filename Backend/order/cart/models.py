@@ -16,7 +16,7 @@ class Cart(models.Model):
     user = models.ForeignKey(Retailer, on_delete=models.CASCADE)
     products = models.ManyToManyField(ProductCatalog, through='CartItem')
     total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
-    type = models.CharField(choices=CART_TYPE, max_length=20)
+    type = models.CharField(choices=CART_TYPE, max_length=20, default='BASIC')
 
     class Meta:
         db_table = "Cart"

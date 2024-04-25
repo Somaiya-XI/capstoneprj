@@ -47,7 +47,7 @@ def add_to_cart(request):
 
     product = get_object_or_404(ProductCatalog, product_id=product_id)
     cart = Cart.objects.filter(user=user, type='BASIC').first()
-    cart_serializer = CartSerializer(data={'user': user, 'type': 'BASIC'})
+    cart_serializer = CartSerializer(data={'user': user})
     cart_serializer.is_valid(raise_exception=True)
 
     if not cart:
