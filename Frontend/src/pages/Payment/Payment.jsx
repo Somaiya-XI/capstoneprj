@@ -9,7 +9,6 @@ import { API } from "../../backend";
 
 import { useCartContext, useUserContext } from "../../Contexts";
 import { toast } from "sonner";
-import Checkout from "../Cart/Shipment";
 import {
   Card,
   CardHeader,
@@ -20,7 +19,12 @@ import {
   Radio,
   RadioGroup,
   VisuallyHidden, cn,
+  Breadcrumbs,
+  BreadcrumbItem
 } from "@nextui-org/react";
+import { useNavigate } from "react-router-dom";
+import { CiShoppingCart } from "react-icons/ci";
+import { IoBagCheckOutline } from "react-icons/io5";
 import Shipment from "../Cart/Shipment";
 import { Divider } from "antd";
 import CartItem from "../Cart/CartItem";
@@ -35,6 +39,8 @@ const ProductDisplay = () => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [selected, setSelected] = useState("");
+  const navigate = useNavigate();
+  const size = ["lg"];
   const id = 17;
 
 
@@ -42,38 +48,39 @@ const ProductDisplay = () => {
     const { data } = await axios.get(
       `${import.meta.env.VITE_API_URL}payment/view-wallet-balance/${id}/`
     );
-    console.log("Bassant!",data);
-    
+    console.log("Bassant!", data);
+
     setBalance(data.payment_wallet);
   };
 
- 
+
 
   const PayByWallet = async () => {
     try {
       const { data } = await axios.put(
         `${import.meta.env.VITE_API_URL}payment/pay-by-wallet/`,
-        { retailer: id,
+        {
+          retailer: id,
           shipping_address: "JJ",
-         }
+        }
       );
-      
+
       // Step 1: Log the received data
       console.log("Step 1 - Response Data:", data);
-  
+
       // Step 2: Update success state
       setSuccess(data.success);
       console.log("Step 2 - Success State Updated:", data.success);
-  
+
       if (data.success === true) {
         // Step 3: Update balance if payment was successful
         setBalance(data.payment_wallet);
         console.log("Step 3 - Balance Updated:", data.payment_wallet);
-        
+
         // Step 4: Display success toast
         toast.success("Success");
         console.log("Step 4 - Success Toast Displayed");
-  
+
         // Additional Step: Log the conducted amount
         console.log("Conducted Amount:", data.conducted_amount);
       } else {
@@ -115,10 +122,15 @@ const ProductDisplay = () => {
       <Header />
       <div id="c" className="md:container md:mx-auto">
         <Navbar />
-        <h1 className="display-5 px-4 py-3 mt-5 mx-auto">
+        {/* <h1 className="display-5 px-4 py-3 mt-5 mx-auto">
           {user.company_name}'s Order Confirmation
-        </h1>
+        </h1> */}
 
+          <Breadcrumbs className="text-[25px] py-3 mt-5 mx-auto">
+          <BreadcrumbItem onClick={() => navigate('/cart')} startContent={<CiShoppingCart/>}>Cart</BreadcrumbItem>
+          <BreadcrumbItem startContent={<IoBagCheckOutline className='text-[#a3e189]' />}>Checkout</BreadcrumbItem>
+        </Breadcrumbs>
+        
         <section className="flex justify-between">
           <div className='container-fluid '>
             <Shipment />
@@ -150,7 +162,7 @@ const ProductDisplay = () => {
                     <p className="font-th">
                       Not Sufficient Balance?{' '}
                       <span
-                        style={{ textDecoration: 'underline', cursor: 'pointer', color:"#a3e189" }}
+                        style={{ textDecoration: 'underline', cursor: 'pointer', color: "#a3e189" }}
                         onClick={() => setIsActive(!isAccordtion)}
                       >
                         Charge Now
@@ -228,7 +240,7 @@ const ProductDisplay = () => {
 
                         <div className="flex flex-col gap-1">
                           <div className="flex justify-between">
-                            <p className="text-small">{p.unit_price}</p>
+                            <p className="text-small">SAR {p.unit_price}</p>
                             <p className="text-small text-foreground/50">{p.quantity} quantity</p>
                           </div>
                         </div>
@@ -246,7 +258,7 @@ const ProductDisplay = () => {
                       Order Total
                     </p>
                     <p className="text-small">Shipping: FREE</p>
-                    <p className="text-small">Subtotal: ${cart.total}</p>
+                    <p className="text-small">Subtotal: SAR {cart.total}</p>
                   </div>
                 </div>
               </div>
@@ -292,11 +304,11 @@ export default function App() {
     // Check to see if this is a redirect back from Checkout
     const query = new URLSearchParams(window.location.search);
 
-    if (query.get("session_id")){
+    if (query.get("session_id")) {
       //s_id = query.get("session_id")
       //setMessage("Order placed! You will receive an email confirmation.");
       const s = query.get("session_id")
-      setMessage("s_id: "+s);
+      setMessage("s_id: " + s);
     }
 
     // if (query.get("canceled")) {

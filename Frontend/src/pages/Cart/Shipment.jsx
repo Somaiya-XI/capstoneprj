@@ -27,6 +27,8 @@ import { API } from "../../backend";
 export default function Shipment() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { user } = useUserContext();
+  const [loading, setLoading] = useState(true);
+  const [address, setAddress] = useState([]);
   const [formData, setFormData] = useState({
     state: "",
     city: "",
@@ -35,25 +37,20 @@ export default function Shipment() {
   });
 
   const [error, setError] = useState("");
-  const [addresses, setAddresses] = useState([]);
-  const [loading, setLoading] = useState(true); // Add loading state
+  
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const fetchAddresses = async () => {
-    try {
-      const response = await axios.get(`${API}/user/${user.id}`, {
+    
+      const response = axios.get(`${API}/user/${user.id}`, {
         withCredentials: true,
-      });
-      console.log("Address response:", response.data);
-      setAddresses(response.data.addresses || []); 
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching addresses:", error);
-      setLoading(false);
-    }
+    } )
+    .then(response)
+    .then(data => setAddress({data}))
+    .catch(err => console.log(err))
   };
   
 
@@ -80,10 +77,20 @@ export default function Shipment() {
 
   return (
     <div>
+      <div>
+        <ul>
+          {address.map((address,index) => (
+            <li key={index}>{address.address}</li>
+          )
+          ) }
+        </ul>
+      </div>
+
+  
       <Card className="max-w-[600px] py-3 mx-4 mb-3" >
         <CardHeader className="justify-between">
           <div className="flex flex-col">
-            <h6 className="text-lg text-black">Shipping Address</h6>
+            <h6 className="text-lg text-black">Shipping Address {formData.address}</h6>
           </div>
           <FaPlus
             className="text-[#023c07] mx-3 size-5 cursor-pointer hover:text-[#a3e189]"
@@ -91,16 +98,14 @@ export default function Shipment() {
           />
         </CardHeader>
         <CardBody>
-          {loading ? ( 
-            <p>Loading...</p>
-          ) : addresses.length === 0 ? (
+          {loading && address.length === 0 ? (
             <div className="flex items-center justify-center">
               <p className="text-grey-300">No address is added yet</p>
               <CiWarning className="size-5 ml-1 mb-3 text-grey-300" />
             </div>
           ) : (
             <div className="flex gap-3">
-              {addresses.map((address, index) => (
+              {address.map((address, index) => (
                 <Card
                   key={index}
                   className="max-w-[250px] shadow-none border-1 border-[#a3e189] px-2 py-2"
@@ -112,7 +117,7 @@ export default function Shipment() {
                       <EditOutlined className="text-[#023c07] size-3 cursor-pointer" />
                     </div>
                   </CardHeader>
-                  <p>{`${user.address}, ${address.city}, ${address.district}, ${address.street}`}</p>
+                  <p>{`${address.address}`}</p>
                 </Card>
               ))}
             </div>
