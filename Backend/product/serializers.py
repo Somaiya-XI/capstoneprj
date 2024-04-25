@@ -47,6 +47,7 @@ class OrderProductSerializer(serializers.HyperlinkedModelSerializer):
 
 # send all data as jason
 class SupermarketProductSerializer(serializers.HyperlinkedModelSerializer):
+    product_img = Base64ImageField()
     retailer = serializers.PrimaryKeyRelatedField(queryset=Retailer.objects.all())
     order_config = serializers.PrimaryKeyRelatedField(queryset=AutoOrderConfig.objects.all())
 
