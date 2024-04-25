@@ -22,6 +22,7 @@ const UserContextProvider = ({children}) => {
     setRole,
     user,
     setUser,
+    
   };
 
   return <UserContext.Provider value={userValues}>{children}</UserContext.Provider>;
