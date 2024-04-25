@@ -125,11 +125,12 @@ const Cart = () => {
                 </h5>
               )}
             </div>
-            {cart?.products && (
-                <Button className='bg-[#023c07] text-white' onClick={() => navigate('/payment')}>
-                Checkout
-              </Button>
-              )}
+          {cart.products?.length > 0 && (
+            <Button className='bg-[#023c07] text-white' onClick={() => navigate('/payment')}>
+            Checkout
+          </Button>
+
+          )}
             
           </div>
         </div>

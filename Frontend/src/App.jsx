@@ -42,7 +42,7 @@ function App() {
                 <Route path='/register' element={<Register />} />
                 <Route path='/forgot-password' element={<ForgotPassword />} />
                 <Route path='/reset-password/form/:uidb64/:token' element={<ResetPassword />} />
-                <Route path='/payment' element={<Payment />} />
+                <Route path='/payment' element={<RetailerRoute><Payment /></RetailerRoute>} />
                 <Route path='/test' element={<ApiTest />} />
                 <Route path='/simulation' element={<HardwareSimulation />} />
                 <Route path='/hardware-register' element={<HardwareRegister />} />
