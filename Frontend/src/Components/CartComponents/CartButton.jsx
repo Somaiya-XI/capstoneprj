@@ -15,9 +15,6 @@ function CartButton({id, minAllowed, stock}) {
   }, [cart]);
 
   useEffect(() => {
-    console.log('order quant', minAllowed);
-    console.log('order quant', stock);
-
     if (minAllowed > stock || stock === 0) {
       setButtonDisabled(true);
     } else {
@@ -26,7 +23,7 @@ function CartButton({id, minAllowed, stock}) {
   }, [minAllowed, stock]);
 
   const handleAddToCart = async () => {
-    if (cart && !buttonDisabled) {
+    if (cart && isAuthenticated) {
       try {
         const resp = await ax.post(`${API}cart/add-to-cart/`, {product_id: id, quantity: quant + 1});
         CustomSuccessToast({msg: 'item added to cart!', position: 'top-right', shiftStart: 'ms-0'});
@@ -38,9 +35,6 @@ function CartButton({id, minAllowed, stock}) {
       console.log(`quant is${quant}`);
     } else {
       let m = '';
-      if (!isAuthenticated) {
-        m = 'Please log in to add to cart';
-      }
       if (!isAuthenticated) {
         m = 'Please log in to add to cart';
       } else {
