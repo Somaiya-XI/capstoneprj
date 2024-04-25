@@ -95,6 +95,7 @@ def pay_by_wallet(request):
     # collect the data from incoming request
     user = request.data.get('retailer')
     shipping_address = request.data.get('shipping_address')
+    order_type = request.data.get('order_type')
 
     # check request data existance
     if user == '':
@@ -103,9 +104,12 @@ def pay_by_wallet(request):
     if shipping_address == '':
         return JsonResponse({'message': 'please send a valid request'})
 
+    if order_type == '':
+        return JsonResponse({'message': 'please send a valid request'})
+
     # check user cart existance
     try:
-        cart = Cart.objects.get(user=user)
+        cart = Cart.objects.get(user=user, type=order_type)
     except Retailer.DoesNotExist:
         return JsonResponse({'message': 'You do not have a cart'})
 
@@ -134,7 +138,7 @@ def pay_by_wallet(request):
 
     # create new order
     payment_method = 'wallet'
-    order_id = make_order(user, payment_method, shipping_address)
+    order_id = make_order(user, order_type, payment_method, shipping_address)
 
     # # construct the query parameters
     # query_params = {

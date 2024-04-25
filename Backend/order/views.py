@@ -24,12 +24,14 @@ from urllib.parse import urlencode
 def create_checkout_session(request):
 
     # access the authenticated user
-    if request.user.is_anonymous:
-        return JsonResponse(
-            {'message': 'You are not authenticated, log in then try again'}
-        )
+    # if request.user.is_anonymous:
+    #     return JsonResponse(
+    #         {'message': 'You are not authenticated, log in then try again'}
+    #     )
 
-    user_id = request.user.id
+    # user_id = request.user.id
+
+    user_id = 17
 
     # get the user object
     try:
@@ -49,9 +51,9 @@ def create_checkout_session(request):
 
     # check the user cart existance
     try:
-        cart = Cart.objects.get(user=retailer)
+        cart = Cart.objects.get(user=retailer, type='BASIC')
     except:
-        return JsonResponse({'message': 'You do not have cart'})
+        return JsonResponse({'message': 'You do not have a cart'})
 
     # get the current items within the cart
     cart_items = CartItem.objects.filter(cart=cart.cart_id)
@@ -136,7 +138,8 @@ def validate_checkout_session(request):
     if checkout_session.payment_status == 'paid':
 
         # create new order
-        order_id = make_order(user, payment_method, shipping_address)
+        order_type = 'BASIC'
+        order_id = make_order(user, order_type, payment_method, shipping_address)
 
         # construct the query parameters
         query_params = {
@@ -153,11 +156,11 @@ def validate_checkout_session(request):
     return JsonResponse({'message': 'payment process failed'})
 
 
-def make_order(user, payment_method, shipping_address):
+def make_order(user, order_type, payment_method, shipping_address):
 
     # check the cart existance
     try:
-        cart = Cart.objects.get(user=user)
+        cart = Cart.objects.get(user=user, type=order_type)
     except Cart.DoesNotExist:
         return JsonResponse({'message': 'You do not have a cart'})
 
