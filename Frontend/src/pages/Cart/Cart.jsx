@@ -125,9 +125,12 @@ const Cart = () => {
                 </h5>
               )}
             </div>
-            <Button className='bg-[#023c07] text-white' onClick={() => navigate('/payment')}>
-                    Checkout
-                  </Button>
+            {cart?.products && (
+                <Button className='bg-[#023c07] text-white' onClick={() => navigate('/payment')}>
+                Checkout
+              </Button>
+              )}
+            
           </div>
         </div>
       </section>
