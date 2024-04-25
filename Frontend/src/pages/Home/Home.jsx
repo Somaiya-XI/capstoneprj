@@ -74,10 +74,12 @@ const Home = () => {
                           productID={product.product_id}
                           productImage={product.product_img}
                           productName={product.product_name}
-                          seller={product.supplier}
+                          seller={product.brand}
                           price={product.new_price}
                           oldPrice={product.price}
                           discount={product.discount_percentage}
+                          minAllowed={product.min_order_quantity}
+                          stock={product.quantity}
                           key={index}
                         />
                       ) : null
@@ -125,10 +127,12 @@ const Home = () => {
                             productID={product.product_id}
                             productImage={product.product_img}
                             productName={product.product_name}
-                            seller={product.supplier}
+                            seller={product.brand}
                             price={product.new_price}
                             oldPrice={product.price}
                             discount={product.discount_percentage}
+                            minAllowed={product.min_order_quantity}
+                            stock={product.quantity}
                             key={index}
                           />
                         ) : null
