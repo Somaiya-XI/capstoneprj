@@ -10,7 +10,14 @@ class AutoOrderConfigSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = AutoOrderConfig
-        fields = ['id', 'qunt_reach_level', 'ordering_amount', 'retailer', 'type']
+        fields = [
+            'id',
+            'qunt_reach_level',
+            'ordering_amount',
+            'confirmation_status',
+            'retailer',
+            'type',
+        ]
 
 
 # send data as jason

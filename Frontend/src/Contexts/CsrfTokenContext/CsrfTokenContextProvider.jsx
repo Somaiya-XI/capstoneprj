@@ -2,8 +2,10 @@ import axios from 'axios';
 import CsrfTokenContext from './CsrfTokenContext';
 import {useState, useContext, useEffect} from 'react';
 import {API} from '../../backend';
+import {useUserContext} from '@/Contexts';
 
 const CsrfTokenContextProvider = ({children}) => {
+  const {setUser} = useUserContext();
   const [csrf, setCSRF] = useState(() => {
     const currentCsrf = localStorage.getItem('csrf');
     try {
@@ -82,6 +84,13 @@ const CsrfTokenContextProvider = ({children}) => {
       const data = response.data;
       console.log(data);
       setIsAuthenticated(false);
+      const initialUser = {
+        id: null,
+        email: '',
+        company_name: '',
+        role: '',
+      };
+      setUser((oldUser) => ({...oldUser, ...initialUser}));
       await getCsrfToken();
       console.log('Context Logout Success');
     } catch (err) {

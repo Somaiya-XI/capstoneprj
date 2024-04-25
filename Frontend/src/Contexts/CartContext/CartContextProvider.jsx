@@ -4,7 +4,7 @@ import {API} from '../../backend';
 import {useCsrfContext, useUserContext} from '../index';
 
 const CartContextProvider = ({children}) => {
-  const {ax} = useCsrfContext();
+  const {ax, isAuthenticated} = useCsrfContext();
   const {user} = useUserContext();
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -32,7 +32,7 @@ const CartContextProvider = ({children}) => {
       console.log('cart fetched');
       fetchCart();
     }
-  }, [user]);
+  }, []);
 
   const getProductQuantity = (productId) => {
     const product = cart?.products?.find((item) => item.product_id === productId);

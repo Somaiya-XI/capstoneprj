@@ -25,6 +25,14 @@ def update_default_order_config(request):
 
     user_id = 17
 
+    # get the user object
+    try:
+        retailer = Retailer.objects.get(id=user_id)
+    except Retailer.DoesNotExist:
+        return JsonResponse(
+            {'message': 'You are not authorized to create an auto order configuration'}
+        )
+
     # collect the data from incoming request
     quantity_reach_level = request.data.get('quantity_reach_level')
     ordering_amount = request.data.get('ordering_amount')
@@ -37,13 +45,7 @@ def update_default_order_config(request):
     if not ordering_amount:
         return JsonResponse({'message': 'please send a valid request'})
 
-    if not confirmation_status:
-        return JsonResponse({'message': 'please send a valid request'})
-
-    # get the user object
-    try:
-        retailer = Retailer.objects.get(id=user_id)
-    except Retailer.DoesNotExist:
+    if confirmation_status == None:
         return JsonResponse({'message': 'please send a valid request'})
 
     # get the user default auto order config or create a new one if it doesn't exist
@@ -56,13 +58,6 @@ def update_default_order_config(request):
     default_order_config[0].ordering_amount = ordering_amount
     default_order_config[0].confirmation_status = confirmation_status
     default_order_config[0].save()
-
-    # add the default auto order config to all products in retailer's supermarket
-    # if sellect_all == True:
-    #     products = SupermarketProduct.objects.filter(retailer=retailer)
-    #     for product in products:
-    #         product.order_config = default_order_config[0].pk
-    #         product.save()
 
     # check whether a new object created or not
     if default_order_config[1] == True:
@@ -94,14 +89,16 @@ def view_default_order_config(request):
     try:
         retailer = Retailer.objects.get(id=user_id)
     except Retailer.DoesNotExist:
-        return JsonResponse({'message': 'please send a valid request'})
+        return JsonResponse(
+            {'message': 'You are not authorized to view an auto order configuration'}
+        )
 
     # get the user default auto order config object
     try:
         default_order_config = AutoOrderConfig.objects.get(
             retailer=retailer, type='DEFAULT'
         )
-    except default_order_config.DoesNotExist:
+    except AutoOrderConfig.DoesNotExist:
 
         # prepare the response_data
         response_data = {
@@ -138,12 +135,20 @@ def delete_default_order_config(request):
 
     user_id = 17
 
+    # get the user object
+    try:
+        retailer = Retailer.objects.get(id=user_id)
+    except Retailer.DoesNotExist:
+        return JsonResponse(
+            {'message': 'You are not authorized to delete an auto order configuration'}
+        )
+
     # get the user default auto order config object
     try:
         default_order_config = AutoOrderConfig.objects.get(
-            retailer=user_id, type='DEFAULT'
+            retailer=retailer, type='DEFAULT'
         )
-    except default_order_config.DoesNotExist:
+    except AutoOrderConfig.DoesNotExist:
         return JsonResponse(
             {'message': 'There is no default order configuration to be deleted'}
         )
@@ -169,18 +174,28 @@ def apply_default_order_config_to_all_products(request):
 
     user_id = 17
 
+    # get the user object
+    try:
+        retailer = Retailer.objects.get(id=user_id)
+    except Retailer.DoesNotExist:
+        return JsonResponse(
+            {
+                'message': 'You are not authorized to apply the auto order configuration to products'
+            }
+        )
+
     # get the user default auto order config object
     try:
         default_order_config = AutoOrderConfig.objects.get(
-            retailer=user_id, type='DEFAULT'
+            retailer=retailer, type='DEFAULT'
         )
-    except default_order_config.DoesNotExist:
+    except AutoOrderConfig.DoesNotExist:
         return JsonResponse(
             {'message': 'please create a default order configuration first'}
         )
 
-    # get the all products in the retailer's supermarket
-    products = SupermarketProduct.objects.filter(retailer=user_id)
+    # get all products in the retailer's supermarket
+    products = SupermarketProduct.objects.filter(retailer=retailer)
 
     # check the products existance
     if not products:
@@ -192,7 +207,7 @@ def apply_default_order_config_to_all_products(request):
 
     # add the default auto order config to all products in retailer's supermarket
     for product in products:
-        product.order_config = default_order_config.pk
+        product.order_config = default_order_config
         product.save()
 
     return JsonResponse(
@@ -216,8 +231,18 @@ def delete_default_order_config_from_all_products(request):
 
     user_id = 17
 
+    # get the user object
+    try:
+        retailer = Retailer.objects.get(id=user_id)
+    except Retailer.DoesNotExist:
+        return JsonResponse(
+            {
+                'message': 'You are not authorized to delete the auto order configuration from products'
+            }
+        )
+
     # get the all products in the retailer's supermarket
-    products = SupermarketProduct.objects.filter(retailer=user_id)
+    products = SupermarketProduct.objects.filter(retailer=retailer)
 
     # check the products existance
     if not products:
@@ -254,8 +279,19 @@ def update_product_order_config(request):
 
     user_id = 17
 
+    # get the user object
+    try:
+        retailer = Retailer.objects.get(id=user_id)
+    except Retailer.DoesNotExist:
+        return JsonResponse(
+            {
+                'message': 'You are not authorized to create or update the auto order configuration of this product'
+            }
+        )
+
     # collect the data from incoming request
     product_id = request.data.get('product_id')
+    config_type = request.data.get('config_type')
     quantity_reach_level = request.data.get('quantity_reach_level')
     ordering_amount = request.data.get('ordering_amount')
     confirmation_status = request.data.get('confirmation_status')
@@ -264,27 +300,49 @@ def update_product_order_config(request):
     if not product_id:
         return JsonResponse({'message': 'please send a valid request'})
 
-    if not quantity_reach_level:
+    if not config_type:
         return JsonResponse({'message': 'please send a valid request'})
 
-    if not ordering_amount:
-        return JsonResponse({'message': 'please send a valid request'})
+    if config_type == 'special':
 
-    if not confirmation_status:
-        return JsonResponse({'message': 'please send a valid request'})
+        if not quantity_reach_level:
+            return JsonResponse({'message': 'please send a valid request'})
 
-    # get the user object
-    try:
-        retailer = Retailer.objects.get(id=user_id)
-    except Retailer.DoesNotExist:
-        return JsonResponse({'message': 'please send a valid request'})
+        if not ordering_amount:
+            return JsonResponse({'message': 'please send a valid request'})
+
+        if confirmation_status == None:
+            return JsonResponse({'message': 'please send a valid request'})
 
     # get the supermarket product object
     try:
-        product = SupermarketProduct.objects.get(product_id=product_id)
-    except product.DoesNotExist:
+        product = SupermarketProduct.objects.get(
+            product_id=product_id, retailer=retailer
+        )
+    except SupermarketProduct.DoesNotExist:
         return JsonResponse(
             {'message': 'This product does not exist in your supermarket'}
+        )
+
+    if config_type == "default":
+
+        # get the user default auto order config object
+        try:
+            default_order_config = AutoOrderConfig.objects.get(
+                retailer=retailer, type='DEFAULT'
+            )
+        except AutoOrderConfig.DoesNotExist:
+            return JsonResponse(
+                {'message': 'please create a default order configuration first'}
+            )
+
+        # add the default auto order config to the product
+        product.order_config = default_order_config
+        product.save()
+
+        return JsonResponse(
+            {'message': 'The auto ordering configuration updated successfully'},
+            status=200,
         )
 
     # create a new special order configuration object if the product does not have its own special order configuration
@@ -297,8 +355,9 @@ def update_product_order_config(request):
             ordering_amount=ordering_amount,
             confirmation_status=confirmation_status,
         )
-
         order_config.save()
+
+        # add the special auto order config to the product
         product.order_config = order_config
         product.save()
 
@@ -331,10 +390,22 @@ def view_product_order_config(request, product_id):
 
     user_id = 17
 
+    # get the user object
+    try:
+        retailer = Retailer.objects.get(id=user_id)
+    except Retailer.DoesNotExist:
+        return JsonResponse(
+            {
+                'message': 'You are not authorized to view the auto order configuration of this product'
+            }
+        )
+
     # get the supermarket product object
     try:
-        product = SupermarketProduct.objects.get(product_id=product_id)
-    except product.DoesNotExist:
+        product = SupermarketProduct.objects.get(
+            product_id=product_id, retailer=retailer
+        )
+    except SupermarketProduct.DoesNotExist:
         return JsonResponse(
             {'message': 'This product does not exist in your supermarket'}
         )
@@ -354,7 +425,7 @@ def view_product_order_config(request, product_id):
     # get the product order configuration object
     try:
         order_config = AutoOrderConfig.objects.get(id=product.order_config.pk)
-    except order_config.DoesNotExist:
+    except AutoOrderConfig.DoesNotExist:
         return JsonResponse(
             {'message': 'The product order configuration does not exist'}
         )
@@ -385,6 +456,16 @@ def delete_product_order_config(request):
 
     user_id = 17
 
+    # get the user object
+    try:
+        retailer = Retailer.objects.get(id=user_id)
+    except Retailer.DoesNotExist:
+        return JsonResponse(
+            {
+                'message': 'You are not authorized to delete the auto order configuration of this product'
+            }
+        )
+
     # collect the data from incoming request
     product_id = request.data.get('product_id')
 
@@ -394,8 +475,10 @@ def delete_product_order_config(request):
 
     # get the supermarket product object
     try:
-        product = SupermarketProduct.objects.get(product_id=product_id)
-    except product.DoesNotExist:
+        product = SupermarketProduct.objects.get(
+            product_id=product_id, retailer=retailer
+        )
+    except SupermarketProduct.DoesNotExist:
         return JsonResponse(
             {'message': 'This product does not exist in your supermarket'}
         )
@@ -403,7 +486,7 @@ def delete_product_order_config(request):
     # get the product order configuration object
     try:
         order_config = AutoOrderConfig.objects.get(id=product.order_config.pk)
-    except order_config.DoesNotExist:
+    except AutoOrderConfig.DoesNotExist:
         return JsonResponse(
             {'message': 'The product order configuration does not exist'}
         )

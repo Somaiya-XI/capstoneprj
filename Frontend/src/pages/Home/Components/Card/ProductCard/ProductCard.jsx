@@ -2,7 +2,18 @@ import {CartButton} from '@/Components';
 import './productcard.css';
 import {AiOutlineShoppingCart} from 'react-icons/ai';
 import {Link} from 'react-router-dom';
-const ProductCard = ({customClass, productID, productImage, productName, seller, price, oldPrice, discount}) => {
+const ProductCard = ({
+  customClass,
+  productID,
+  productImage,
+  productName,
+  seller,
+  price,
+  oldPrice,
+  discount,
+  minAllowed,
+  stock,
+}) => {
   return (
     <div id={customClass} className='col-lg-1-5 col-md-4 col-12 col-sm-6'>
       <div className='product-cart-wrap mb-30 wow animate__ animate__fadeIn animated' data-wow-delay='.1s'>
@@ -24,7 +35,8 @@ const ProductCard = ({customClass, productID, productImage, productName, seller,
           </h2>
           <div>
             <span className='font-small text-muted'>
-              Seller <Link to={`/${productID}`}>{seller.company_name}</Link>
+              Seller {seller}
+              {/* <Link to={`/product/${productID}`}></Link> */}
             </span>
           </div>
           <div className='product-card-bottom'>
@@ -36,7 +48,7 @@ const ProductCard = ({customClass, productID, productImage, productName, seller,
               ) : null}
               <span>{'$' + price}</span>
             </div>
-            <CartButton id={productID} />
+            <CartButton id={productID} minAllowed={minAllowed} stock={stock} />
             {/* <div className="add-cart">
               <a className="add" href="#">
                 <AiOutlineShoppingCart /> Add{" "}
