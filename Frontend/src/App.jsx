@@ -9,6 +9,7 @@ import {
   ProductDetail,
   Profile,
   Payment,
+  OrderCreated
 } from './url.jsx';
 import {Toaster} from 'sonner';
 import ApiTest from './pages/Test.jsx';
@@ -43,6 +44,7 @@ function App() {
                 <Route path='/forgot-password' element={<ForgotPassword />} />
                 <Route path='/reset-password/form/:uidb64/:token' element={<ResetPassword />} />
                 <Route path='/payment' element={<RetailerRoute><Payment /></RetailerRoute>} />
+                <Route path='/order-created' element={<OrderCreated/>}/>
                 <Route path='/test' element={<ApiTest />} />
                 <Route path='/simulation' element={<HardwareSimulation />} />
                 <Route path='/hardware-register' element={<HardwareRegister />} />

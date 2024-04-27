@@ -27,12 +27,11 @@ import axios from "axios";
 import { API } from "../../backend";
 import { CustomSuccessToast } from "@/Components/FormComponents/CustomAlerts";
 
-export default function Shipment() {
+export default function Shipment({address, setAddress}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { user } = useUserContext();
   const [loading, setLoading] = useState(true);
   const [editIndex, setEditIndex] = useState(null);
-  const [address, setAddress] = useState([]);
   const [formData, setFormData] = useState({
     state: "",
     city: "",
@@ -83,7 +82,7 @@ export default function Shipment() {
         );
 
         onClose();
-        CustomSuccessToast({ msg: 'Success! Your address has been updated.', dur: 3000 });
+        CustomSuccessToast({ msg: 'Your address has been updated!', dur: 3000 });
 
         setTimeout(() => {
           window.location.reload();
