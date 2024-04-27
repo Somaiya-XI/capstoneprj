@@ -126,11 +126,11 @@ const ProductDisplay = () => {
           {user.company_name}'s Order Confirmation
         </h1> */}
 
-          <Breadcrumbs className="text-[25px] py-3 mt-5 mx-auto">
-          <BreadcrumbItem onClick={() => navigate('/cart')} startContent={<CiShoppingCart/>}>Cart</BreadcrumbItem>
+        <Breadcrumbs className="text-[25px] py-3 mt-5 mx-auto">
+          <BreadcrumbItem onClick={() => navigate('/cart')} startContent={<CiShoppingCart />}>Cart</BreadcrumbItem>
           <BreadcrumbItem startContent={<IoBagCheckOutline className='text-[#a3e189]' />}>Checkout</BreadcrumbItem>
         </Breadcrumbs>
-        
+
         <section className="flex justify-between">
           <div className='container-fluid '>
             <Shipment />
@@ -240,10 +240,11 @@ const ProductDisplay = () => {
 
                         <div className="flex flex-col gap-1">
                           <div className="flex justify-between">
-                            <p className="text-small">SAR {p.unit_price}</p>
+                            <p className="text-small">SAR {Number(p.subtotal).toFixed(2)}</p>
                             <p className="text-small text-foreground/50">{p.quantity} quantity</p>
                           </div>
                         </div>
+
                       </div>
                     </div>
                   </CardBody>

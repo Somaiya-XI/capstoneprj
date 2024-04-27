@@ -433,6 +433,25 @@ td:first-letter {
   max-width: 100%;
     font-size: 200px !important;
 }
+:where(.css-dev-only-do-not-override-1xg9z9n).ant-btn-primary:not(:disabled):not(.ant-btn-disabled) {
+  color: #fff;
+  background: #023c07;
+}
+:where(.css-dev-only-do-not-override-1xg9z9n).ant-btn-primary:not(:disabled):not(.ant-btn-disabled):hover {
+  color: #fff;
+  background: #a3e189;
+}
+:where(.css-dev-only-do-not-override-1xg9z9n).ant-popconfirm .ant-popconfirm-message >.ant-popconfirm-message-icon .anticon {
+  color: #e94343;
+  font-size: 14px;
+  line-height: 1;
+  margin-inline-end: 8px;
+}
+:where(.css-dev-only-do-not-override-1xg9z9n).ant-btn-default:not(:disabled):not(.ant-btn-disabled):hover {
+  color: #a3e189;
+  border-color: #a3e189;
+  background: #ffffff;
+}
 
 
 
