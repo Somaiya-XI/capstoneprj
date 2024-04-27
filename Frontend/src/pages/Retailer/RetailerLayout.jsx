@@ -13,7 +13,7 @@ const RetailerLayout = ({children}) => {
   const {user} = useUserContext();
   return (
     <NextUIProvider>
-      <Layout className='h-100vh'>
+      <Layout className='h-100vh '>
         <Sider collapsed={collapsed} collapsible trigger={null}>
           <div className='flex align-items-center my-0 px-0'>{collapsed ? <WLogo fontSize='10px' /> : <Logo />}</div>
           <SideNavbar collabsed={collapsed}></SideNavbar>
@@ -39,6 +39,7 @@ const RetailerLayout = ({children}) => {
                     avatarProps={{
                       isBordered: true,
                       src: 'https://i.pravatar.cc/150?u=a042581f4e29026024d',
+                      classNames: {img: 'opacity-100'},
                     }}
                     description={user.email}
                     name={user.company_name}
