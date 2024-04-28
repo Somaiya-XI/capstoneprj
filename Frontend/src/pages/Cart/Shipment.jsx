@@ -10,7 +10,8 @@ import {
   RadioGroup
 } from "@nextui-org/react";
 import { FaPlus } from "react-icons/fa6";
-import { DeleteOutlined, EditOutlined,} from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined} from "@ant-design/icons";
+import {Popconfirm} from 'antd';
 import { useDisclosure } from "@nextui-org/react";
 import {
   Modal,
@@ -18,17 +19,19 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  Spinner,
 } from "@nextui-org/react";
 import { CiWarning } from "react-icons/ci";
 import { useUserContext } from "../../Contexts";
 import axios from "axios";
 import { API } from "../../backend";
+import { CustomSuccessToast } from "@/Components/FormComponents/CustomAlerts";
 
-export default function Shipment() {
+export default function Shipment({address, setAddress}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { user } = useUserContext();
   const [loading, setLoading] = useState(true);
-  const [address, setAddress] = useState([]);
+  const [editIndex, setEditIndex] = useState(null);
   const [formData, setFormData] = useState({
     state: "",
     city: "",
@@ -37,65 +40,104 @@ export default function Shipment() {
   });
 
   const [error, setError] = useState("");
-  
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const fetchAddresses = async () => {
-    
-      const response = axios.get(`${API}/user/${user.id}`, {
-        withCredentials: true,
-    } )
-    .then(response)
-    .then(data => setAddress({data}))
-    .catch(err => console.log(err))
+    axios.get(`${API}/user/${user.id}`, {
+      withCredentials: true,
+    })
+      .then(response => {
+        const addressString = response.data.address;
+        const addressArray = addressString.split(";");
+        setAddress([{
+          state: addressArray[0] || "",
+          city: addressArray[1] || "",
+          district: addressArray[2] || "",
+          street: addressArray[3] || ""
+        }]);
+      })
+      .catch(err => console.log(err));
   };
-  
+
+
 
   useEffect(() => {
     fetchAddresses();
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const { state, city, district, street } = formData;
     if (!state || !city || !district || !street) {
       setError("This field is required");
     } else {
-      setAddresses([...addresses, formData]);
-      onClose();
-      setError("");
+      try {
+        const compiledAddress = `${state};${city};${district};${street};`;
+        console.log('Compiled Address:', compiledAddress);
+        axios.put(
+          `${API}user/update/${user.id}/`,
+          { address: compiledAddress }
+        );
+
+        onClose();
+        CustomSuccessToast({ msg: 'Your address has been updated!', dur: 3000 });
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+
+
+
+
+        setError("");
+      } catch (error) {
+        console.error("Error updating address:", error);
+      }
     }
   };
 
+
   const handleDelete = (index) => {
-    setAddresses(addresses.filter((_, i) => i !== index));
+    axios.put(
+      `${import.meta.env.VITE_API_URL}user/update/${user.id}/`,
+      { address: null }
+    );
+    CustomSuccessToast({ msg: 'Success! Your address has been deleted.', dur: 2000 });
+    setAddress(address.filter((_, i) => i !== index));
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000);
+
+
   };
 
-  const handleEdit = (index) => { }
+  const handleEdit = (index) => {
+    const editedAddress = address[index];
+    setFormData({
+      state: editedAddress.state,
+      city: editedAddress.city,
+      district: editedAddress.district,
+      street: editedAddress.street
+    });
+    onOpen();
+  };
+
 
   return (
     <div>
-      <div>
-        <ul>
-          {address.map((address,index) => (
-            <li key={index}>{address.address}</li>
-          )
-          ) }
-        </ul>
-      </div>
-
-  
-      <Card className="max-w-[600px] py-3 mx-4 mb-3" >
+      <Card className="max-w-[600px] py-3 mx-4 mb-3">
         <CardHeader className="justify-between">
           <div className="flex flex-col">
-            <h6 className="text-lg text-black">Shipping Address {formData.address}</h6>
+            <h6 className="text-lg text-black">Shipping Address</h6>
           </div>
-          <FaPlus
-            className="text-[#023c07] mx-3 size-5 cursor-pointer hover:text-[#a3e189]"
-            onClick={onOpen}
-          />
+          {address.length === 0 && (
+            <FaPlus
+              className="text-[#023c07] mx-3 size-5 cursor-pointer hover:text-[#a3e189]"
+              onClick={onOpen}
+            />
+          )}
         </CardHeader>
         <CardBody>
           {loading && address.length === 0 ? (
@@ -113,22 +155,26 @@ export default function Shipment() {
                   <CardHeader className="justify-between p-1">
                     <p className="text-md text-black">Shipping</p>
                     <div className="flex gap-3 mb-3 mx-2">
-                      <DeleteOutlined className="text-rose-500 size-3 cursor-pointer" onClick={() => handleDelete(index)} />
-                      <EditOutlined className="text-[#023c07] size-3 cursor-pointer" />
+                        <Popconfirm title='Sure to delete?' onConfirm={() => handleDelete(index)}>
+                          <DeleteOutlined className="text-rose-500 size-3 cursor-pointer"/>
+                        </Popconfirm>
+                      
+                      <EditOutlined className="text-[#023c07] size-3 cursor-pointer" onClick={() => handleEdit(index)} />
                     </div>
                   </CardHeader>
-                  <p>{`${address.address}`}</p>
+                  <p>{`${address.state}, ${address.city}, ${address.district}, ${address.street} `}</p>
                 </Card>
               ))}
             </div>
           )}
         </CardBody>
       </Card>
+
       <Modal isOpen={isOpen} onOpenChange={onClose} placement="top-center">
         <ModalContent>
           <>
             <ModalHeader className="flex flex-col gap-1">
-              Add New Address
+              {editIndex !== null ? "Edit Address" : "Add New Address"}
             </ModalHeader>
             <ModalBody>
               <Input

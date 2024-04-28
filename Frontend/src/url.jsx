@@ -18,9 +18,11 @@ import Cart from './pages/Cart/Cart.jsx';
 import Navbar from './pages/Home/Components/Navbar/Navbar.jsx';
 import Header from './pages/Home/Components/Header/Header.jsx';
 import Schedule from './pages/Supplier/Components/Schedule/Schedule';
+import OrderCreated from './pages/Payment/OrderCreated';
 
 
 export {
+  OrderCreated,
   AddProduct,
   Schedule,
   Products,

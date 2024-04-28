@@ -3,11 +3,11 @@ import Header from "../Home/Components/Header/Header";
 import Navbar from "../Home/Components/Navbar/Navbar";
 import "./Payment.css";
 import axios from "axios";
-import visa from "./Images/visa.png";
-import src from '../HardwareSet/page_assets/bg.json';
-import { API } from "../../backend";
+import CustomErrorAlert from "@/Components/FormComponents/CustomAlerts";
+import { CustomErrorToast } from "@/Components";
 
 import { useCartContext, useUserContext } from "../../Contexts";
+import { CustomSuccessToast } from "@/Components/FormComponents/CustomAlerts";
 import { toast } from "sonner";
 import {
   Card,
@@ -22,7 +22,7 @@ import {
   Breadcrumbs,
   BreadcrumbItem
 } from "@nextui-org/react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CiShoppingCart } from "react-icons/ci";
 import { IoBagCheckOutline } from "react-icons/io5";
 import Shipment from "../Cart/Shipment";
@@ -30,7 +30,10 @@ import { Divider } from "antd";
 import CartItem from "../Cart/CartItem";
 
 
+
 const ProductDisplay = () => {
+  const [address, setAddress] = useState([]);
+  const navigate = useNavigate();
   const message = "Your payment is done successfully";
   const [isAccordtion, setIsActive] = useState(false);
   const { user } = useUserContext();
@@ -39,7 +42,6 @@ const ProductDisplay = () => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [selected, setSelected] = useState("");
-  const navigate = useNavigate();
   const size = ["lg"];
   const id = 17;
 
@@ -52,6 +54,35 @@ const ProductDisplay = () => {
 
     setBalance(data.payment_wallet);
   };
+
+  const PlaceOrder = () => {
+    if (address.length === 0) {
+      CustomErrorToast({ msg: 'Shipping Address must be added', duration: 1500 });
+      return;
+    }
+  
+    const isValid = address.every(addr => {
+      const valid = addr.state && addr.city && addr.district && addr.street;
+      if (!valid) {
+        CustomErrorToast({ msg: 'All shipping Address fields must be added', duration: 1500 });
+      }
+      return valid;
+    });
+  
+    if (isValid) {
+      if (selected) {
+        // CustomSuccessToast({ msg: '', duration: 3000 });
+        setTimeout(() => navigate('/order-created'), 2000);
+      } else {
+        CustomErrorToast({ msg: 'Choose payment method!', duration: 3000 });
+      }
+    }
+  
+    return isValid;
+    
+  };
+  
+  
 
 
 
@@ -93,13 +124,7 @@ const ProductDisplay = () => {
       console.error("Error:", error);
     }
   };
-  const PlaceOrder = async () => {
-    if (selected) {
-      console.log("Order placed successfully!");
-    } else {
-      console.log("Please select a payment method before placing the order.");
-    }
-  }
+  
 
   const ChargeWallet = async () => {
     const { data } = await axios.put(
@@ -126,15 +151,14 @@ const ProductDisplay = () => {
           {user.company_name}'s Order Confirmation
         </h1> */}
 
-          <Breadcrumbs className="text-[25px] py-3 mt-5 mx-auto">
-          <BreadcrumbItem onClick={() => navigate('/cart')} startContent={<CiShoppingCart/>}>Cart</BreadcrumbItem>
+        <Breadcrumbs className="text-[25px] py-3 mt-5 mx-auto">
+          <BreadcrumbItem onClick={() => navigate('/cart')} startContent={<CiShoppingCart />}>Cart</BreadcrumbItem>
           <BreadcrumbItem startContent={<IoBagCheckOutline className='text-[#a3e189]' />}>Checkout</BreadcrumbItem>
         </Breadcrumbs>
-        
+
         <section className="flex justify-between">
           <div className='container-fluid '>
-            <Shipment />
-
+            <Shipment address={address} setAddress={setAddress} />
             <Card className="payment-container max-w-[600px] py-3 mx-4">
               <CardHeader className="justify-between">
                 <div className="flex flex-col">
@@ -240,10 +264,11 @@ const ProductDisplay = () => {
 
                         <div className="flex flex-col gap-1">
                           <div className="flex justify-between">
-                            <p className="text-small">SAR {p.unit_price}</p>
+                            <p className="text-small">SAR {Number(p.subtotal).toFixed(2)}</p>
                             <p className="text-small text-foreground/50">{p.quantity} quantity</p>
                           </div>
                         </div>
+
                       </div>
                     </div>
                   </CardBody>
@@ -265,7 +290,7 @@ const ProductDisplay = () => {
               <CardFooter className="flex justify-center">
                 <Button
                   className="bg-[#023c07] text-default w-2/5"
-                  onClick={""}
+                  onClick={PlaceOrder}
                 >
                   Place Order
                 </Button>
