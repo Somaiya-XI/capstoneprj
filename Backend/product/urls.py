@@ -17,7 +17,8 @@ urlpatterns = [
     path('get-user-products/<int:supplier_id>/', views.view_user_products),
     ### RETAILER CONTROLLER URLS ###
     path('get-ret-products/<int:retailer_id>/', views_retailer.view_user_products),
-    path('supermarket/create/', views_retailer.create_product),
+    path('supermarket/manage/', views_retailer.manage_product),
+    path('view_bulk/<str:product_id>/', views_retailer.view_user_products_bulks),
 
     path('get-simulation/', views_simulation.get_simulation_list),
     path('reset-simulation/', views_simulation.reset_simulation),

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { PlusOutlined } from "@ant-design/icons";
 import {
   Button,
   Form,
@@ -12,9 +11,9 @@ import {
 import { useNavigate } from "react-router-dom";
 import SupplierLayout from "../Layout/SupplierLayout";
 import { useCsrfContext } from "../../../../Contexts";
-import { API } from "../../../../backend";
-import { toastError } from "../Orders";
+import { API } from "@/backend";
 import { toast } from "sonner";
+import { Tooltip } from "@nextui-org/react";
 
 const formItemLayout = {
   labelCol: {
@@ -29,6 +28,7 @@ const formItemLayout = {
 
 const AddProduct = () => {
   const {ax} = useCsrfContext();
+  const [categories, setCategories] = useState([])
   const [inputData, setInputData] = useState({
     product_img: null,
     product_name: "",
@@ -39,6 +39,7 @@ const AddProduct = () => {
     discount_percentage: 0,
     quantity: "",
     min_order_quantity: "",
+    tag_id: ''
     // production_date: null,
     // expiry_date: null,
   });
@@ -57,6 +58,14 @@ const AddProduct = () => {
   };
 
   useEffect(() => {
+    ax.get(`${API}category/get`)
+    .then(response =>{
+      console.log(response.data)
+      setCategories(response.data)
+    })
+    .catch(error =>{
+      console.log(error)
+    })
   }, []);
 
   const handleSubmit = async () => {
@@ -128,7 +137,24 @@ const AddProduct = () => {
           {inputData.product_img && (
             <img src={inputData.product_img} alt="Product" />
           )}
+          <Form.Item
+            label="Product Tag ID"
+            name="tag_id"
+          >
+          <div className="flex items-center">
+              <Input
+              className='mr-2'
+              onChange={(e) =>
+                handleInputChange("tag_id", e.target.value)
+              }
+            />
+                    
+            <Tooltip content='Adding a tag ID makes it easier for retailers to find your product' disableAnimation>
+              <span class="icon-[solar--danger-circle-bold] bg-red-800"></span>
+              </Tooltip>
+            </div>
 
+          </Form.Item>
           <Form.Item
             label="Product Name"
             name="product_name"
@@ -162,8 +188,12 @@ const AddProduct = () => {
             name="category"
             rules={[{ required: true, message: "Please select category!" }]}
           >
-            <Select onChange={(value) => handleInputChange("category", value)}>
-              <Select.Option value="Dairy">Dairy</Select.Option>
+          <Select onChange={(value) => handleInputChange("category", value)}>
+              {categories.map((categor) => (
+                <Select.Option key={categor} value={categor}>
+                  {categor}
+                </Select.Option>
+              ))}
             </Select>
           </Form.Item>
 

@@ -13,7 +13,7 @@ import {
 import {Toaster} from 'sonner';
 import ApiTest from './pages/Test.jsx';
 import {AdminRoute, SupplierRoute, RetailerRoute} from "@/Components"
-import {Register, Login, UserActivation, ForgotPassword, ResetPassword, Cart, HardwareSimulation, HardwareRegister, FourOhFour, RetDashboard} from '@/pages';
+import {Register, Login, UserActivation, ForgotPassword, ResetPassword, Cart, HardwareSimulation, HardwareRegister, FourOhFour, RetDashboard, BulkView, ProductView} from '@/pages';
 import {UserContextProvider,CsrfTokenContextProvider,CartContextProvider} from '@/Contexts'
 
 function App() {
@@ -47,6 +47,8 @@ function App() {
                 <Route path='/simulation' element={<HardwareSimulation />} />
                 <Route path='/hardware-register' element={<HardwareRegister />} />
                 <Route path='/retailer-dashboard' element={<RetDashboard/>}></Route>
+                <Route path='/retailer-dashboard/my-products/' element={<ProductView/>}></Route>
+                <Route path='/retailer-dashboard/my-products/view/:product_id' element={<BulkView/>}></Route>
                 <Route path='/*' element={<FourOhFour></FourOhFour>}></Route>
               </Routes>
             </CartContextProvider>

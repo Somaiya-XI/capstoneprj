@@ -3,13 +3,16 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import SupplierLayout from '../Layout/SupplierLayout';
 import ScheduleCard from '../Schedule/ScheduleCard';
-import { useUserContext, useCsrfContext } from '../../../../Contexts';
+import { useUserContext, useCsrfContext } from '@/Contexts';
 import { API } from '../../../../backend';
-import { fileToBase64, imgUrlToBase64 } from '../../../../Helpers';
+import { fileToBase64, imgUrlToBase64 } from '@/Helpers';
+import { Tooltip } from '@nextui-org/react';
+import { CustomErrorToast } from '@/Components';
 
 const EditProduct = () => {
   const {csrf} = useCsrfContext();
   const { id } = useParams();
+  const [categories, setCategories] = useState([])
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     product_img: '',
@@ -23,9 +26,21 @@ const EditProduct = () => {
     discount_percentage: '',
     quantity: '',
     min_order_quantity: '',
+    tag_id: ''
     // production_date: null,
     // expiry_date: null,
   });
+
+  useEffect(() => {
+    axios.get(`${API}category/get`)
+    .then(response =>{
+      console.log(response.data)
+      setCategories(response.data)
+    })
+    .catch(error =>{
+      console.log(error)
+    })
+  }, []);
 
   const fetchProducts = async () => {
     try {
@@ -97,7 +112,14 @@ const EditProduct = () => {
       })
       .catch((err) => {
         console.log('Error!!:', err.message);
-        if (err.response) {
+        if (err.response.data.tag_id) {
+          CustomErrorToast({msg: err.response.data.tag_id});
+          console.log('Server Response Data:', err.response.data);
+        }
+        if (err.response.data.tag_id) {
+          CustomErrorToast({msg: err.response.data.tag_id});
+        }else{
+        
           console.log('Server Response Data:', err.response.data);
         }
       });
@@ -152,7 +174,24 @@ const EditProduct = () => {
               />
             </div>
 
-            
+            <div className="form-group mb-3 flex-row" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
+              <label htmlFor="tag_id" style={{ fontSize: 21, whiteSpace: 'nowrap', marginRight: 40 }}>Tag ID</label>
+              <div  className="flex items-center w-full">
+              <input
+                type="number"
+                className="form-control mr-2"
+                id="tag_id"
+                name="tag_id"
+                value={formData.tag_id}
+                onChange={handleChange("tag_id")}
+                required
+                style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
+              />
+              <Tooltip content='Adding a tag ID makes it easier for retailers to find your product' disableAnimation>
+              <span class="icon-[solar--danger-circle-bold] bg-red-800 text-base"></span>
+              </Tooltip>
+              </div>
+            </div>
 
             <div className="form-group mb-3 flex-row" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
               <label htmlFor="brand" style={{ fontSize: 21, whiteSpace: 'nowrap', marginRight: 40 }}>Brand</label>
@@ -182,7 +221,7 @@ const EditProduct = () => {
 
             <div className="form-group mb-3 flex-row" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
               <label htmlFor="category" style={{ fontSize: 21, whiteSpace: 'nowrap', marginRight: 40 }}>Select Category</label>
-              <select
+               <select
                 className="form-control"
                 id="category"
                 name="category"
@@ -192,8 +231,9 @@ const EditProduct = () => {
                 style={{ background: 'rgba(0, 0, 0, 0.04)', borderWidth: '1px', borderStyle: 'solid', borderColor: 'transparent' }}
               >
                 <option value="">Select Category</option>
-                <option value="Dairy">Dairy</option>
-                <option value="Fruit">Fruit</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
               </select>
             </div>
 

@@ -18,7 +18,7 @@ export default function SideNavbar({collabsed}) {
           },
           {
             title: 'My Products',
-            href: '/retailer-dashboard',
+            href: '/retailer-dashboard/my-products/',
             icon: Store,
             variant: 'ghost',
           },
