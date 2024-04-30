@@ -26,9 +26,9 @@ class Order(models.Model):
     )
     retailer = models.ForeignKey(Retailer, on_delete=models.CASCADE)
     order_date = models.DateField("Ordering Date", auto_now_add=True)
-    total_price = models.DecimalField("Total Price", max_digits=5, decimal_places=2)
+    total_price = models.DecimalField("Total Price", max_digits=8, decimal_places=2)
     payment_method = models.CharField(choices=PAYMENT_METHOD_CHOICES, max_length=20)
-    #order_status = models.CharField(choices=ORDER_STATUS_CHOICES, max_length=20)
+    # order_status = models.CharField(choices=ORDER_STATUS_CHOICES, max_length=20)
     shipping_address = models.CharField(max_length=200)
 
     class Meta:
@@ -43,7 +43,7 @@ class OrderItem(models.Model):
         ("delivered", "Delivered"),
         ("cancelled", "Cancelled"),
     ]
-    
+
     order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
     product_id = models.ForeignKey(ProductCatalog, on_delete=models.CASCADE)
     ordered_quantity = models.PositiveIntegerField("Quantity")

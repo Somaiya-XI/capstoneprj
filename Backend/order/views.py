@@ -1,53 +1,41 @@
 from rest_framework import viewsets
 from .serializers import OrderSerializer, OrderItemSerializer
 from .models import Order, OrderItem
-
 from .cart.models import Cart, CartItem
-from .cart.serializers import CartItemSerializer
-
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.http import JsonResponse
 from .cart.views import calculate_cart_total
 from user.models import Retailer, Supplier
-
 import stripe, os
 from dotenv import load_dotenv
 from django.shortcuts import redirect
 from urllib.parse import urlencode
 
 
-@csrf_protect
-# @api_view(['POST'])
+@csrf_exempt
 @permission_classes([AllowAny])
 def create_checkout_session(request):
 
-    # access the authenticated user
-    # if request.user.is_anonymous:
-    #     return JsonResponse(
-    #         {'message': 'You are not authenticated, log in then try again'}
-    #     )
+    # collect the data from incoming request
+    if request.POST:
+        data = request.POST.dict()
+        user_id = data.get("user_id")
+        shipping_address = data.get("shipping_address")
 
-    # user_id = request.user.id
+    # check request data existance
+    if not user_id:
+        return JsonResponse({'message': 'please send a valid request'})
 
-    user_id = 17
+    if not shipping_address:
+        return JsonResponse({'message': 'please send a valid request'})
 
     # get the user object
     try:
         retailer = Retailer.objects.get(id=user_id)
     except Retailer.DoesNotExist:
         return JsonResponse({'message': 'You are not authorized to create an order'})
-
-    # collect the data from incoming request
-    # if request.POST:
-    #     data = request.POST.dict()
-    #     shipping_address = data.get("shipping_address")
-    shipping_address = request.data.get('shipping_address')
-
-    # check request data existance
-    if not shipping_address:
-        return JsonResponse({'message': 'please send a valid request'})
 
     # check the user cart existance
     try:
@@ -134,24 +122,31 @@ def validate_checkout_session(request):
         checkout_session_id,
     )
 
+    # check the cart existance
+    try:
+        cart = Cart.objects.get(user=user, type='BASIC')
+    except Cart.DoesNotExist:
+        return JsonResponse({'message': 'You do not have a cart'})
+
     # check payment process status
     if checkout_session.payment_status == 'paid':
 
-        # create new order
-        order_type = 'BASIC'
-        order_id = make_order(user, order_type, payment_method, shipping_address)
+        if (checkout_session.amount_total / 100) == cart.total:
 
-        # construct the query parameters
-        query_params = {
-            'order_id': order_id,
-        }
+            # create new order
+            order_type = 'BASIC'
+            order_id = make_order(user, order_type, payment_method, shipping_address)
 
-        # encode the query parameters
-        encoded_params = urlencode(query_params)
+            # construct the query parameters
+            query_params = {
+                'order_id': order_id,
+            }
 
-        # redirect the user to order summary page
-        load_dotenv()
-        return redirect(os.environ['ORDER_SUMMARY_URL'] + '?' + encoded_params)
+            # encode the query parameters
+            encoded_params = urlencode(query_params)
+
+            # redirect the user to order summary page
+            return redirect(os.environ['ORDER_SUMMARY_URL'] + '?' + encoded_params)
 
     return JsonResponse({'message': 'payment process failed'})
 
@@ -176,7 +171,6 @@ def make_order(user, order_type, payment_method, shipping_address):
     # create new order using serializer
     order_serializer = OrderSerializer(
         data={
-            # 'retailer': retailer,
             'retailer': user,
             'payment_method': payment_method,
             'total_price': cart.total,
