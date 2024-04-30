@@ -120,7 +120,7 @@ def pay_by_wallet(request):
     # get the total price to pay
     amount = cart.total
 
-    if amount == 0:
+    if amount == 0.00:
         return JsonResponse({'message': 'You do not have items in your cart'})
 
     # get the user payment wallet or create a new one if it doesn't exist

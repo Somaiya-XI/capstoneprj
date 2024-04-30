@@ -12,6 +12,7 @@ import stripe, os
 from dotenv import load_dotenv
 from django.shortcuts import redirect
 from urllib.parse import urlencode
+from decimal import *
 
 
 @csrf_exempt
@@ -113,45 +114,58 @@ def validate_checkout_session(request):
     if not shipping_address:
         return JsonResponse({'message': 'please send a valid request'})
 
-    # load stripe secret key from environment
-    load_dotenv()
-    stripe.api_key = os.environ['STRIPE_SECRET_KEY']
+    # check whether the checkout session id is used before
+    orders = Order.objects.filter(payment_session_id=checkout_session_id)
 
-    # retrieve checkout session object
-    checkout_session = stripe.checkout.Session.retrieve(
-        checkout_session_id,
-    )
+    if not orders:
 
-    # check the cart existance
-    try:
-        cart = Cart.objects.get(user=user, type='BASIC')
-    except Cart.DoesNotExist:
-        return JsonResponse({'message': 'You do not have a cart'})
+        # load stripe secret key from environment
+        load_dotenv()
+        stripe.api_key = os.environ['STRIPE_SECRET_KEY']
 
-    # check payment process status
-    if checkout_session.payment_status == 'paid':
+        # retrieve checkout session object
+        checkout_session = stripe.checkout.Session.retrieve(
+            checkout_session_id,
+        )
 
-        if (checkout_session.amount_total / 100) == cart.total:
+        # check the cart existance
+        try:
+            cart = Cart.objects.get(user=user, type='BASIC')
+        except Cart.DoesNotExist:
+            return JsonResponse({'message': 'You do not have a cart'})
 
-            # create new order
-            order_type = 'BASIC'
-            order_id = make_order(user, order_type, payment_method, shipping_address)
+        # check payment process status
+        if checkout_session.payment_status == 'paid':
 
-            # construct the query parameters
-            query_params = {
-                'order_id': order_id,
-            }
+            if (Decimal(checkout_session.amount_total) / Decimal(100)) == Decimal(
+                cart.total
+            ):
 
-            # encode the query parameters
-            encoded_params = urlencode(query_params)
+                # create new order
+                order_type = 'BASIC'
+                order_id = make_order(
+                    user,
+                    order_type,
+                    payment_method,
+                    shipping_address,
+                    checkout_session_id,
+                )
 
-            # redirect the user to order summary page
-            return redirect(os.environ['ORDER_SUMMARY_URL'] + '?' + encoded_params)
+                # construct the query parameters
+                query_params = {
+                    'order_id': order_id,
+                }
+
+                # encode the query parameters
+                encoded_params = urlencode(query_params)
+
+                # redirect the user to order summary page
+                return redirect(os.environ['ORDER_SUMMARY_URL'] + '?' + encoded_params)
 
     return JsonResponse({'message': 'payment process failed'})
 
 
-def make_order(user, order_type, payment_method, shipping_address):
+def make_order(user, order_type, payment_method, shipping_address, payment_session_id):
 
     # check the cart existance
     try:
@@ -175,6 +189,7 @@ def make_order(user, order_type, payment_method, shipping_address):
             'payment_method': payment_method,
             'total_price': cart.total,
             'shipping_address': shipping_address,
+            'payment_session_id': payment_session_id,
         }
     )
 
