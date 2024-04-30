@@ -33,26 +33,22 @@ class SupermarketProductManager:
                     expiry_date = obj.get('expiry_date')
                     try:
                         device = HardwareSet.objects.get(id=device_id)
-                        product = SupermarketProduct.objects.get(tag_id=tag_id)
-                        bulk = ProductBulk.objects.filter(expiry_date=expiry_date).first()
+                        product = SupermarketProduct.objects.get(tag_id=tag_id, retailer=device.retailer)
+                        bulk = ProductBulk.objects.filter(product=product, expiry_date=expiry_date).first()
                         print('bulk is: ', bulk)
                         if topic.lower().find('add') != -1:
-                            p.add_to_shelf(product, bulk)
+                            self.add_to_shelf(product, bulk)
                             print('added')
                         if topic.lower().find('remove') != -1:
-                            p.remove_from_shelf(product, bulk)
+                            self.remove_from_shelf(product, bulk)
                             print('removed')
                         if not bulk:
-                            bulk = ProductBulk()
-                            bulk.product = product
-                            bulk.bulk_qyt = 1
-                            bulk.expiry_date = expiry_date
-                            bulk.save()
+                            self.create_new_bulk(product, expiry_date)
                             print('new bulk for: ', bulk)
                     except HardwareSet.DoesNotExist:
                         return 'This device is not registered'
                     except SupermarketProduct.DoesNotExist:
-                        product = p.create_new(device.retailer, tag_id, expiry_date)
+                        product = p.create_new_product(device.retailer, tag_id, expiry_date)
                         print('created')
         except json.JSONDecodeError as e:
             return "Error decoding JSON payload:", e
@@ -159,35 +155,39 @@ class SupermarketProductManager:
             english_data, arabic_data = self.extract_API_data(data=data)
             return english_data, arabic_data
         else:
-            return "Error:", response.status_code
+            return "error:", response.status_code
 
     ## create the product
-    def create_new(self, retailer_id, tag_id, exp_date):
+    def create_new_product(self, retailer_id, tag_id, exp_date, *args, **kwargs):
         product = SupermarketProduct()
-        bulk = ProductBulk()
-        eng_product_data, ara_product_data = self.get_product_details(tag_id)
-        if not eng_product_data or ara_product_data:
-            return {'Error': 'Creation Failed'}
+
+        if 'product_name' not in kwargs or not kwargs['product_name']:
+            eng_product_data, ara_product_data = self.get_product_details(tag_id)
+            print('data extracted: ', ara_product_data, eng_product_data)
+            if not (eng_product_data and not ara_product_data) or 'error' in eng_product_data:
+                return {'error': 'Failed, It looks like you have to provide the product name'}
+            else:
+                if "product_name" in eng_product_data and eng_product_data["product_name"]:
+                    name = eng_product_data.get('product_name')
+                else:
+                    name = ara_product_data.get('product_name')
+
+                if "brand" in eng_product_data and eng_product_data["brand"]:
+                    product.brand = eng_product_data.get('brand')
+                else:
+                    product.brand = ara_product_data.get('brand')
+        else:
+            name = kwargs['product_name']
+
         product.tag_id = tag_id
         product.retailer = retailer_id
         product.price = 00
         product.quantity = 1
-
-        if "product_name" in eng_product_data and eng_product_data["product_name"]:
-            product.product_name = eng_product_data.get('product_name')
-        else:
-            product.product_name = ara_product_data.get('product_name')
-        if "brand" in eng_product_data and eng_product_data["brand"]:
-            product.brand = eng_product_data.get('brand')
-        else:
-            product.brand = ara_product_data.get('brand')
+        product.product_name = name
 
         product.save()
 
-        bulk.product = product
-        bulk.expiry_date = exp_date
-        bulk.bulk_qyt = 1
-        bulk.save()
+        self.create_new_bulk(product, exp_date)
         return product
 
     def add_to_shelf(self, product, bulk):
@@ -214,16 +214,24 @@ class SupermarketProductManager:
         bulk.bulk_qyt = bulk.bulk_qyt - 1
         bulk.save()
 
+    def create_new_bulk(self, product, exp):
+        bulk = ProductBulk()
+        bulk.product = product
+        bulk.bulk_qyt = 1
+        bulk.expiry_date = exp
+        bulk.save()
+
     @staticmethod
     @receiver(pre_save, sender=ProductBulk)
     def calculate_days_to_exp(sender, instance, *args, **kwargs):
+        expiry_date = datetime.strptime(instance.expiry_date, '%Y-%m-%d').date()
         if not instance.pk:
-            instance.days_to_expiry = (instance.expiry_date - date.today()).days
+            instance.days_to_expiry = (expiry_date - date.today()).days
         if instance.pk:
             original_instance = sender.objects.get(pk=instance.pk)
             old_exp = original_instance.expiry_date
             if old_exp != instance.expiry_date:
-                instance.days_to_expiry = (instance.expiry_date - date.today()).days
+                instance.days_to_expiry = (expiry_date - date.today()).days
 
     @staticmethod
     @receiver(product_removed)

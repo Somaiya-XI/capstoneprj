@@ -32,6 +32,10 @@ export {
   AddressIcon,
   SimpleLogo,
   HardwareIcon,
+  EyeIcon,
+  DeleteIcon,
+  EditIcon,
+  SearchIcon,
 } from './Icons.jsx';
 
 export {default as SearchNav, BasicNav as BasicNav} from './BasicComponents/Nav.jsx';

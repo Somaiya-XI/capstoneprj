@@ -8,7 +8,7 @@ router.register(r"", views.PaymentWalletViewSet)
 
 urlpatterns = [
     path(
-        'view-wallet-balance/<int:id>/',
+        'view-wallet-balance/',
         views.view_wallet_balance,
         name='view-wallet-balance',
     ),

@@ -21,6 +21,7 @@ class OrderSerializer(serializers.HyperlinkedModelSerializer):
             'payment_method',
             'total_price',
             'shipping_address',
+            'payment_session_id',
         ]
 
 

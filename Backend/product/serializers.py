@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ProductCatalog, SupermarketProduct
+from .models import ProductCatalog, SupermarketProduct, ProductBulk
 from drf_extra_fields.fields import Base64ImageField
 from user.models import Supplier, Retailer
 from category.models import Category
@@ -16,6 +16,7 @@ class ProductCatalogSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ProductCatalog
         fields = (
+            'tag_id',
             'product_id',
             'product_name',
             'product_img',
@@ -71,3 +72,11 @@ class SupermarketSpecialSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = SupermarketProduct
         fields = ['product_id', 'product_name', 'quantity']
+
+
+class ProductBulkSerializer(serializers.HyperlinkedModelSerializer):
+    product = SupermarketProductSerializer(read_only=True)
+
+    class Meta:
+        model = ProductBulk
+        fields = ['product', 'expiry_date', 'bulk_qyt', 'days_to_expiry']
