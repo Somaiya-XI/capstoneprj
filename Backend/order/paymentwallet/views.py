@@ -118,7 +118,7 @@ def pay_by_wallet(request):
 
     # get the user object
     try:
-        retailer = Retailer.objects.get(id=id)
+        retailer = Retailer.objects.get(id=user)
     except Retailer.DoesNotExist:
         return JsonResponse({'message': 'please send a valid request'})
 
