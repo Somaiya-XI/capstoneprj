@@ -15,8 +15,15 @@ class Cart(models.Model):
     cart_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     user = models.ForeignKey(Retailer, on_delete=models.CASCADE)
     products = models.ManyToManyField(ProductCatalog, through='CartItem')
-    total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    # total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     type = models.CharField(choices=CART_TYPE, max_length=20, default='BASIC')
+
+    @property
+    def total(self):
+        total = 0
+        for item in self.cartitem_set.all():
+            total += item.subtotal
+        return total
 
     class Meta:
         db_table = "Cart"
@@ -35,9 +42,6 @@ class CartItem(models.Model):
     @property
     def subtotal(self):
         return self.product.new_price * self.quantity
-
-    def calculate_subtotal(self):
-        return self.subtotal
 
     def __str__(self):
         return f"{self.product} of {self.cart.user.company_name.capitalize()}'s {self.cart.type.capitalize()} Cart "

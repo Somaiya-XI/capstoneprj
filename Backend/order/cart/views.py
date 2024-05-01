@@ -39,7 +39,7 @@ def add_to_cart(request):
     if quantity:
         try:
             float(quantity)
-            int(quantity)
+            quantity = int(quantity)
         except (ValueError, TypeError):
             return JsonResponse({'message': 'Please enter a valid quantity'})
     else:
@@ -74,7 +74,7 @@ def add_to_cart(request):
             data={
                 'cart': cart.cart_id,
                 'product': product.product_id,
-                'quantity': product.min_order_quantity,
+                'quantity': product.min_order_quantity if quantity < product.min_order_quantity else quantity,
             }
         )
         cart_item_serializer.is_valid(raise_exception=True)
@@ -82,7 +82,6 @@ def add_to_cart(request):
         message = 'Product added to cart'
         status = 200
 
-    calculate_cart_total(cart)
     cart.save()
 
     response_data = {
@@ -114,7 +113,6 @@ def remove_from_cart(request):
 
         if cart_item:
             cart_item.delete()
-            calculate_cart_total(cart)
             cart.save()
             return JsonResponse({'message': 'Product removed from cart'})
         else:
@@ -188,7 +186,6 @@ def clear_cart(request):
     if cart:
         cart_items = CartItem.objects.filter(cart=cart)
         cart_items.delete()
-        calculate_cart_total(cart)
         cart.save()
         return JsonResponse({'message': 'Cart cleared'})
     else:
