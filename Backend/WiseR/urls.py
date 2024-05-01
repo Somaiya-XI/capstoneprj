@@ -32,7 +32,7 @@ urlpatterns = [
     path('order/', include('order.urls')),
     path('config/', include('configuration.urls')),
     path('user/', include('user.urls')),
-    path('schedule/', include('supplyschedule.urls')),
+    path('schedule/', include('user.supplier.supplyschedule.urls')),
     path('cart/', include('order.cart.urls')),
     path('payment/', include('order.paymentwallet.urls')),
     path('device/', include('user.retailer.hardware_set.urls')),

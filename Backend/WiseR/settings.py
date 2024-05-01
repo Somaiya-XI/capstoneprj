@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     'configuration',
     'category',
     'user',
-    'supplyschedule',
+    'user.supplier.supplyschedule',
     'user.retailer.hardware_set',
 ]
 
