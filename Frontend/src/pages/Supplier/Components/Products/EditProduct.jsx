@@ -5,14 +5,14 @@ import SupplierLayout from '../Layout/SupplierLayout';
 import ScheduleCard from '../Schedule/ScheduleCard';
 import { useUserContext, useCsrfContext } from '@/Contexts';
 import { API } from '../../../../backend';
-import { fileToBase64, imgUrlToBase64 } from '@/Helpers';
+import { fileToBase64, imgUrlToBase64 } from '../../../../Helpers';
 import { Tooltip } from '@nextui-org/react';
-import { CustomErrorToast } from '@/Components';
+import { toast } from 'sonner';
 
 const EditProduct = () => {
+  const [categories, setCategories] = useState([])
   const {csrf} = useCsrfContext();
   const { id } = useParams();
-  const [categories, setCategories] = useState([])
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     product_img: '',
@@ -30,17 +30,6 @@ const EditProduct = () => {
     // production_date: null,
     // expiry_date: null,
   });
-
-  useEffect(() => {
-    axios.get(`${API}category/get`)
-    .then(response =>{
-      console.log(response.data)
-      setCategories(response.data)
-    })
-    .catch(error =>{
-      console.log(error)
-    })
-  }, []);
 
   const fetchProducts = async () => {
     try {
@@ -60,8 +49,20 @@ const EditProduct = () => {
     }
   };
 
+  const fetchCategories =()=>{
+    axios.get(`${API}category/get`)
+    .then(response =>{
+      console.log(response.data)
+      setCategories(response.data)
+    })
+    .catch(error =>{
+      console.log(error)
+    })
+  }
+
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
   }, []);
 
   const handleDateChange = (name, date) => {
@@ -113,11 +114,11 @@ const EditProduct = () => {
       .catch((err) => {
         console.log('Error!!:', err.message);
         if (err.response.data.tag_id) {
-          CustomErrorToast({msg: err.response.data.tag_id});
+          toast.error(err.response.data.tag_id);
           console.log('Server Response Data:', err.response.data);
         }
         if (err.response.data.tag_id) {
-          CustomErrorToast({msg: err.response.data.tag_id});
+          toast.error(rr.response.data.tag_id);
         }else{
         
           console.log('Server Response Data:', err.response.data);
