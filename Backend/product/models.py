@@ -60,7 +60,7 @@ class SupermarketProduct(Product):
     order_config = models.ForeignKey(AutoOrderConfig, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return f"{self.product_name} of {self.retailer}"
+        return f"{self.product_name} of {self.retailer.company_name}"
 
     class Meta:
         db_table = "Supermarket Product"
@@ -74,7 +74,7 @@ class ProductBulk(models.Model):
     days_to_expiry = models.IntegerField()
 
     def __str__(self):
-        return f"{self.product.product_name} bulk"
+        return f"{self.product.product_name} bulk of {self.product.retailer.company_name}"
 
     class Meta:
         db_table = "Product Bulk"

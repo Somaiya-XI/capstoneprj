@@ -43,8 +43,9 @@ const RetailerLayout = ({children}) => {
                   <User
                     avatarProps={{
                       isBordered: true,
+                      showFallback: true,
                       src: `${imgURL}${user.profile_picture}`,
-                      classNames: {img: 'opacity-100'},
+                      classNames: {img: user.profile_picture ? 'opacity-1' : 'opacity-0'},
                     }}
                     description={user.email}
                     name={user.company_name}
