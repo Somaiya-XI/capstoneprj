@@ -24,20 +24,28 @@ def manage_product(request):
 
     data = {key: value for key, value in received.items() if value}
 
+    if not 'tag_id' in data:
+        return JsonResponse({'error': 'please enter all required values'}, status=400)
+
     tag_id = data.pop('tag_id')
-    exp = data.pop('expiry_date')
+    exp = data.get('expiry_date')
     product_name = data.get('product_name')
 
     prod = SupermarketProduct.objects.filter(retailer=retailer, tag_id=tag_id)
 
     if prod.exists():
         bulk = ProductBulk.objects.filter(product=prod.first(), expiry_date=exp).first()
-        if not bulk:
+        print('found bulk', bulk, 'with exp is ', exp)
+        if not bulk and exp:
+            print('it entered bulk')
             manager.create_new_bulk(product=prod.first(), exp=exp)
         serializer = SupermarketProductSerializer(prod.first(), data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
-        return JsonResponse({'message': 'This product already exists, updated successfully!'}, status=201)
+        return JsonResponse({'message': 'Product updated successfully!'}, status=201)
+
+    if not 'expiry_date' in data:
+        return JsonResponse({'error': 'please enter all required values'}, status=400)
 
     product = manager.create_new_product(retailer, tag_id, exp, product_name=product_name)
 
@@ -48,8 +56,6 @@ def manage_product(request):
         return JsonResponse({'message': 'Product created successfully.'}, status=201)
     elif 'error' in product:
         return JsonResponse(product, status=400)
-    else:
-        return JsonResponse({'error': 'please enter all required values'}, status=400)
 
 
 @api_view(['GET'])
