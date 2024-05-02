@@ -12,7 +12,7 @@ import json
 @csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def create_schedule(request):
+def add_schedule_entry(request):
     print('SCHED USER', request.user)
     if request.user.is_anonymous:
         return JsonResponse({'message': 'You are not authenticated, log in then try again'})
@@ -35,7 +35,7 @@ def create_schedule(request):
 
 
 @csrf_exempt
-def remove_schedule(request):
+def remove_schedule_entry(request):
     # check if Django server recognizes the
     # CSRF as authenticated user's token
     if request.user.is_anonymous:
@@ -63,7 +63,7 @@ def remove_schedule(request):
 @csrf_exempt
 @api_view(['PUT'])
 @permission_classes([AllowAny])
-def update_schedule(request):
+def update_schedule_entry(request):
     # check if Django server recognizes the
     # CSRF as authenticated user's token
     if request.user.is_anonymous:
@@ -97,7 +97,7 @@ def update_schedule(request):
 @csrf_exempt
 @api_view(['GET'])
 @permission_classes([AllowAny])
-def view_supplier_schedules(request, supplier_id):
+def view_supplier_schedule(request, supplier_id):
 
     schedules = SupplyingSchedule.objects.filter(supplier_id=supplier_id)
     response_data = []

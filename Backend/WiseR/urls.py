@@ -28,7 +28,7 @@ urlpatterns = [
     path('api2/', include('user.urls')),
     # custom apps urls:
     path('product/', include('product.urls')),
-    path('category/', include('category.urls')),
+    path('category/', include('product.category.urls')),
     path('order/', include('order.urls')),
     path('config/', include('configuration.urls')),
     path('user/', include('user.urls')),

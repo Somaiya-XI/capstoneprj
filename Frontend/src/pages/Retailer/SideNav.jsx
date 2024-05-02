@@ -1,6 +1,6 @@
 /** @format */
 
-import {LayoutDashboard, Package, Store, Settings} from 'lucide-react';
+import {Sparkles, Package, Store, Settings} from 'lucide-react';
 
 import Nav from '@/Components/ui/shadcnnav';
 
@@ -11,16 +11,10 @@ export default function SideNavbar({collabsed}) {
         isCollapsed={collabsed}
         links={[
           {
-            title: 'Dashboard',
-            href: '/retailer-dashboard',
-            icon: LayoutDashboard,
-            variant: 'default',
-          },
-          {
-            title: 'My Products',
-            href: '/retailer-dashboard/my-products/',
+            title: 'Products',
+            href: '/retailer-dashboard/my-products',
             icon: Store,
-            variant: 'ghost',
+            variant: 'default',
           },
           {
             title: 'Ordrs',
@@ -32,6 +26,12 @@ export default function SideNavbar({collabsed}) {
             title: 'Settings',
             href: '/retailer-dashboard',
             icon: Settings,
+            variant: 'ghost',
+          },
+          {
+            title: 'Go Smart!',
+            href: '/retailer-dashboard/device-register',
+            icon: Sparkles,
             variant: 'ghost',
           },
         ]}

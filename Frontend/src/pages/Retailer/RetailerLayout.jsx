@@ -6,16 +6,21 @@ import {WiserLogo as Logo, WLogo} from '../Supplier/Components/Layout/Logo';
 import SideNavbar from './SideNav';
 import {Search, ChevronLeft, ChevronRight, Bell} from 'lucide-react';
 import {useUserContext} from '@/Contexts';
+import {useNavigate} from 'react-router-dom';
+import {imgURL} from '@/backend';
 const {Header, Sider} = Layout;
 
 const RetailerLayout = ({children}) => {
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const {user} = useUserContext();
   return (
     <NextUIProvider>
       <Layout className='h-100vh '>
         <Sider collapsed={collapsed} collapsible trigger={null}>
-          <div className='flex align-items-center my-0 px-0'>{collapsed ? <WLogo fontSize='10px' /> : <Logo />}</div>
+          <div className='flex align-items-center my-0 px-0 cursor-pointer' onClick={() => navigate('/')}>
+            {collapsed ? <WLogo fontSize='10px' /> : <Logo />}
+          </div>
           <SideNavbar collabsed={collapsed}></SideNavbar>
         </Sider>
 
@@ -38,7 +43,7 @@ const RetailerLayout = ({children}) => {
                   <User
                     avatarProps={{
                       isBordered: true,
-                      src: 'https://i.pravatar.cc/150?u=a042581f4e29026024d',
+                      src: `${imgURL}${user.profile_picture}`,
                       classNames: {img: 'opacity-100'},
                     }}
                     description={user.email}

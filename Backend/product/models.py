@@ -3,7 +3,7 @@ import uuid
 
 from user.models import Supplier, Retailer
 
-from category.models import Category
+from .category.models import Category
 from decimal import Decimal
 from configuration.models import AutoOrderConfig
 

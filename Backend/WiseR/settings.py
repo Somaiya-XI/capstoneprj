@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'order.cart.apps',
     'order.paymentwallet',
     'configuration',
-    'category',
+    'product.category',
     'user',
     'user.supplier.supplyschedule',
     'user.retailer.hardware_set',

@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import ProductCatalog, SupermarketProduct, ProductBulk
 from drf_extra_fields.fields import Base64ImageField
 from user.models import Supplier, Retailer
-from category.models import Category
+from .category.models import Category
 from user.serializers import UserSerializer
 from configuration.models import AutoOrderConfig
 

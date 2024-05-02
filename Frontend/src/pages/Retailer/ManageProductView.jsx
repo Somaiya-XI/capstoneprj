@@ -28,7 +28,7 @@ const ManageProduct = ({product_id, setLoad}) => {
     product_name: '',
     brand: '',
     price: '',
-    product_img: '  ',
+    product_img: null,
     expiry_date: null,
   });
 

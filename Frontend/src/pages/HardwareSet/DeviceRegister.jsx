@@ -1,8 +1,9 @@
 import {useEffect} from 'react';
 import {Button, Spacer} from '@nextui-org/react';
 import {BasicNav, PriceCard, RegisterModal} from '../../Components';
+import RetailerLayout from '../Retailer/RetailerLayout';
 
-const HardwareRegister = () => {
+const DeviceRegister = () => {
   const main = 'Step into the world of smart automation with RFID technology and explore the hidden possibilities..';
   const Body = (n) => {
     return `Suitable for +${n} shelves`;
@@ -11,8 +12,7 @@ const HardwareRegister = () => {
   const postBody = 'xxx$';
 
   return (
-    <>
-      <BasicNav />
+    <RetailerLayout>
       <div className='px-3 py-3 mx-auto text-center'>
         <h1 className='display-4'>Pricing</h1>
         <p className='lead'>Start now by ordering your preferred set </p>
@@ -48,8 +48,8 @@ const HardwareRegister = () => {
         <p className='text-lg my-0 font-semibold'>already a member? register your device</p>
         <RegisterModal />
       </div>
-    </>
+    </RetailerLayout>
   );
 };
 
-export default HardwareRegister;
+export default DeviceRegister;

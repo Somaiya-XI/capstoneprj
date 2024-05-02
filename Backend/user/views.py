@@ -68,11 +68,13 @@ def login_view(request):
     account = authenticate(email=email, password=password)
 
     if account:
+        user_ = UserSerializer(instance=user).data
         user_data = {
             'id': user.id,
             'email': user.email,
             'company_name': user.company_name,
             'role': user.role,
+            'profile_picture': user_.get('profile_picture'),
         }
         login(request, user)
         resp = JsonResponse(
