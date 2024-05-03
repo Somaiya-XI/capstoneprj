@@ -7,7 +7,7 @@ import {Button} from '@nextui-org/react';
 
 function CartButton({id, minAllowed, stock}) {
   const {isAuthenticated, ax} = useCsrfContext();
-  const {cart, getProductQuantity, setProductQuantity, UpdateCartContent, reloadCart} = useCartContext();
+  const {cart, getProductQuantity, UpdateCartContent, reloadCart} = useCartContext();
   const [quant, setQuant] = useState(0);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   useEffect(() => {
@@ -50,7 +50,6 @@ function CartButton({id, minAllowed, stock}) {
     const product = cart?.products?.find((p) => p.product_id === id) ?? null;
     if (product) {
       console.log('after reload', product);
-      setProductQuantity(id, product.quantity);
     }
   };
 

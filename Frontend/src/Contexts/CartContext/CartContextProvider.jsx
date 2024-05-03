@@ -39,24 +39,11 @@ const CartContextProvider = ({children}) => {
     return product ? product.quantity : 0;
   };
 
-  const setProductQuantity = (productId, newQty) => {
-    const updatedProducts = cart?.products?.map((item) => {
-      if (item.product_id === productId) {
-        return {...item, quantity: newQty, subtotal: item.price * newQty};
-      }
-      return item;
-    });
-
-    if (updatedProducts) {
-      setCart({...cart, products: updatedProducts});
-    }
-  };
-
   const UpdateCartContent = async (id, quantity) => {
     try {
-      setProductQuantity(id, quantity);
       await ax.post(`${API}cart/add-to-cart/`, {product_id: id, quantity: quantity});
       console.log('Item updated:', id);
+      reloadCart();
     } catch (error) {
       console.error(error);
     }
@@ -66,7 +53,6 @@ const CartContextProvider = ({children}) => {
     cart,
     setCart,
     getProductQuantity,
-    setProductQuantity,
     fetchCart,
     loading,
     UpdateCartContent,

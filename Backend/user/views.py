@@ -90,15 +90,11 @@ def login_view(request):
 
 def logout_view(request):
 
-    # print("user", request.user)
-    # print('session before: ', request.user.session_token)
-    if request.user:
-        request.user.session_token = 0
-        request.user.save()
-        # print('session after: ', request.user.session_token)
-
     if not request.user.is_authenticated:
         return JsonResponse({'message': 'You\'re not logged in.'}, status=400)
+
+    request.user.session_token = 0
+    request.user.save()
 
     logout(request)
     return JsonResponse({'message': 'Successfully logged out.'})

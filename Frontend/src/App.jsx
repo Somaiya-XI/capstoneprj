@@ -20,7 +20,7 @@ import {UserContextProvider,CsrfTokenContextProvider,CartContextProvider} from '
 function App() {
   return (
     <>
-      <Toaster position='top-right' visibleToasts='1' duration={1500} />
+      <Toaster position='top-right' visibleToasts={1} duration={1500} />
       <Router>
         <UserContextProvider>
           <CsrfTokenContextProvider>

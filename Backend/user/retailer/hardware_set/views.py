@@ -34,6 +34,22 @@ def create(request):
     return JsonResponse({'error': 'you are not authenticated!'}, status=400)
 
 
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_device(request):
+    if request.user.is_authenticated:
+        retailer = request.user.id
+        print(retailer)
+        device = HardwareSet.objects.filter(retailer=retailer).first()
+        if device:
+            return JsonResponse({'id': device.gateway_id}, status=201)
+        else:
+            return JsonResponse({'id': None}, status=201)
+
+    return JsonResponse({'error': 'you are not authenticated!'}, status=400)
+
+
 class HardwareSetViewSet(viewsets.ModelViewSet):
     queryset = HardwareSet.objects.all()
     serializer_class = HardwareSetSerializer

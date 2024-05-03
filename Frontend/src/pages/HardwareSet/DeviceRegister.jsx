@@ -1,9 +1,21 @@
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {Button, Spacer} from '@nextui-org/react';
 import {BasicNav, PriceCard, RegisterModal} from '../../Components';
 import RetailerLayout from '../Retailer/RetailerLayout';
+import {useCsrfContext} from '@/Contexts';
+import {API} from '@/backend';
 
 const DeviceRegister = () => {
+  const {ax} = useCsrfContext();
+  const [deviceId, setDeviceId] = useState();
+  useEffect(() => {
+    ax.get(`${API}device/get-user-device/`)
+      .then((resp) => {
+        console.log(resp.data);
+        setDeviceId(resp.data.id);
+      })
+      .catch((err) => console.log(err));
+  }, []);
   const main = 'Step into the world of smart automation with RFID technology and explore the hidden possibilities..';
   const Body = (n) => {
     return `Suitable for +${n} shelves`;
@@ -44,10 +56,12 @@ const DeviceRegister = () => {
           ></PriceCard>
         </div>
       </div>
-      <div className='px-3 py-3 pt-md-5 mx-auto flex align-items-center justify-content-center text-center'>
-        <p className='text-lg my-0 font-semibold'>already a member? register your device</p>
-        <RegisterModal />
-      </div>
+      {!deviceId && (
+        <div className='px-3 py-3 pt-md-5 mx-auto flex align-items-center justify-content-center text-center'>
+          <p className='text-lg my-0 font-semibold'>already a member? register your device</p>
+          <RegisterModal />
+        </div>
+      )}
     </RetailerLayout>
   );
 };
