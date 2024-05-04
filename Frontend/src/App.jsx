@@ -50,11 +50,8 @@ function App() {
                 <Route path='/simulation' element={<HardwareSimulation />} />
                 <Route path='/retailer-dashboard/device-register' element={<DeviceRegister />} />
                 <Route path='/retailer-dashboard' element={<RetDashboard />} />
-                <Route path='/retailer-dashboard/my-products' element={<ProductView/>}></Route>
-                <Route path='/hardware-register' element={<HardwareRegister />} />
-                <Route path='/retailer-dashboard' element={<RetDashboard/>}></Route>
-                <Route path='/retailer-dashboard/my-products/' element={<ProductView/>}></Route>
                 <Route path='/retailer-dashboard/settings' element={<SettingsLayout/>}></Route>
+                <Route path='/retailer-dashboard/my-products' element={<ProductView/>}></Route>
                 <Route path='/retailer-dashboard/my-products/view/:product_id' element={<BulkView/>}></Route>
                 <Route path='/*' element={<FourOhFour></FourOhFour>}></Route>
               </Routes>
