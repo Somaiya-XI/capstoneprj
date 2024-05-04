@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class SupplyscheduleConfig(AppConfig):
+class CategoryConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'supplyschedule'
+    name = 'product.category'

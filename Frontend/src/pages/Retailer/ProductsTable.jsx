@@ -61,18 +61,16 @@ const SuperMarketProducts = ({data, setLoad}) => {
 
   const renderCell = useCallback((product, columnKey) => {
     const cellValue = product[columnKey];
-    const fallback = product['product_name'].slice(0, 2);
     switch (columnKey) {
       case 'product_img':
         return (
           <Avatar
             radius='lg'
             size='lg'
-            name='  '
+            name={product['product_name']}
             showFallback
-            fallback={fallback}
             src={`${imgURL}${cellValue}`}
-            classNames={{img: 'transition-opacity !duration-500 opacity-1'}}
+            classNames={{img: cellValue ? 'opacity-1' : 'opacity-0'}}
           ></Avatar>
         );
       case 'actions':
@@ -94,7 +92,7 @@ const SuperMarketProducts = ({data, setLoad}) => {
   if (!data || data.length === 0) {
     return (
       <>
-        <Table>
+        <Table topContent={topContent}>
           <TableHeader>{<TableColumn align='start'>Product</TableColumn>}</TableHeader>
           <TableBody>
             <TableRow>

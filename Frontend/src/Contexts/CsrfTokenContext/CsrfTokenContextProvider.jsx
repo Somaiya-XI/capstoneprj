@@ -3,7 +3,7 @@ import CsrfTokenContext from './CsrfTokenContext';
 import {useState, useContext, useEffect} from 'react';
 import {API} from '../../backend';
 import {useUserContext} from '@/Contexts';
-
+import {toast} from 'sonner';
 const CsrfTokenContextProvider = ({children}) => {
   const {setUser} = useUserContext();
   const [csrf, setCSRF] = useState(() => {
@@ -45,14 +45,13 @@ const CsrfTokenContextProvider = ({children}) => {
     return _csrfToken;
   }
 
-  // Initialize Axios instance with default configuration
+  // Axios instance with default configuration
   const ax = axios.create({
-    withCredentials: true, // Always include credentials
+    withCredentials: true,
   });
 
-  // Add a request interceptor to set CSRF token in headers
+  // Add CSRF token to request headers
   ax.interceptors.request.use((config) => {
-    // Set CSRF token in the request headers
     config.headers['X-CSRFToken'] = csrf;
     return config;
   });
@@ -94,7 +93,8 @@ const CsrfTokenContextProvider = ({children}) => {
       await getCsrfToken();
       console.log('Context Logout Success');
     } catch (err) {
-      console.log(err);
+      toast.error(err.response.data.message);
+      console.log(err.response.data);
     }
   }
 

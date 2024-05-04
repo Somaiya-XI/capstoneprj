@@ -15,13 +15,13 @@ import {
 import {Toaster} from 'sonner';
 import ApiTest from './pages/Test.jsx';
 import {AdminRoute, SupplierRoute, RetailerRoute} from "@/Components"
-import {Register, Login, UserActivation, ForgotPassword, ResetPassword, Cart, HardwareSimulation, HardwareRegister, FourOhFour, RetDashboard, BulkView, ProductView} from '@/pages';
+import {Register, Login, UserActivation, ForgotPassword, ResetPassword, Cart, HardwareSimulation, DeviceRegister, FourOhFour, RetDashboard, BulkView, ProductView} from '@/pages';
 import {UserContextProvider,CsrfTokenContextProvider,CartContextProvider} from '@/Contexts'
 
 function App() {
   return (
     <>
-      <Toaster position='top-right' visibleToasts='1' duration={1500} />
+      <Toaster position='top-right' visibleToasts={1} duration={1500} />
       <Router>
         <UserContextProvider>
           <CsrfTokenContextProvider>
@@ -48,6 +48,9 @@ function App() {
                 <Route path='/order-created' element={<OrderCreated/>}/>
                 <Route path='/test' element={<ApiTest />} />
                 <Route path='/simulation' element={<HardwareSimulation />} />
+                <Route path='/retailer-dashboard/device-register' element={<DeviceRegister />} />
+                <Route path='/retailer-dashboard' element={<RetDashboard />} />
+                <Route path='/retailer-dashboard/my-products' element={<ProductView/>}></Route>
                 <Route path='/hardware-register' element={<HardwareRegister />} />
                 <Route path='/retailer-dashboard' element={<RetDashboard/>}></Route>
                 <Route path='/retailer-dashboard/my-products/' element={<ProductView/>}></Route>

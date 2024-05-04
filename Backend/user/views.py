@@ -68,11 +68,13 @@ def login_view(request):
     account = authenticate(email=email, password=password)
 
     if account:
+        user_ = UserSerializer(instance=user).data
         user_data = {
             'id': user.id,
             'email': user.email,
             'company_name': user.company_name,
             'role': user.role,
+            'profile_picture': user_.get('profile_picture'),
         }
         login(request, user)
         resp = JsonResponse(
@@ -88,15 +90,11 @@ def login_view(request):
 
 def logout_view(request):
 
-    # print("user", request.user)
-    # print('session before: ', request.user.session_token)
-    if request.user:
-        request.user.session_token = 0
-        request.user.save()
-        # print('session after: ', request.user.session_token)
-
     if not request.user.is_authenticated:
         return JsonResponse({'message': 'You\'re not logged in.'}, status=400)
+
+    request.user.session_token = 0
+    request.user.save()
 
     logout(request)
     return JsonResponse({'message': 'Successfully logged out.'})

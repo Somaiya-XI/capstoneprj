@@ -38,7 +38,11 @@ const SearchNav = ({children}) => {
                   <>
                     <ButtonGroup icon='solar:cart-large-minimalistic-outline' buttonText={'  My Cart'} link='/cart' />
                     <div className='divider'></div>
-                    <ButtonGroup icon='carbon:dashboard' buttonText={'Dashboard'} link='/hardware-register' />
+                    <ButtonGroup
+                      icon='carbon:dashboard'
+                      buttonText={'Dashboard'}
+                      link='/retailer-dashboard/my-products'
+                    />
                     <div className='divider'></div>
                   </>
                 )}
@@ -106,7 +110,11 @@ export const BasicNav = ({children}) => {
                   <>
                     <ButtonGroup icon='solar:cart-large-minimalistic-outline' buttonText={'  My Cart'} link='/cart' />
                     <div className='divider'></div>
-                    <ButtonGroup icon='carbon:dashboard' buttonText={'Dashboard'} link='/hardware-register' />
+                    <ButtonGroup
+                      icon='carbon:dashboard'
+                      buttonText={'Dashboard'}
+                      link='/retailer-dashboard/my-products/'
+                    />
                     <div className='divider'></div>
                   </>
                 )}

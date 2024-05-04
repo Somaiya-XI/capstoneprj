@@ -7,9 +7,9 @@ router = routers.DefaultRouter()
 router.register(r'', views.ScheduleViewSet)
 
 urlpatterns = [
-    path('create/', views.create_schedule),
-    path('delete/', views.remove_schedule),
-    path('update/', views.update_schedule),
-    path('view/<int:supplier_id>/', views.view_supplier_schedules),
+    path('create/', views.add_schedule_entry),
+    path('delete/', views.remove_schedule_entry),
+    path('update/', views.update_schedule_entry),
+    path('view/<int:supplier_id>/', views.view_supplier_schedule),
     path('', include(router.urls)),
 ]

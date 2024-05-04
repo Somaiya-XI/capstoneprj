@@ -20,17 +20,17 @@ import {fileToBase64} from '@/Helpers';
 const ManageProduct = ({product_id, setLoad}) => {
   const {ax} = useCsrfContext();
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
-  const [date, setDate] = useState(parseDate('2024-04-04'));
+  const [date, setDate] = useState();
   const [img, setImg] = useState();
-
-  const [productData, setProductData] = useState({
+  const initialState = {
     tag_id: '',
     product_name: '',
     brand: '',
     price: '',
-    product_img: '  ',
-    expiry_date: null,
-  });
+    product_img: null,
+    expiry_date: date,
+  };
+  const [productData, setProductData] = useState(initialState);
 
   const handleChange = (name) => async (e) => {
     e.preventDefault();
@@ -49,9 +49,16 @@ const ManageProduct = ({product_id, setLoad}) => {
 
   const Create = async (Close) => {
     try {
-      const {year, month, day} = date;
-      const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-      console.log(formattedDate);
+      let formattedDate = '';
+      if (date) {
+        const {year, month, day} = date;
+        formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+        console.log(formattedDate);
+        setProductData((productData) => ({
+          ...productData,
+          expiry_date: formattedDate,
+        }));
+      }
       const response = await ax.post(`${API}/product/supermarket/manage/`, {
         ...productData,
         expiry_date: formattedDate,
@@ -61,6 +68,8 @@ const ManageProduct = ({product_id, setLoad}) => {
       const msg = response.data.message;
       setLoad((l) => l + 1);
       CustomSuccessToast({msg: msg ? msg : 'Created!', position: 'top-right', shiftStart: 'ms-0'});
+      setProductData(initialState);
+      setDate(null);
       Close();
     } catch (error) {
       console.error(error);
@@ -163,9 +172,7 @@ const ManageProduct = ({product_id, setLoad}) => {
                   value={productData.product_img}
                   onChange={handleChange('product_img')}
                 />
-                {product_id === 0 ? (
-                  <DateInput label='Date' placeholder='2024-04-04' value={date} onChange={setDate} isRequired />
-                ) : null}
+                {product_id === 0 ? <DateInput label='Date' value={date} onChange={setDate} isRequired /> : null}
                 <div className='flex py-2 px-1 justify-between'></div>
               </ModalBody>
               <ModalFooter className='flex align-items-center justify-content-center my-2  py-3 mb-4'>

@@ -8,7 +8,6 @@ import {Link} from 'react-router-dom';
 import ListHeader from './ListHeader';
 import CartItem from './CartItem';
 import BinIcon from './BinIcon';
-import Checkout from './Shipment';
 import {RiEmotionSadLine} from 'react-icons/ri';
 import {toast} from 'sonner';
 import {Button} from '@nextui-org/react';
@@ -20,13 +19,13 @@ const Cart = () => {
 
   const {user} = useUserContext();
   const {ax} = useCsrfContext();
-  const {cart, UpdateCartContent, fetchCart, loading} = useCartContext();
-  const [showSection, setShowSection] = useState(false);
+  const {cart, UpdateCartContent, loading, reloadCart} = useCartContext();
+  const [total, setTotal] = useState(cart ? parseFloat(cart.total).toFixed(2) : 0);
   const navigate = useNavigate();
 
-  const reloadCart = () => {
-    fetchCart();
-  };
+  useEffect(() => {
+    setTotal(parseFloat(cart?.total).toFixed(2));
+  }, [cart]);
 
   const removeFromCart = async (id) => {
     if (cart) {
@@ -56,10 +55,6 @@ const Cart = () => {
     } else {
       toast.warning('your cart is empty', {duration: 1500});
     }
-  };
-
-  const displayCheckout = () => {
-    setShowSection((prevState) => !prevState);
   };
 
   return (
@@ -121,22 +116,18 @@ const Cart = () => {
             <div className='container-fluid mt-4'>
               {cart?.products && (
                 <h5 className='text-muted' style={{textAlign: 'end'}}>
-                  Total: {cart.total}
+                  Total: {total}
                 </h5>
               )}
             </div>
-          {cart.products?.length > 0 && (
-            <Button className='bg-[#023c07] text-white' onClick={() => navigate('/payment')}>
-            Checkout
-          </Button>
-
-          )}
-            
+            {cart?.products?.length > 0 && (
+              <Button className='bg-[#023c07] text-white' onClick={() => navigate('/payment')}>
+                Checkout
+              </Button>
+            )}
           </div>
         </div>
       </section>
-
-      
     </>
   );
 };
