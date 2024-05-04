@@ -40,8 +40,6 @@ const AddProduct = () => {
     quantity: "",
     min_order_quantity: "",
     tag_id: ''
-    // production_date: null,
-    // expiry_date: null,
   });
 
   const navigate = useNavigate();
@@ -243,29 +241,6 @@ const AddProduct = () => {
               }
             />
           </Form.Item>
-
-          {/* <Form.Item
-            label="Production Date"
-            name="production_date"
-            rules={[
-              { required: true, message: "Please Select Production Date!" },
-            ]}
-          >
-            <DatePicker
-              onChange={(date) => handleInputChange("production_date", date)}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Expiry Date"
-            name="expiry_date"
-            rules={[{ required: true, message: "Please Select Expiry Date!" }]}
-          >
-            <DatePicker
-              onChange={(date) => handleInputChange("expiry_date", date)}
-            />
-          </Form.Item> */}
-
           <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
             <Button type="primary" className="AddButton2" htmlType="submit">
               Submit

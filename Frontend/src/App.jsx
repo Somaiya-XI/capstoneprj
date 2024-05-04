@@ -9,7 +9,8 @@ import {
   ProductDetail,
   Profile,
   Payment,
-  OrderCreated
+  OrderCreated,
+  SettingsLayout
 } from './url.jsx';
 import {Toaster} from 'sonner';
 import ApiTest from './pages/Test.jsx';
@@ -50,6 +51,7 @@ function App() {
                 <Route path='/hardware-register' element={<HardwareRegister />} />
                 <Route path='/retailer-dashboard' element={<RetDashboard/>}></Route>
                 <Route path='/retailer-dashboard/my-products/' element={<ProductView/>}></Route>
+                <Route path='/retailer-dashboard/settings' element={<SettingsLayout/>}></Route>
                 <Route path='/retailer-dashboard/my-products/view/:product_id' element={<BulkView/>}></Route>
                 <Route path='/*' element={<FourOhFour></FourOhFour>}></Route>
               </Routes>

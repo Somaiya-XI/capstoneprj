@@ -30,7 +30,7 @@ export default function SideNavbar({collabsed}) {
           },
           {
             title: 'Settings',
-            href: '/retailer-dashboard',
+            href: '/retailer-dashboard/settings',
             icon: Settings,
             variant: 'ghost',
           },

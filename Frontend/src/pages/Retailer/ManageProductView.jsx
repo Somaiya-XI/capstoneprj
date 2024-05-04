@@ -95,8 +95,8 @@ const ManageProduct = ({product_id, setLoad}) => {
   return (
     <>
       {product_id === 0 ? (
-        <Button className='AddButton retailer-link-btn text-white' type='primary' onPress={onOpen}>
-          + Add New
+        <Button className='AddButton retailer-link-btn text-default' type='primary' onPress={onOpen}>
+          + Add
         </Button>
       ) : (
         <EditIcon onClick={onOpen} />

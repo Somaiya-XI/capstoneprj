@@ -49,5 +49,24 @@ urlpatterns = [
         views.delete_product_order_config,
         name='delete_product_order_config',
     ),
+    path('notification-config/view_default_notification_config/',
+        views.view_default_notification_config,
+        name='view_default_notification_config'),
+
+    path(
+        'notification-config/add-default-notification-config/',
+        views.add_default_notification_config,
+        name='add_default_notification_config',
+    ),
+    path(
+        'notification-config/delete-default-notification-config/',
+        views.delete_default_notification_config,
+        name='delete_default_notification_config',
+    ),
+    path(
+        'notification-config/update-default-notification-config/',
+        views.update_default_notification_config,
+        name='update_default_notification_config',
+    ),
     path('', include(router.urls)),
 ]

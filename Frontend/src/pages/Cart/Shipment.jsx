@@ -61,9 +61,6 @@ export default function Shipment({address, setAddress}) {
       })
       .catch(err => console.log(err));
   };
-
-
-
   useEffect(() => {
     fetchAddresses();
   }, []);

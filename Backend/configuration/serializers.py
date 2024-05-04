@@ -4,7 +4,7 @@ from .models import AutoOrderConfig, NotificationConfig
 from user.models import Retailer
 
 
-# send data as jason
+# send data as json
 class AutoOrderConfigSerializer(serializers.HyperlinkedModelSerializer):
     retailer = serializers.PrimaryKeyRelatedField(queryset=Retailer.objects.all())
 
@@ -20,8 +20,14 @@ class AutoOrderConfigSerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
-# send data as jason
+# send data as json
 class NotificationConfigSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
+     retailer = serializers.PrimaryKeyRelatedField(queryset=Retailer.objects.all())
+     class Meta:
         model = NotificationConfig
+        fields = [
+            'activation_status',
+            'near_expiry_days',
+            'low_quantity_threshold',
+        ]
         fields = '__all__'

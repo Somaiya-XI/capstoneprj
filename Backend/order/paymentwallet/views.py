@@ -20,10 +20,10 @@ from order.views import make_order
 def view_wallet_balance(request):
 
     # access the authenticated user
-    if request.user.is_anonymous:
-        return JsonResponse(
-            {'message': 'You are not authenticated, log in then try again'}
-        )
+    # if request.user.is_anonymous:
+    #     return JsonResponse(
+    #         {'message': 'You are not authenticated, log in then try again'}
+    #     )
 
     user_id = request.user.id
 

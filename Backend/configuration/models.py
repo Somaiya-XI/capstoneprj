@@ -24,19 +24,19 @@ class AutoOrderConfig(models.Model):
 
 
 class NotificationConfig(models.Model):
-    NOTIFICATION_METHODS = [
-        ('email', 'Email'),
-        ('in_app', 'In-App'),
-    ]
-
+    # NOTIFICATION_METHODS = [
+    #     # ('email', 'Email'),
+    #     ('in_app', 'In-App'),
+    # ] 
+    # Note: Reason why is due to the default in app notifications ..
     retailer = models.ForeignKey(
         Retailer, on_delete=models.CASCADE, verbose_name="Retailer"
     )
     activation_status = models.BooleanField(default=True)
     near_expiry_days = models.IntegerField()
     low_quantity_threshold = models.IntegerField()
-    notification_method = models.CharField(choices=NOTIFICATION_METHODS, max_length=10)
+    # notification_method = models.CharField(choices=NOTIFICATION_METHODS, max_length=10)
 
     class Meta:
         db_table = "Notification Config"
-        unique_together = ['retailer', 'notification_method']
+        # unique_together = ['retailer', 'notification_method']

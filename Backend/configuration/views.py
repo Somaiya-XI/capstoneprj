@@ -9,9 +9,110 @@ from django.http import JsonResponse
 from .models import AutoOrderConfig
 from user.models import Retailer
 from product.models import SupermarketProduct
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.request import Request
+from django.core.exceptions import ObjectDoesNotExist
 
 
-# Create your views here.
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def add_default_notification_config(request):
+    if NotificationConfig.objects.exists():
+        return JsonResponse({'error': 'Default Notification config already exists.'}, status=400)
+
+    data = request.data
+    serializer = NotificationConfigSerializer(data=data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return JsonResponse({'message': 'Notification config added successfully.'})
+    else:
+        return JsonResponse(serializer.errors, status=400)
+    
+
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def view_default_notification_config(request: Request):
+        try: 
+            retailer_id = request.data.get('user_id') 
+            retailer = Retailer.objects.get(id=retailer_id)
+        except Retailer.DoesNotExist:
+            response_data = {
+                'error': 'Retailer not found for the given ID.',
+            }
+            return JsonResponse(response_data, status=404)
+
+        try:
+            default_notification_config = NotificationConfig.objects.get(retailer=retailer)
+        except NotificationConfig.DoesNotExist:
+            response_data = {
+                'low_quantity_threshold': '',
+                'near_expiry_days': '',
+            }
+            return JsonResponse(response_data, status=200)
+
+        config_serialized = NotificationConfigSerializer(default_notification_config, context={'request': request}).data
+        response_data = {
+            'low_quantity_threshold': config_serialized['low_quantity_threshold'],
+            'near_expiry_days': config_serialized['near_expiry_days'],
+        }
+
+        return JsonResponse(response_data, status=200)
+
+@csrf_exempt
+@api_view(['DELETE'])
+@permission_classes([AllowAny])
+def delete_default_notification_config(request):
+    try:
+        retailer_id = request.data.get('user_id')  
+        retailer = Retailer.objects.get(id=retailer_id)
+        default_notification_config = NotificationConfig.objects.get(retailer=retailer)
+    except Retailer.DoesNotExist:
+        return JsonResponse({'message': 'Retailer does not exist'}, status=404)
+    except NotificationConfig.DoesNotExist:
+        return JsonResponse({'message': 'There is no default Notification configuration to be deleted'}, status=404)
+    
+    default_notification_config.delete()
+
+    return JsonResponse({'message': 'The default order configuration was deleted successfully'}, status=204)
+
+@csrf_exempt
+@api_view(['PUT'])
+def update_default_notification_config(request):
+    try:
+        retailer_id = request.data.get('user_id')  
+        retailer = Retailer.objects.get(id=retailer_id)
+    except Retailer.DoesNotExist:
+        return JsonResponse({'message': 'Retailer not found'})
+
+    data = request.data
+
+    # activation_status = data.get('activation_status')
+    near_expiry_days = data.get('near_expiry_days')
+    low_quantity_threshold = data.get('low_quantity_threshold') 
+
+    if any in (near_expiry_days, low_quantity_threshold):
+        return JsonResponse({'message': 'Notification is updated'})
+
+    default_notification_config, created = NotificationConfig.objects.get_or_create(
+        retailer=retailer
+    )
+
+    # default_notification_config.activation_status = activation_status
+    default_notification_config.near_expiry_days = near_expiry_days
+    default_notification_config.low_quantity_threshold = low_quantity_threshold
+    default_notification_config.save()
+
+    return JsonResponse(
+        {'message': 'Default notification configuration created' if created else 'Default notification configuration updated'},
+        status=201 if created else 200,
+    )
+
+
+
 @csrf_exempt
 @api_view(['PUT'])
 @permission_classes([AllowAny])
