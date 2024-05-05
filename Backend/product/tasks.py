@@ -9,6 +9,9 @@ from .models import ProductBulk
 from .utils import SupermarketProductManager
 from .signals import date_updated
 
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+
 ### THIS FILE WILL INCLUDE BACKGROUND TASKS >> CELERY WORKERS && REGULAR PYTHON THREADS ###
 
 
@@ -99,3 +102,9 @@ def reduce_days_to_expiry():
     bulks = ProductBulk.objects.all()
 
     date_updated.send(sender=reduce_days_to_expiry, bulks=bulks)
+
+
+@shared_task
+def send_notification(message):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)("notifications", {"type": 'notify_user', "message": message})
