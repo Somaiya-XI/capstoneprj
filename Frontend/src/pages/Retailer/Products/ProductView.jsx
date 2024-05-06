@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
-import RetailerLayout from './RetailerLayout';
-import './retailer.css';
+import RetailerLayout from '../RetailerLayout';
+import '../retailer.css';
 import SuperMarketProducts from './ProductsTable';
 import {useCsrfContext, useUserContext} from '@/Contexts';
 import {API} from '@/backend';

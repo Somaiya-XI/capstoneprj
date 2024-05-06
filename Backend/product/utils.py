@@ -12,9 +12,13 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_save
 
 from configuration.models import NotificationConfig
-from configuration.tasks import add_to_auto_order_list_task
+from configuration.utils_config import quantity_order_config_manager, quantity_notification_config_manager
 
 from .signals import product_removed, date_updated
+
+from celery import shared_task
+from django.db.models import F
+from WiseR.consumers import NotificationManager as notify
 
 
 class SupermarketProductManager:
@@ -224,7 +228,11 @@ class SupermarketProductManager:
     @staticmethod
     @receiver(pre_save, sender=ProductBulk)
     def calculate_days_to_exp(sender, instance, *args, **kwargs):
-        expiry_date = datetime.strptime(instance.expiry_date, '%Y-%m-%d').date()
+        if isinstance(instance.expiry_date, str):
+            expiry_date = datetime.strptime(instance.expiry_date, '%Y-%m-%d').date()
+        else:
+            expiry_date = instance.expiry_date
+
         if not instance.pk:
             instance.days_to_expiry = (expiry_date - date.today()).days
         if instance.pk:
@@ -239,33 +247,30 @@ class SupermarketProductManager:
         product = kwargs['product']
         old_quant = kwargs['quantity']
         quant = product.quantity
-        if old_quant != quant:  # check if old_q changed or not
-            order_config = product.order_config
-            notification_config = NotificationConfig.objects.filter(retailer=product.retailer)
-
-            if order_config and quant <= order_config.qunt_reach_level:
-                serialized_order_config = AutoOrderConfigSerializer(instance=order_config)
-                serialized_product = SupermarketProductSerializer(instance=product)
-                serialized_order_config = json.dumps(serialized_order_config.data)
-                serialized_product = json.dumps(serialized_product.data)
-                add_to_auto_order_list_task.delay(
-                    serialized_order_config, serialized_product
-                )  ## execution in celery
-
-            [
-                print('NOTIFY!')  ## replace with PUSH Notification Method as Celery Worker ##
-                for config in notification_config
-                if notification_config.exists() and quant <= config.low_quantity_threshold
-            ]
+        if old_quant != quant:
+            quantity_order_config_manager(product=product)
+            quantity_notification_config_manager(product=product)
 
     @staticmethod
     @receiver(date_updated)
     def track_expiry_date(sender, **kwargs):
         bulks = kwargs['bulks']
         for bulk in bulks:
-            notification_config = NotificationConfig.objects.filter(retailer=bulk.product.retailer)
-        [
-            print('NOTIFY!')  ## replace with PUSH Notification Method as Celery Worker ##
-            for config in notification_config
-            if notification_config.exists() and bulk.days_to_expiry == config.near_expiry_days
-        ]
+            try:
+                config = NotificationConfig.objects.get(retailer=bulk.product.retailer)
+                if bulk.days_to_expiry == config.near_expiry_days:
+                    notify.send_notification(
+                        f'Product {bulk.product.product_name} will expire within {bulk.days_to_expiry} days!',
+                        user_id=bulk.product.retailer,
+                    )
+            except NotificationConfig.DoesNotExist:
+                return None
+
+    @staticmethod
+    @shared_task
+    def reduce_days_to_expiry(self):
+        ProductBulk.objects.filter(days_to_expiry__gt=0).update(days_to_expiry=F('days_to_expiry') - 1)
+
+        bulks = ProductBulk.objects.all()
+
+        date_updated.send(sender=self.reduce_days_to_expiry, bulks=bulks)

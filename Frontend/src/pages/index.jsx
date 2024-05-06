@@ -7,6 +7,6 @@ export {default as Cart} from './Cart/Cart';
 export {default as HardwareSimulation} from './HardwareSet/HDsimulation';
 export {default as DeviceRegister} from './HardwareSet/DeviceRegister';
 export {default as RetDashboard} from './Retailer/Dashboard';
-export {default as BulkView} from './Retailer/BulkView';
-export {default as ProductView} from './Retailer/ProductView';
+export {default as BulkView} from './Retailer/Products/BulkView';
+export {default as ProductView} from './Retailer/Products/ProductView';
 export {default as FourOhFour} from './FourOhFour';

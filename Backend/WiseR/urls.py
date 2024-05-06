@@ -41,4 +41,4 @@ urlpatterns = [
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-websocket_urlpatterns = [path("ws/notifications/", NotificationConsumer.as_asgi())]
+websocket_urlpatterns = [path("ws/notifications/<str:user_id>/", NotificationConsumer.as_asgi())]

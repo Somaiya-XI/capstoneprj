@@ -49,7 +49,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     def update(self, instance, validated_data):
         for attr, value in validated_data.items():
-            if attr == 'old_password':
+            if attr == 'old_password' or attr == "password":
                 # old_password = validated_data.pop('old_password', None)
                 # if old_password != instance.password:
                 #     raise ValidationError('Please enter the correct password')

@@ -1,7 +1,6 @@
-import RetailerLayout from './RetailerLayout';
-import './retailer.css';
+import RetailerLayout from '../RetailerLayout';
+import '../retailer.css';
 import ProductBulkTable from './BulkTable';
-import {Button} from '@nextui-org/react';
 import {useParams} from 'react-router-dom';
 import {useState} from 'react';
 
