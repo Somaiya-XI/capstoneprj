@@ -19,6 +19,7 @@ import {API} from "../../../../backend";
 import {useCsrfContext, useUserContext} from "../../../../Contexts";
 import {toast} from "sonner";
 
+
 const Schedule = () => {
   const {user} = useUserContext();
 
@@ -82,29 +83,17 @@ const Schedule = () => {
 
   return (
     <SupplierLayout>
-      <div className="SupplierDashboard">
-        <div className="DashboardContent">
-          <h3 className="HeaderTitle">Supply Schedule</h3>
-          <Button className="AddButton text-light" type="primary" onClick={handleOpen}>
+      <div className='mx-4'>
+          <div className='retailer-dashboard-cont'>
+            <h3 className='d-block font-bold' aria-label="Product-Details">Supply Schedule</h3>
+            <Button className="bg-[#023c07] text-default mt-4 size-24 h-10" type='primary' onClick={onOpen}>
             + Add
           </Button>
+          </div>
+          <div className='mt-4'>
+            <ScheduleCard/>
+          </div>
         </div>
-        <div
-          key={load}
-          style={{
-            borderRadius: 24,
-            backgroundColor: "white",
-            boxShadow: "0px 0px 0px rgba(0, 0, 0, 0.1)",
-            padding: 5,
-            paddingLeft: 40,
-            maxWidth: 1555,
-            margin: "0 auto",
-            marginTop: 5,
-          }}
-        >
-          <ScheduleCard />
-        </div>
-      </div>
 
       <Modal isOpen={isOpen} onOpenChange={handleClose} placement="top-center">
         <ModalContent>

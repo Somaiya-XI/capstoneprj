@@ -68,5 +68,11 @@ urlpatterns = [
         views.update_default_notification_config,
         name='update_default_notification_config',
     ),
+    path(
+        'receive_notification_of_low_quantity_feature/',
+        views.receive_notification_of_low_quantity_feature,
+        name='receive_notification_of_low_quantity_feature',
+    ),
+    
     path('', include(router.urls)),
 ]
