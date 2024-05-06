@@ -36,6 +36,7 @@ export {
   DeleteIcon,
   EditIcon,
   SearchIcon,
+  ConfirmIcon,
 } from './Icons.jsx';
 
 export {default as SearchNav, BasicNav as BasicNav} from './BasicComponents/Nav.jsx';

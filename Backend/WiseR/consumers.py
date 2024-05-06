@@ -1,26 +1,41 @@
-from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.generic.websocket import WebsocketConsumer
 import json
-from product.tasks import send_notification
+from asgiref.sync import async_to_sync, sync_to_async
+from channels.layers import get_channel_layer
+from celery import shared_task
+from user.models import User
 
 
-class NotificationConsumer(AsyncWebsocketConsumer):
+class NotificationConsumer(WebsocketConsumer):
 
-    async def connect(self):
-        await self.channel_layer.group_add('notifications', self.channel_name)
-        await self.accept()
+    def connect(self):
+        self.user_connected = self.scope["url_route"]["kwargs"]["user_id"]
+        self.user_channel = "user_%s" % self.user_connected
+        print(self.user_channel)
+        async_to_sync(self.channel_layer.group_add)(self.user_channel, self.channel_name)
 
-    async def disconnect(self, close_code):
-        await self.channel_layer.group_discard('notifications', self.channel_name)
+        self.accept()
 
-    async def receive(self, text_data):
-        await self.channel_layer.group_send(
-            "notifications",
-            {
-                "type": "notify_user",
-                "message": text_data + ', Success!',
-            },
+    def disconnect(self, close_code):
+        async_to_sync(self.channel_layer.group_discard)(self.user_channel, self.channel_name)
+
+    def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+        message = text_data_json["message"]
+
+        async_to_sync(self.channel_layer.group_send)(
+            self.user_channel, {"type": "notify_user", "message": message}
         )
 
-    async def notify_user(self, event):
-        print(event['message'])
-        await self.send(text_data=json.dumps({'message': event['message']}))
+    def notify_user(self, event):
+        message = event["message"]
+
+        self.send(text_data=json.dumps({"message": message}))
+
+
+class NotificationManager:
+    @staticmethod
+    def send_notification(message, user_id):
+        user_channel = "user_%s" % str(user_id)
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(user_channel, {"type": "notify_user", "message": message})

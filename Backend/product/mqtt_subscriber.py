@@ -2,15 +2,8 @@ import threading
 import paho.mqtt.client as paho
 from paho import mqtt
 import os
-import time
-from datetime import datetime
 import sys
-from .models import ProductBulk
 from .utils import SupermarketProductManager
-from .signals import date_updated
-
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 
 ### THIS FILE WILL INCLUDE BACKGROUND TASKS >> CELERY WORKERS && REGULAR PYTHON THREADS ###
 
@@ -89,22 +82,3 @@ class MqttTasks:
 
 
 MqttTasks.run_mqtt_subscriber()
-
-
-from celery import shared_task
-from django.db.models import F
-
-
-@shared_task
-def reduce_days_to_expiry():
-    ProductBulk.objects.filter(days_to_expiry__gt=0).update(days_to_expiry=F('days_to_expiry') - 1)
-
-    bulks = ProductBulk.objects.all()
-
-    date_updated.send(sender=reduce_days_to_expiry, bulks=bulks)
-
-
-@shared_task
-def send_notification(message):
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)("notifications", {"type": 'notify_user', "message": message})

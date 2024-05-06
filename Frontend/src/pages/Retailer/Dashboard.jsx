@@ -2,7 +2,7 @@ import {useState, useEffect} from 'react';
 import SideNavbar from './SideNav';
 import RetailerLayout from './RetailerLayout';
 import './retailer.css';
-import SuperMarketProducts from './ProductsTable';
+import SuperMarketProducts from './Products/ProductsTable';
 import {Button} from '@nextui-org/react';
 import {Link} from 'react-router-dom';
 import {useCsrfContext, useUserContext} from '@/Contexts';

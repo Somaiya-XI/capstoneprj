@@ -1,9 +1,8 @@
 import {useState, useEffect} from 'react';
-import './retailer.css';
+import '../retailer.css';
 import {useCsrfContext} from '@/Contexts';
 import {API} from '@/backend';
 import {CustomErrorToast, CustomSuccessToast, EditIcon} from '@/Components';
-import {parseDate} from '@internationalized/date';
 import {
   Modal,
   ModalContent,
@@ -59,7 +58,7 @@ const ManageProduct = ({product_id, setLoad}) => {
           expiry_date: formattedDate,
         }));
       }
-      const response = await ax.post(`${API}/product/supermarket/manage/`, {
+      const response = await ax.post(`${API}product/supermarket/create/`, {
         ...productData,
         expiry_date: formattedDate,
         product_img: img,
@@ -78,8 +77,30 @@ const ManageProduct = ({product_id, setLoad}) => {
     }
   };
 
+  const Update = async (Close) => {
+    try {
+      const response = await ax.put(`${API}product/supermarket/update/`, {
+        ...productData,
+        product_img: img,
+      });
+      console.log('response: ', response);
+      const msg = response.data.message;
+      setLoad((l) => l + 1);
+      CustomSuccessToast({msg: msg ? msg : 'Updated!', position: 'top-right', shiftStart: 'ms-0'});
+      Close();
+    } catch (error) {
+      console.error(error);
+      const msg = error.response.data.error;
+      CustomErrorToast({msg: msg ? msg : 'please enter valid data!', position: 'top-right', shiftStart: 'ms-0'});
+    }
+  };
+
   const onConfirm = async (Close) => {
-    Create(Close);
+    if (product_id == 0) {
+      Create(Close);
+    } else {
+      Update(Close);
+    }
   };
 
   const fetchProduct = async () => {

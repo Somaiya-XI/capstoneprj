@@ -1,9 +1,10 @@
-import {useCallback, useEffect, useState, useMemo} from 'react';
+import {useCallback, useState, useMemo} from 'react';
 import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Avatar, Input} from '@nextui-org/react';
-import {API, imgURL} from '../../backend';
+import {imgURL} from '@/backend';
 import {EyeIcon, SearchIcon} from '@/Components';
 import {useNavigate} from 'react-router-dom';
 import ManageProduct from './ManageProductView';
+import DeleteProduct from './DeleteProduct';
 
 const SuperMarketProducts = ({data, setLoad}) => {
   const [filterValue, setFilterValue] = useState('');
@@ -81,6 +82,9 @@ const SuperMarketProducts = ({data, setLoad}) => {
             </span>
             <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
               <ManageProduct product_id={product.key} setLoad={setLoad}></ManageProduct>
+            </span>
+            <span className='text-lg text-red-600 cursor-pointer active:opacity-50'>
+              <DeleteProduct product_id={product.key} setLoad={setLoad} />
             </span>
           </div>
         );

@@ -1,8 +1,7 @@
 import {useCallback, useEffect, useState} from 'react';
-import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Avatar, Image} from '@nextui-org/react';
-import {API, imgURL} from '../../backend';
-import {useCsrfContext, useUserContext} from '@/Contexts';
-import {EyeIcon, EditIcon} from '@/Components';
+import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell} from '@nextui-org/react';
+import {API} from '@/backend';
+import {useCsrfContext} from '@/Contexts';
 import {useNavigate} from 'react-router-dom';
 
 const ProductBulkTable = ({product_id, setProductName}) => {
