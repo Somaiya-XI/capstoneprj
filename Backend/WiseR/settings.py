@@ -37,6 +37,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'corsheaders',
+    "daphne",
+    "channels",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -117,7 +119,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'WiseR.wsgi.application'
+ASGI_APPLICATION = 'WiseR.asgi.application'
+
+# WSGI_APPLICATION = 'WiseR.wsgi.application'
 
 
 # Database
@@ -208,7 +212,45 @@ REST_FRAMEWORK = {
 
 
 # Celery Config:
-CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+CELERY_BROKER_URL = os.getenv('REDIS_URL')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Riyadh'
+
+
+""" 
+THIS CONFIG ONLY FOR TESTING THINGS LOCALLY!
+"""
+CHANNEL_LAYERS = {
+    "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"},
+}
+
+
+""" 
+USE THIS INSTEAD IF YOU HAVE REDIS IMAGE LOCALLY
+"""
+
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {"hosts": [('localhost', 6379)]},
+#     },
+# }
+
+
+""" 
+USING PRE-DEPLOYED REDIS INSTANCES
+"""
+
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [
+#                 {
+#                     "address": "redis://default:OMVVqGqxipkZNOKtbCJVdGvVBNUGiQWi@monorail.proxy.rlwy.net:54598",
+#                 }
+#             ]
+#         },
+#     },
+# }
