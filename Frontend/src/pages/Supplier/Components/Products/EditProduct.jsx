@@ -27,8 +27,6 @@ const EditProduct = () => {
     quantity: '',
     min_order_quantity: '',
     tag_id: ''
-    // production_date: null,
-    // expiry_date: null,
   });
 
   const fetchProducts = async () => {
@@ -335,3 +333,134 @@ const EditProduct = () => {
 };
 
 export default EditProduct;
+
+// import React, { useState, useEffect } from 'react';
+// import axios from 'axios';
+// import { useParams } from 'react-router-dom';
+// import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Input } from '@nextui-org/react';
+// import { fileToBase64, imgUrlToBase64 } from '../../../../Helpers';
+// import SupplierLayout from '../Layout/SupplierLayout';
+// import { API } from '@/backend';
+
+// const EditProduct = () => {
+//   const { id } = useParams();
+//   const [formData, setFormData] = useState({
+//     product_img: '',
+//     product_name: '',
+//     brand: '',
+//     description: '',
+//     category: '',
+//     price: '',
+//     discount_percentage: '',
+//     quantity: '',
+//     min_order_quantity: '',
+//     tag_id: ''
+//   });
+//   const [modalOpen, setModalOpen] = useState(false);
+
+//   const fetchProducts = async () => {
+//     try {
+//       const response = await axios.get(`${API}product/catalog-product/${id}/`);
+//       const prod = response.data;
+//       const { supplier, product_img, ...product } = prod;
+
+//       if (product_img) {
+//         const currentImg = await imgUrlToBase64(product_img);
+//         product.product_img = currentImg;
+//       }
+
+//       setFormData(product);
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchProducts();
+//   }, [id]);
+
+//   const handleChange = (name) => async (event) => {
+//     if (name === 'product_img') {
+//       const img = event.target.files[0];
+//       const image64 = await fileToBase64(img);
+//       setFormData({
+//         ...formData,
+//         product_img: image64,
+//       });
+//     } else {
+//       setFormData({
+//         ...formData,
+//         [name]: event.target.value,
+//       });
+//     }
+//   };
+
+//   const handleSubmit = (event) => {
+//     event.preventDefault();
+//     // Implement your submit logic here
+//   };
+
+//   return (
+//     <SupplierLayout>
+//       <div className="SupplierDashboard">
+//         <div className="DashboardContent">
+//           <h3 className="HeaderTitle">Edit Product</h3>
+//           {/* Add console log to check if the button is clicked */}
+//           <Button onClick={() => { console.log("Open modal clicked"); setModalOpen(true); }}>Open Modal</Button>
+//         </div>
+//         <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+//           <ModalHeader>Edit Product</ModalHeader>
+//           <form onSubmit={handleSubmit}>
+//             <ModalBody>
+//               <Input
+//                 label='Tag ID'
+//                 className='w-full mb-3'
+//                 placeholder='xxxxxxxxxxxxx'
+//                 value={formData.tag_id}
+//                 onChange={handleChange('tag_id')}
+//               />
+//               <Input
+//                 label='Product Name'
+//                 className='w-full mb-3'
+//                 placeholder='milk 200g'
+//                 value={formData.product_name}
+//                 onChange={handleChange('product_name')}
+//               />
+//               <Input
+//                 label='Brand'
+//                 className='w-full mb-3'
+//                 placeholder='almarai'
+//                 value={formData.brand}
+//                 onChange={handleChange('brand')}
+//               />
+//               <Input
+//                 type='number'
+//                 label='Price'
+//                 className='w-full mb-3'
+//                 placeholder='00.00'
+//                 labelPlacement='inside'
+//                 value={formData.price}
+//                 onChange={handleChange('price')}
+//                 endContent={<span className='text-default-400'>SAR</span>}
+//               />
+//               <Input
+//                 type='file'
+//                 label='Product Image'
+//                 placeholder=' '
+//                 className='w-full mb-3'
+//                 labelPlacement='inside'
+//                 onChange={handleChange('product_img')}
+//               />
+//             </ModalBody>
+//             <ModalFooter>
+//               <Button onClick={() => setModalOpen(false)}>Close</Button>
+//               <Button type="submit">Submit</Button>
+//             </ModalFooter>
+//           </form>
+//         </Modal>
+//       </div>
+//     </SupplierLayout>
+//   );
+// };
+
+// export default EditProduct;

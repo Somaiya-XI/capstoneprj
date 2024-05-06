@@ -1,7 +1,7 @@
 import Products from './pages/Supplier/Components/Products/Products';
 import AddProduct from './pages/Supplier/Components/Products/AddProduct';
 import EditProduct from './pages/Supplier/Components/Products/EditProduct';
-import Orders from './pages/Supplier/Components/Orders';
+import Orders from './pages/Supplier/Components/Orders/Orders';
 
 import Home from './pages/Home/Home.jsx';
 import ProductDetail from './pages/ProductDetail/ProductDetail.jsx';

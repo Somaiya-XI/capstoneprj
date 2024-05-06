@@ -25,6 +25,7 @@ import {
 } from "@nextui-org/react";
 import {Card, Popconfirm, TimePicker} from "antd";
 import {useUserContext, useCsrfContext} from "../../../../Contexts";
+import { EditIcon, DeleteIcon } from "@/Components";
 
 import axios from "axios";
 import {API} from "../../../../backend";
@@ -142,24 +143,24 @@ const ScheduleCard = () => {
                 <TableCell>{getFullWeekdayName(dataForm[key].day)}</TableCell>
                 <TableCell>{dataForm[key].time}</TableCell>
                 <TableCell>
-                  <div className="relative flex items-center gap-2">
+                  <div className="relative flex items-center gap-3">
+                  <span
+                      className='text-lg text-default-400 cursor-pointer active:opacity-50'
+                      onClick={() => handleEdit(key)}
+                    >
+                      <EditIcon />
+                    </span>
+
                     <Popconfirm
                       title="Sure to delete?"
                       onConfirm={() => onDeleteProduct(dataForm[key].id, selectedKey)}
                     >
                       <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                        <FiTrash2 />
+                        <DeleteIcon />
                       </span>
                     </Popconfirm>
 
                     {/* <Tooltip content="Edit user"> */}
-                    <span
-                      className="text-lg text-default-1000 cursor-pointer active:opacity-50"
-                      onClick={() => handleEdit(key)}
-                    >
-                      <CiEdit />
-                    </span>
-                    {/* </Tooltip>  this component has heavy animation, it causes errors {you can check it}*/}
                   </div>
                 </TableCell>
               </TableRow>

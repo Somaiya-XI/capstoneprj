@@ -8,10 +8,11 @@ from rest_framework.decorators import api_view, permission_classes
 from django.http import JsonResponse
 from .models import AutoOrderConfig
 from user.models import Retailer
-from product.models import SupermarketProduct
+from product.models import SupermarketProduct, ProductBulk
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.request import Request
 from django.core.exceptions import ObjectDoesNotExist
+from datetime import datetime
 
 
 
@@ -32,6 +33,60 @@ def add_default_notification_config(request):
         return JsonResponse(serializer.errors, status=400)
     
 
+# def receive_notification_of_near_expiry(request):
+#     expiry = ProductBulk.objects.all()
+#     products = SupermarketProduct.objects.all()
+#     notifications = []
+#     notification_configs = NotificationConfig.objects.all()
+#     retailer_configs = {config.retailer: config for config in notification_configs}
+#     for expires in expiry:
+#         retailer_id = product.retailer
+
+
+
+#     if hasattr(product, 'productbulk'): 
+#         days_to_expiry = ProductBulk.days_to_expiry
+#         if days_to_expiry == near_expiry_days:
+#             notification_message = f'Product "{product.product_name}" is near expiry. Expires in {near_expiry_days} days.'
+#             notifications.append(notification_message)
+
+#     return notifications
+    
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes([AllowAny])  
+def receive_notification_of_low_quantity_feature(request):
+    products = SupermarketProduct.objects.all()
+    expiry = ProductBulk.objects.all()
+    notifications = []
+    notification_configs = NotificationConfig.objects.all()
+
+    
+    retailer_configs = {config.retailer: config for config in notification_configs}
+
+    for product in products:
+        retailer_id = product.retailer
+        if retailer_id in retailer_configs:
+            config = retailer_configs[retailer_id]
+            threshold = config.low_quantity_threshold
+            near_expiry_days = config.near_expiry_days
+
+            if ProductBulk.days_to_expiry == near_expiry_days:
+                notification_message = f'Product {product.product_name} has near expiry days reaching. Near expiry days: {ProductBulk.days_to_expiry}'
+                notifications.append(notification_message)
+
+            if product.quantity == threshold:
+                notification_message = f'Product {product.product_name} quantity has reached or fallen below threshold level. Current quantity: {product.quantity}'
+                notifications.append(notification_message)
+            elif product.quantity < threshold:
+                notification_message = f'Product "{product.product_name}" quantity has fallen below the threshold level. Current quantity: {product.quantity}.'
+                notifications.append(notification_message)
+
+    if notifications:
+        return JsonResponse({'notifications': notifications}, status=200)
+    else:
+        return JsonResponse({'message': 'All product quantities are within threshold'}, status=200)
+    
 @csrf_exempt
 @api_view(['GET'])
 @permission_classes([AllowAny])
