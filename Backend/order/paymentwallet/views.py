@@ -6,7 +6,7 @@ from order.cart.models import Cart
 from rest_framework.permissions import AllowAny
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from decimal import Decimal
 from order.views import make_order
 
@@ -14,7 +14,8 @@ from order.views import make_order
 # Create your views here.
 
 
-@csrf_protect
+# @csrf_protect
+@csrf_exempt
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def view_wallet_balance(request):
@@ -25,7 +26,8 @@ def view_wallet_balance(request):
     #         {'message': 'You are not authenticated, log in then try again'}
     #     )
 
-    user_id = request.user.id
+    # user_id = request.user.id
+    user_id = 17
 
     # get the user object
     try:
@@ -41,18 +43,20 @@ def view_wallet_balance(request):
     return JsonResponse({'payment_wallet': payment_wallet[0].balance}, status=200)
 
 
-@csrf_protect
+#@csrf_protect
+@csrf_exempt
 @api_view(['PUT'])
 @permission_classes([AllowAny])
 def charge_wallet(request):
 
     # access the authenticated user
-    if request.user.is_anonymous:
-        return JsonResponse(
-            {'message': 'You are not authenticated, log in then try again'}
-        )
+    # if request.user.is_anonymous:
+    #     return JsonResponse(
+    #         {'message': 'You are not authenticated, log in then try again'}
+    #     )
 
-    user_id = request.user.id
+    # user_id = request.user.id
+    user_id = 17
 
     # get the user object
     try:
@@ -79,18 +83,21 @@ def charge_wallet(request):
     return JsonResponse({'payment_wallet': payment_wallet[0].balance}, status=200)
 
 
-@csrf_protect
+# @csrf_protect
+@csrf_exempt
 @api_view(['PUT'])
 @permission_classes([AllowAny])
 def pay_by_wallet(request):
 
     # access the authenticated user
-    if request.user.is_anonymous:
-        return JsonResponse(
-            {'message': 'You are not authenticated, log in then try again'}
-        )
+    # if request.user.is_anonymous:
+    #     return JsonResponse(
+    #         {'message': 'You are not authenticated, log in then try again'}
+    #     )
 
-    user_id = request.user.id
+    # user_id = request.user.id
+
+    user_id = 17
 
     # get the user object
     try:
