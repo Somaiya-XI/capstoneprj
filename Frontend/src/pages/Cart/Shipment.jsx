@@ -29,6 +29,7 @@ import { CustomSuccessToast } from "@/Components/FormComponents/CustomAlerts";
 
 export default function Shipment({address, setAddress}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [loadState, setLoadState] = useState(0);
   const { user } = useUserContext();
   const [loading, setLoading] = useState(true);
   const [editIndex, setEditIndex] = useState(null);
@@ -61,9 +62,13 @@ export default function Shipment({address, setAddress}) {
       })
       .catch(err => console.log(err));
   };
+
+
+
   useEffect(() => {
     fetchAddresses();
-  }, []);
+  }, [loadState]);
+  
 
   const handleSubmit = async () => {
     const { state, city, district, street } = formData;
@@ -81,11 +86,7 @@ export default function Shipment({address, setAddress}) {
         onClose();
         CustomSuccessToast({ msg: 'Your address has been updated!', dur: 3000 });
 
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-
-
+      
 
 
         setError("");

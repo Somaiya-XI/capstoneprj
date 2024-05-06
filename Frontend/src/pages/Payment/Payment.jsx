@@ -20,7 +20,8 @@ import {
   RadioGroup,
   VisuallyHidden, cn,
   Breadcrumbs,
-  BreadcrumbItem
+  BreadcrumbItem,
+  Avatar
 } from "@nextui-org/react";
 import { Link, useNavigate } from "react-router-dom";
 import { CiShoppingCart } from "react-icons/ci";
@@ -28,6 +29,7 @@ import { IoBagCheckOutline } from "react-icons/io5";
 import Shipment from "../Cart/Shipment";
 import { Divider } from "antd";
 import CartItem from "../Cart/CartItem";
+import { API } from "@/backend";
 
 
 
@@ -43,15 +45,14 @@ const ProductDisplay = () => {
   const [error, setError] = useState("");
   const [selected, setSelected] = useState("");
   const size = ["lg"];
-  const id = 17;
+
 
 
   const loadWalletBalance = async () => {
     const { data } = await axios.get(
-      `${import.meta.env.VITE_API_URL}payment/view-wallet-balance/${id}/`
+      `${API}payment/view-wallet-balance/`,
+      user.id
     );
-    console.log("Bassant!", data);
-
     setBalance(data.payment_wallet);
   };
 
@@ -60,7 +61,7 @@ const ProductDisplay = () => {
       CustomErrorToast({ msg: 'Shipping Address must be added', duration: 1500 });
       return;
     }
-  
+
     const isValid = address.every(addr => {
       const valid = addr.state && addr.city && addr.district && addr.street;
       if (!valid) {
@@ -68,7 +69,7 @@ const ProductDisplay = () => {
       }
       return valid;
     });
-  
+
     if (isValid) {
       if (selected) {
         CustomSuccessToast({ msg: 'Redirecting .. ', duration: 3000 });
@@ -77,47 +78,44 @@ const ProductDisplay = () => {
         CustomErrorToast({ msg: 'Choose payment method!', duration: 3000 });
       }
     }
-  
-    return isValid;
-    
-  };
-  
-  
 
+    return isValid;
+
+  };
 
 
   const PayByWallet = async () => {
     try {
       const requestData = {
-        retailer: id,
-        shipping_address: "k",
+        user_id: user.id,
+        shipping_address: address,
         order_type: "BASIC"
       };
-  
+
       // Step 0: Log the request payload before sending
       console.log("Step 0 - Request Payload:", requestData);
-  
+
       const { data } = await axios.put(
         `${import.meta.env.VITE_API_URL}payment/pay-by-wallet/`,
         requestData
       );
-  
+
       // Step 1: Log the received data
       console.log("Step 1 - Response Data:", data);
-  
+
       // Step 2: Update success state
       setSuccess(data.success);
       console.log("Step 2 - Success State Updated:", data.success);
-  
+
       if (data.success === true) {
         // Step 3: Update balance if payment was successful
         setBalance(data.payment_wallet);
         console.log("Step 3 - Balance Updated:", data.payment_wallet);
-  
+
         // Step 4: Display success toast
         toast.success("Success");
         console.log("Step 4 - Success Toast Displayed");
-  
+
         // Additional Step: Log the conducted amount
         console.log("Conducted Amount:", data.conducted_amount);
       } else {
@@ -130,7 +128,7 @@ const ProductDisplay = () => {
       console.error("Error:", error);
     }
   };
-  
+
 
   const ChargeWallet = async () => {
     const { data } = await axios.put(
@@ -236,10 +234,10 @@ const ProductDisplay = () => {
             </Card>
           </div>
           {cart && cart.products?.length > 0 ? (
-            <Card className="order-summary py-10 mx-4">
+            <Card className="order-summary py-10 mx-4 border-1 bg-white">
               <CardHeader className="flex gap-3">
                 <div className="flex">
-                  <p className="text-lg text-black font-medium">
+                  <p className="text-lg text-black font-medium text-[#7E7E7E]">
                     {user.company_name}'s Order Summary
                   </p>
                 </div>
@@ -248,17 +246,19 @@ const ProductDisplay = () => {
               {cart.products.map((p, index) => (
                 <>
                   <CardBody key={p.product_id}>
-                    <div className="grid md:grid-cols-12 gap-6 md:gap-4 items-center justify-center px-3">
+                    <div className="grid md:grid-cols-12 gap-10 md:gap-4 items-center justify-center px-3">
                       <div className="flex ">
                         <img
                           alt={p.name}
-                          className="object-cover"
+                          className="max-w-[57px] "
                           height={200}
                           shadow="md"
                           src={`http://localhost:8000${p.image}`}
                           width={100}
                         />
+                        
                       </div>
+
                       <div className="flex flex-col col-span-6 md:col-span-8">
                         <div className="flex justify-between items-start">
                           <div className="flex flex-col gap-0">
