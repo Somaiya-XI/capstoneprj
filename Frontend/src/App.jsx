@@ -10,7 +10,8 @@ import {
   Profile,
   Payment,
   OrderCreated,
-  SettingsLayout
+  SettingsLayout,
+  OrdersLayout
 } from './url.jsx';
 import {Toaster} from 'sonner';
 import {AdminRoute, SupplierRoute, RetailerRoute} from "@/Components"
@@ -52,6 +53,7 @@ function App() {
                 <Route path='/retailer-dashboard/settings' element={<SettingsLayout/>}></Route>
                 <Route path='/retailer-dashboard/my-products' element={<ProductView/>}></Route>
                 <Route path='/retailer-dashboard/my-products/view/:product_id' element={<BulkView/>}></Route>
+                <Route path='/retailer-dashboard/orders' element={<OrdersLayout/>}></Route>
                 <Route path='/notify' element={<NotificationComponent/>}></Route>
                 <Route path='/*' element={<FourOhFour></FourOhFour>}></Route>
               </Routes>

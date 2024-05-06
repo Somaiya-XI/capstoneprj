@@ -1,6 +1,8 @@
 /** @format */
 
 import {Sparkles, Package, Store, Settings} from 'lucide-react';
+import { useCsrfContext } from '@/Contexts';
+
 
 import Nav from '@/Components/ui/shadcnnav';
 
@@ -17,8 +19,8 @@ export default function SideNavbar({collabsed}) {
             variant: 'default',
           },
           {
-            title: 'Ordrs',
-            href: '/retailer-dashboard',
+            title: 'Orders',
+            href: '/retailer-dashboard/orders',
             icon: Package,
             variant: 'ghost',
           },

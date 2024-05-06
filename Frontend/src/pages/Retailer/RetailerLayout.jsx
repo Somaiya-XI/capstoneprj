@@ -9,10 +9,12 @@ import {useUserContext} from '@/Contexts';
 import {useNavigate} from 'react-router-dom';
 import {imgURL} from '@/backend';
 const {Header, Sider} = Layout;
+import { useCsrfContext } from '@/Contexts';
 
 const RetailerLayout = ({children}) => {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+  const {logUserOut} = useCsrfContext();
   const {user} = useUserContext();
   return (
     <NextUIProvider>

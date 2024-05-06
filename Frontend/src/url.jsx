@@ -20,9 +20,11 @@ import Header from './pages/Home/Components/Header/Header.jsx';
 import Schedule from './pages/Supplier/Components/Schedule/Schedule';
 import OrderCreated from './pages/Payment/OrderCreated';
 import SettingsLayout from './pages/Retailer/Settings/SettingsLayout';
+import OrdersLayout from './pages/Retailer/Orders/OrdersLayout';
 
 
 export {
+  OrdersLayout,
   SettingsLayout,
   OrderCreated,
   AddProduct,
