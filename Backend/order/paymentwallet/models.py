@@ -8,7 +8,7 @@ class PaymentWallet(models.Model):
     wallet_id = models.UUIDField(
         default=uuid.uuid4, editable=False, unique=True, primary_key=True
     )
-    retailer = models.ForeignKey(
+    retailer = models.OneToOneField(
         Retailer, on_delete=models.CASCADE, verbose_name="Retailer"
     )
     balance = models.DecimalField(

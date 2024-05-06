@@ -21,7 +21,7 @@ class Order(models.Model):
     total_price = models.DecimalField("Total Price", max_digits=8, decimal_places=2)
     payment_method = models.CharField(choices=PAYMENT_METHOD_CHOICES, max_length=20)
     shipping_address = models.CharField(max_length=200)
-    payment_session_id = models.CharField(max_length=255)
+    payment_session_id = models.CharField(max_length=255, unique=True, null=True)
 
     class Meta:
         db_table = "Order"

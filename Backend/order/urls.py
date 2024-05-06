@@ -29,5 +29,8 @@ urlpatterns = [
         name='view_order_summary',
     ),
     path('view-orders-history/', views.view_orders_history, name='view_orders_history'),
+    path(
+        'view-supplier-orders/', views.view_supplier_orders, name='view_supplier_orders'
+    ),
     path("", include(router.urls)),
 ]

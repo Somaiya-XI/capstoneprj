@@ -418,7 +418,7 @@ def view_orders_history(request):
         retailer = Retailer.objects.get(id=user_id)
     except Retailer.DoesNotExist:
         return JsonResponse(
-            {'message': 'You are not authorized to view orders summary an order'}
+            {'message': 'You are not authorized to view orders history'}
         )
 
     # get all the orders associated with the user
@@ -458,6 +458,73 @@ def view_orders_history(request):
         orders_list.append(data)
 
     return JsonResponse(orders_list, safe=False, status=200)
+
+
+@csrf_protect
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def view_supplier_orders(request):
+
+    # access the authenticated user
+    if request.user.is_anonymous:
+        return JsonResponse(
+            {'message': 'You are not authenticated, log in then try again'}
+        )
+
+    user_id = request.user.id
+
+    # get the user object
+    try:
+        supplier = Supplier.objects.get(id=user_id)
+    except Supplier.DoesNotExist:
+        return JsonResponse({'message': 'You are not authorized to view these orders'})
+
+    # get all the orders objects
+    orders = Order.objects.all()
+
+    # prepare orders for serialization
+    supplier_orders = []
+    for order in orders:
+        ordered_items_serialized = []
+
+        # get the items of the order
+        ordered_items = OrderItem.objects.filter(order_id=order.order_id)
+
+        # serialize each item in the order
+        for ordered_item in ordered_items:
+
+            # search for the supllier's items
+            if ordered_item.product_id.supplier.pk == supplier.pk:
+                item_serialized = OrderItemSerializer(ordered_item).data
+                item_serialized.pop('order_id', None)
+                ordered_items_serialized.append(item_serialized)
+
+        # add the order details to the list only if ordered items for the supplier exist
+        if len(ordered_items_serialized) != 0:
+            order_serialized = OrderSerializer(order).data
+
+            #  get the retailer object
+            try:
+                retailer = Retailer.objects.get(id=order_serialized['retailer'])
+            except Retailer.DoesNotExist:
+                return JsonResponse({'message': 'This retailer does not exist'})
+
+            order_data = {
+                'order_id': order_serialized['order_id'],
+                'retailer': retailer.company_name,
+                'order_date': order_serialized['order_date'],
+                'total_price': order_serialized['total_price'],
+                'shipping_address': order_serialized['shipping_address'],
+            }
+
+            data = {
+                'order_data': order_data,
+                'ordered_items': ordered_items_serialized,
+            }
+
+            supplier_orders.append(data)
+
+    return JsonResponse(supplier_orders, safe=False, status=200)
 
 
 # Create your views here.

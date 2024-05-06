@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from .serializers import AutoOrderConfigSerializer, NotificationConfigSerializer
 from .models import AutoOrderConfig, NotificationConfig
 from rest_framework.permissions import AllowAny
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from rest_framework.decorators import api_view, permission_classes
 from django.http import JsonResponse
 from .models import AutoOrderConfig
@@ -15,13 +15,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 
 
-
 @csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def add_default_notification_config(request):
     if NotificationConfig.objects.exists():
-        return JsonResponse({'error': 'Default Notification config already exists.'}, status=400)
+        return JsonResponse(
+            {'error': 'Default Notification config already exists.'}, status=400
+        )
 
     data = request.data
     serializer = NotificationConfigSerializer(data=data)
@@ -31,7 +32,7 @@ def add_default_notification_config(request):
         return JsonResponse({'message': 'Notification config added successfully.'})
     else:
         return JsonResponse(serializer.errors, status=400)
-    
+
 
 # def receive_notification_of_near_expiry(request):
 #     expiry = ProductBulk.objects.all()
@@ -91,54 +92,64 @@ def receive_notification_of_low_quantity_feature(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def view_default_notification_config(request: Request):
-        try: 
-            retailer_id = request.data.get('user_id') 
-            retailer = Retailer.objects.get(id=retailer_id)
-        except Retailer.DoesNotExist:
-            response_data = {
-                'error': 'Retailer not found for the given ID.',
-            }
-            return JsonResponse(response_data, status=404)
-
-        try:
-            default_notification_config = NotificationConfig.objects.get(retailer=retailer)
-        except NotificationConfig.DoesNotExist:
-            response_data = {
-                'low_quantity_threshold': '',
-                'near_expiry_days': '',
-            }
-            return JsonResponse(response_data, status=200)
-
-        config_serialized = NotificationConfigSerializer(default_notification_config, context={'request': request}).data
+    try:
+        retailer_id = request.data.get('user_id')
+        retailer = Retailer.objects.get(id=retailer_id)
+    except Retailer.DoesNotExist:
         response_data = {
-            'low_quantity_threshold': config_serialized['low_quantity_threshold'],
-            'near_expiry_days': config_serialized['near_expiry_days'],
+            'error': 'Retailer not found for the given ID.',
         }
+        return JsonResponse(response_data, status=404)
 
+    try:
+        default_notification_config = NotificationConfig.objects.get(retailer=retailer)
+    except NotificationConfig.DoesNotExist:
+        response_data = {
+            'low_quantity_threshold': '',
+            'near_expiry_days': '',
+        }
         return JsonResponse(response_data, status=200)
+
+    config_serialized = NotificationConfigSerializer(
+        default_notification_config, context={'request': request}
+    ).data
+    response_data = {
+        'low_quantity_threshold': config_serialized['low_quantity_threshold'],
+        'near_expiry_days': config_serialized['near_expiry_days'],
+    }
+
+    return JsonResponse(response_data, status=200)
+
 
 @csrf_exempt
 @api_view(['DELETE'])
 @permission_classes([AllowAny])
 def delete_default_notification_config(request):
     try:
-        retailer_id = request.data.get('user_id')  
+        retailer_id = request.data.get('user_id')
         retailer = Retailer.objects.get(id=retailer_id)
         default_notification_config = NotificationConfig.objects.get(retailer=retailer)
     except Retailer.DoesNotExist:
         return JsonResponse({'message': 'Retailer does not exist'}, status=404)
     except NotificationConfig.DoesNotExist:
-        return JsonResponse({'message': 'There is no default Notification configuration to be deleted'}, status=404)
-    
+        return JsonResponse(
+            {'message': 'There is no default Notification configuration to be deleted'},
+            status=404,
+        )
+
     default_notification_config.delete()
 
-    return JsonResponse({'message': 'The default order configuration was deleted successfully'}, status=204)
+    return JsonResponse(
+        {'message': 'The default order configuration was deleted successfully'},
+        status=204,
+    )
+
 
 @csrf_exempt
 @api_view(['PUT'])
 def update_default_notification_config(request):
     try:
-        retailer_id = request.data.get('user_id')  
+        retailer_id = request.data.get('user_id')
         retailer = Retailer.objects.get(id=retailer_id)
     except Retailer.DoesNotExist:
         return JsonResponse({'message': 'Retailer not found'})
@@ -147,7 +158,7 @@ def update_default_notification_config(request):
 
     # activation_status = data.get('activation_status')
     near_expiry_days = data.get('near_expiry_days')
-    low_quantity_threshold = data.get('low_quantity_threshold') 
+    low_quantity_threshold = data.get('low_quantity_threshold')
 
     if any in (near_expiry_days, low_quantity_threshold):
         return JsonResponse({'message': 'Notification is updated'})
@@ -162,24 +173,32 @@ def update_default_notification_config(request):
     default_notification_config.save()
 
     return JsonResponse(
-        {'message': 'Default notification configuration created' if created else 'Default notification configuration updated'},
+        {
+            'message': (
+                'Default notification configuration created'
+                if created
+                else 'Default notification configuration updated'
+            )
+        },
         status=201 if created else 200,
     )
 
 
-
-@csrf_exempt
+# @csrf_exempt
+@csrf_protect
 @api_view(['PUT'])
 @permission_classes([AllowAny])
 def update_default_order_config(request):
 
     # access the authenticated user
-    # if request.user.is_anonymous:
-    #     return JsonResponse({'message': 'You are not authenticated, log in then try again'})
+    if request.user.is_anonymous:
+        return JsonResponse(
+            {'message': 'You are not authenticated, log in then try again'}
+        )
 
-    # user = request.user
+    user_id = request.user.id
 
-    user_id = 17
+    # user_id = 17
 
     # get the user object
     try:
@@ -228,18 +247,21 @@ def update_default_order_config(request):
     )
 
 
-@csrf_exempt
+# @csrf_exempt
+@csrf_protect
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def view_default_order_config(request):
 
     # access the authenticated user
-    # if request.user.is_anonymous:
-    #     return JsonResponse({'message': 'You are not authenticated, log in then try again'})
+    if request.user.is_anonymous:
+        return JsonResponse(
+            {'message': 'You are not authenticated, log in then try again'}
+        )
 
-    # user = request.user
+    user_id = request.user.id
 
-    user_id = 17
+    # user_id = 17
 
     # get the user object
     try:
@@ -278,18 +300,21 @@ def view_default_order_config(request):
     return JsonResponse(response_data, status=200)
 
 
-@csrf_exempt
+# @csrf_exempt
+@csrf_protect
 @api_view(['DELETE'])
 @permission_classes([AllowAny])
 def delete_default_order_config(request):
 
     # access the authenticated user
-    # if request.user.is_anonymous:
-    #     return JsonResponse({'message': 'You are not authenticated, log in then try again'})
+    if request.user.is_anonymous:
+        return JsonResponse(
+            {'message': 'You are not authenticated, log in then try again'}
+        )
 
-    # user = request.user
+    user_id = request.user.id
 
-    user_id = 17
+    # user_id = 17
 
     # get the user object
     try:
@@ -317,18 +342,21 @@ def delete_default_order_config(request):
     )
 
 
-@csrf_exempt
+# @csrf_exempt
+@csrf_protect
 @api_view(['PUT'])
 @permission_classes([AllowAny])
 def apply_default_order_config_to_all_products(request):
 
     # access the authenticated user
-    # if request.user.is_anonymous:
-    #     return JsonResponse({'message': 'You are not authenticated, log in then try again'})
+    if request.user.is_anonymous:
+        return JsonResponse(
+            {'message': 'You are not authenticated, log in then try again'}
+        )
 
-    # user = request.user
+    user_id = request.user.id
 
-    user_id = 17
+    # user_id = 17
 
     # get the user object
     try:
@@ -374,18 +402,21 @@ def apply_default_order_config_to_all_products(request):
     )
 
 
-@csrf_exempt
+# @csrf_exempt
+@csrf_protect
 @api_view(['PUT'])
 @permission_classes([AllowAny])
 def delete_default_order_config_from_all_products(request):
 
     # access the authenticated user
-    # if request.user.is_anonymous:
-    #     return JsonResponse({'message': 'You are not authenticated, log in then try again'})
+    if request.user.is_anonymous:
+        return JsonResponse(
+            {'message': 'You are not authenticated, log in then try again'}
+        )
 
-    # user = request.user
+    user_id = request.user.id
 
-    user_id = 17
+    # user_id = 17
 
     # get the user object
     try:
@@ -422,18 +453,21 @@ def delete_default_order_config_from_all_products(request):
     )
 
 
-@csrf_exempt
+# @csrf_exempt
+@csrf_protect
 @api_view(['PUT'])
 @permission_classes([AllowAny])
 def update_product_order_config(request):
 
     # access the authenticated user
-    # if request.user.is_anonymous:
-    #     return JsonResponse({'message': 'You are not authenticated, log in then try again'})
+    if request.user.is_anonymous:
+        return JsonResponse(
+            {'message': 'You are not authenticated, log in then try again'}
+        )
 
-    # user = request.user
+    user_id = request.user.id
 
-    user_id = 17
+    # user_id = 17
 
     # get the user object
     try:
@@ -533,18 +567,21 @@ def update_product_order_config(request):
     )
 
 
-@csrf_exempt
+# @csrf_exempt
+@csrf_protect
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def view_product_order_config(request, product_id):
 
     # access the authenticated user
-    # if request.user.is_anonymous:
-    #     return JsonResponse({'message': 'You are not authenticated, log in then try again'})
+    if request.user.is_anonymous:
+        return JsonResponse(
+            {'message': 'You are not authenticated, log in then try again'}
+        )
 
-    # user = request.user
+    user_id = request.user.id
 
-    user_id = 17
+    # user_id = 17
 
     # get the user object
     try:
@@ -599,18 +636,21 @@ def view_product_order_config(request, product_id):
     return JsonResponse(response_data, status=200)
 
 
-@csrf_exempt
+# @csrf_exempt
+@csrf_protect
 @api_view(['DELETE'])
 @permission_classes([AllowAny])
 def delete_product_order_config(request):
 
     # access the authenticated user
-    # if request.user.is_anonymous:
-    #     return JsonResponse({'message': 'You are not authenticated, log in then try again'})
+    if request.user.is_anonymous:
+        return JsonResponse(
+            {'message': 'You are not authenticated, log in then try again'}
+        )
 
-    # user = request.user
+    user_id = request.user.id
 
-    user_id = 17
+    # user_id = 17
 
     # get the user object
     try:
