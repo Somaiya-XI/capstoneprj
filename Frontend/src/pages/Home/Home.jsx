@@ -16,19 +16,20 @@ import {useState, useEffect} from 'react';
 import axios from 'axios';
 import {Link} from 'react-router-dom';
 import {useUserContext} from '../../Contexts/index.jsx';
+import { API } from "@/backend";
 
 const Home = () => {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
 
   const loadCategories = async () => {
-    const {data} = await axios.get(`${import.meta.env.VITE_API_URL}product/catalog-product/get-categories/`);
+    const {data} = await axios.get(`${API}product/catalog-product/get-categories/`);
     console.log(data);
     setCategories(data);
   };
 
   const loadProducts = async () => {
-    const {data} = await axios.get(`${import.meta.env.VITE_API_URL}product/catalog-product/`);
+    const {data} = await axios.get(`${API}product/catalog-product/get-products/`);
     console.log(data);
     setProducts(data);
   };
@@ -74,7 +75,7 @@ const Home = () => {
                           productID={product.product_id}
                           productImage={product.product_img}
                           productName={product.product_name}
-                          seller={product.brand}
+                          seller={product.company_name}
                           price={product.new_price}
                           oldPrice={product.price}
                           discount={product.discount_percentage}
@@ -127,7 +128,7 @@ const Home = () => {
                             productID={product.product_id}
                             productImage={product.product_img}
                             productName={product.product_name}
-                            seller={product.brand}
+                            seller={product.company_name}
                             price={product.new_price}
                             oldPrice={product.price}
                             discount={product.discount_percentage}

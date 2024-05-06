@@ -8,6 +8,8 @@ import Text from "../Navbar/Text";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import icon from "../../images/supplier1.png";
+import { API } from "@/backend";
+
 
 function SampleNextArrow(props) {
   const { className, style, onClick, customCLass } = props;
@@ -89,7 +91,7 @@ const CustomSlider = () => {
 
   const loadBrands = async () => {
     const { data } = await axios.get(
-      `${import.meta.env.VITE_API_URL}product/catalog-product/get-brands/`
+      `${API}product/catalog-product/get-brands/`
     );
     console.log(data);
     setBrands(data);

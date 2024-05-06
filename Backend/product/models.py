@@ -11,7 +11,9 @@ from configuration.models import AutoOrderConfig
 
 
 class Product(models.Model):
-    product_id = models.UUIDField("ID", default=uuid.uuid4, editable=False, unique=True, primary_key=True)
+    product_id = models.UUIDField(
+        "ID", default=uuid.uuid4, editable=False, unique=True, primary_key=True
+    )
     product_name = models.CharField("Name", max_length=50)
     price = models.DecimalField("Price", max_digits=5, decimal_places=2)
     quantity = models.IntegerField("Quantity")
@@ -23,8 +25,12 @@ class Product(models.Model):
 
 
 class ProductCatalog(Product):
-    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, verbose_name="Supplier")
-    product_img = models.ImageField("Product Image", upload_to='catalogImgs/', blank=False, null=False)
+    supplier = models.ForeignKey(
+        Supplier, on_delete=models.CASCADE, verbose_name="Supplier"
+    )
+    product_img = models.ImageField(
+        "Product Image", upload_to='catalogImgs/', blank=False, null=False
+    )
     description = models.CharField("Description", max_length=250, blank=True, null=True)
     category = models.ForeignKey(
         Category,
@@ -45,7 +51,9 @@ class ProductCatalog(Product):
     def new_price(self):
         discount_percentage = self.discount_percentage or 0
         price = self.price or 0
-        return Decimal(price - (price * (discount_percentage / Decimal(100))))
+        return Decimal(price - (price * (discount_percentage / Decimal(100)))).quantize(
+            Decimal('.01')
+        )
 
     def __str__(self):
         return self.product_name
@@ -55,9 +63,15 @@ class ProductCatalog(Product):
 
 
 class SupermarketProduct(Product):
-    retailer = models.ForeignKey(Retailer, on_delete=models.CASCADE, verbose_name="Retailer")
-    product_img = models.ImageField("Product Image", upload_to='marketProductImgs/', blank=True, null=True)
-    order_config = models.ForeignKey(AutoOrderConfig, on_delete=models.SET_NULL, null=True)
+    retailer = models.ForeignKey(
+        Retailer, on_delete=models.CASCADE, verbose_name="Retailer"
+    )
+    product_img = models.ImageField(
+        "Product Image", upload_to='marketProductImgs/', blank=True, null=True
+    )
+    order_config = models.ForeignKey(
+        AutoOrderConfig, on_delete=models.SET_NULL, null=True
+    )
 
     def __str__(self):
         return f"{self.product_name} of {self.retailer.company_name}"
@@ -74,7 +88,9 @@ class ProductBulk(models.Model):
     days_to_expiry = models.IntegerField()
 
     def __str__(self):
-        return f"{self.product.product_name} bulk of {self.product.retailer.company_name}"
+        return (
+            f"{self.product.product_name} bulk of {self.product.retailer.company_name}"
+        )
 
     class Meta:
         db_table = "Product Bulk"

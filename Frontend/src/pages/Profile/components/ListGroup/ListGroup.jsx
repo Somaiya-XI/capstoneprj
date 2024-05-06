@@ -2,13 +2,16 @@ import "./ListGroup.css";
 import "../ProfileImage/ProfileImage.css";
 import "../Labels/Labels.css";
 import ChangePassword from "../ChangePassword/ChangePassword.jsx";
+import { useUserContext } from "@/Contexts";
+import { API } from "@/backend";
 import axios from "axios";
 import React from "react";
 import { useState, useEffect } from "react";
-import { json } from "react-router-dom";
+
 
 const ListGroup = () => {
-  const id = "3";
+  const { user } = useUserContext();
+  const id = user.id;
   const [flag, setFlag] = useState(1);
   const [flags, setFlags] = useState({
     flag1: 1,
@@ -38,7 +41,7 @@ const ListGroup = () => {
 
   const loadProfile = async () => {
     const { data } = await axios.get(
-      `${import.meta.env.VITE_API_URL}user/${id}/`
+      `${API}user/${id}/`
     );
     console.log(data);
     setValues({
@@ -64,7 +67,7 @@ const ListGroup = () => {
     }
     return axios({
       method: "PUT",
-      url: `${import.meta.env.VITE_API_URL}user/update/${id}/`,
+      url: `${API}user/update/${id}/`,
       data: formData,
     })
       .then((response) => {
@@ -238,7 +241,7 @@ const ListGroup = () => {
               ) : (
                 <>
                   <input
-                    type="text"
+                    type="text" 
                     className="company-info"
                     id="input2"
                     defaultValue={values.company_name}
