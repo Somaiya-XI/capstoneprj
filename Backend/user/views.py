@@ -13,7 +13,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import smart_bytes, smart_str
 from django.core.mail import send_mail
 from rest_framework.exceptions import ValidationError
-
+from rest_framework.decorators import api_view
 from .serializers import UserSerializer
 from .models import User
 from json.decoder import JSONDecodeError
@@ -27,6 +27,8 @@ from django.middleware.csrf import get_token
 import os
 
 SOCIAL_AUTH_PWD = os.getenv('SOCIAL_AUTH_PWD')
+BASE_URL = os.getenv('BASE_URL')
+FRONTEND_URL = os.getenv('FRONTEND_URL')
 
 
 def get_csrf(request):
@@ -90,7 +92,7 @@ def login_view(request):
 
 def logout_view(request):
 
-    if not request.user.is_authenticated:
+    if request.user.is_anonymous:
         return JsonResponse({'message': 'You\'re not logged in.'}, status=400)
 
     request.user.session_token = 0
@@ -107,70 +109,24 @@ def session_view(request):
     return JsonResponse({'isAuthenticated': True})
 
 
-def get_user(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({'isAuthenticated': False})
+def view_users(request):
+    if request.user.is_anonymous or not request.user.role == 'ADMIN':
+        return JsonResponse({'error': 'Unauthorized access! Login as admin then try again..'}, status=400)
 
-    return JsonResponse(
-        {
-            'id': request.user.id,
-            'email': request.user.email,
-            'company_name': request.user.company_name,
-            'role': request.user.role,
-        }
-    )
+    inactive_users = User.objects.filter(role__in=['SUPPLIER', 'RETAILER'])
 
+    response_data = []
 
-def users_api(request):
+    for user in inactive_users:
+        users_data = UserSerializer(user)
+        response_data.append(users_data.data)
 
-    UserModel = get_user_model()
-
-    inactive_users = UserModel.objects.filter(role__in=['SUPPLIER', 'RETAILER'])
-
-    users_data = serialize(
-        'json',
-        inactive_users,
-        fields=(
-            'email',
-            'commercial_reg',
-            'role',
-            "profile_picture",
-            'is_active',
-        ),
-    )
-
-    users_data = json.loads(users_data)
-    for user_data in users_data:
-        user_data['fields']['commercial_reg'] = user_data['fields']['commercial_reg']
-
-    return JsonResponse(users_data, safe=False)
+    return JsonResponse(response_data, safe=False)
 
 
-def fetch_image(request, image_path):
-    UserModel = get_user_model()
-
-    full_path = f"{settings.MEDIA_ROOT}/{image_path}"
-
-    users = UserModel.objects.filter(profile_picture=image_path)
-
-    if not users.exists():
-        users = UserModel.objects.filter(commercial_reg=image_path)
-        if not users.exists():
-            raise Http404("User not found")
-
-    # specify type based on the requested image
-    content_type, _ = mimetypes.guess_type(full_path)
-    if not content_type:
-        content_type = "application/octet-stream"
-
-    with open(full_path, "rb") as image_file:
-        image_data = image_file.read()
-
-    return HttpResponse(image_data, content_type=content_type)
-
-
-@csrf_exempt
 def activate_user_account(request):
+    if request.user.is_anonymous or not request.user.role == 'ADMIN':
+        return JsonResponse({'error': 'Unauthorized access! Login then try again..'}, status=400)
 
     UserModel = get_user_model()
 
@@ -178,43 +134,47 @@ def activate_user_account(request):
 
         data = json.loads(request.body)
         user_email = data['user_email']
-        activation_status = data['activation_status']
+        activation_status = str(data['activation_status']).capitalize()
+
+        if not activation_status or not (activation_status in ['True', 'False']):
+            return JsonResponse({'error': 'please enter valid activation status'}, status=400)
 
         try:
             user_account = UserModel.objects.get(email=user_email)
         except UserModel.DoesNotExist:
-            return JsonResponse({'error': 'User does not exist'})
+            return JsonResponse({'error': 'User does not exist'}, status=400)
 
         if user_account.role == 'ADMIN':
-            return JsonResponse({'error': 'you cannot modify the admin account'})
+            return JsonResponse({'error': 'you cannot modify the admin account'}, status=400)
 
-        user_account.is_active = activation_status.capitalize()
+        user_account.is_active = activation_status
         user_account.save()
 
-        message = "deactivated" if not activation_status == "true" else "activated"
+        message = "deactivated" if not activation_status == "True" else "activated"
 
         return JsonResponse({'success': f'User account {message} successfully'})
 
-    return JsonResponse({'error': 'Invalid request method'})
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 
+@api_view(['POST'])
 @csrf_exempt
 def reset_password(request):
+    try:
+        UserModel = get_user_model()
 
-    UserModel = get_user_model()
+        data = request.data
+        email = data['email']
 
-    print('before request')
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        email = data.get('email')
-        print(email)
+        if not email:
+            return JsonResponse({'error': 'email field is required'})
 
         try:
             user = UserModel.objects.get(email=email)
             if user:
                 token = PasswordResetTokenGenerator().make_token(user)
                 uid = urlsafe_base64_encode(smart_bytes(user.pk))
-                reset_link = f'http://localhost:8000/user/reset-password/{uid}/{token}/'
+                reset_link = f'{BASE_URL}/user/reset-password/{uid}/{token}/'
                 send_mail(
                     'Password Reset New',
                     f'Click the following link to reset your password: {reset_link}',
@@ -222,12 +182,11 @@ def reset_password(request):
                     [email],
                     fail_silently=False,
                 )
-                print('email sent')
                 return JsonResponse({'message': 'Password reset link sent to your email'})
         except UserModel.DoesNotExist:
             return JsonResponse({'error': 'User with this email does not exist'})
-    else:
-        return JsonResponse({'error': 'Please send a POST request with valid parameters'})
+    except Exception as e:
+        return JsonResponse({'error': f'something went wrong, err: {e}'})
 
 
 @csrf_exempt
@@ -238,11 +197,9 @@ def authorize_password_reset(request, uidb64, token):
     try:
         uid = smart_str(urlsafe_base64_decode(uidb64))
         user = UserModel.objects.get(pk=uid)
-        print(uid)
-        print(user)
         if PasswordResetTokenGenerator().check_token(user, token):
             # return JsonResponse({'success': 'you can reset your password'})
-            return redirect(f"http://localhost:5173/reset-password/form/{uidb64}/{token}/")
+            return redirect(f"{FRONTEND_URL}/reset-password/form/{uidb64}/{token}/")
         else:
             return JsonResponse({'error': 'Invalid or expired token'})
             # redirect(f"http://localhost:5173/reset-password/expired-token/")
@@ -259,18 +216,15 @@ def set_new_password(request):
 
         if request.method == 'POST':
             data = json.loads(request.body)
-            print("data", data)
 
             uidb64 = data.get('uidb64')
             token = data.get('token')
             new_password = data.get('new_password')
-            print(uidb64, token, new_password)
+
             if uidb64 and token and new_password:
                 try:
                     uid = smart_str(urlsafe_base64_decode(uidb64))
-                    print(uid)
                     user = UserModel.objects.get(pk=uid)
-                    print(user)
                     if PasswordResetTokenGenerator().check_token(user, token):
                         try:
                             validated_password = serializer.validate_password(new_password)
@@ -285,6 +239,9 @@ def set_new_password(request):
                         return JsonResponse({'error': 'Invalid or expired token'}, status=400)
                 except UserModel.DoesNotExist:
                     return JsonResponse({'error': 'Invalid user ID'}, status=400)
+                except Exception as e:
+                    return JsonResponse({'error': 'Invalid request data'}, status=400)
+
             else:
                 return JsonResponse({'error': 'please enter a password!'})
 

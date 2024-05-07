@@ -17,6 +17,8 @@ const SettingsLayout = () => {
         <div className='mt-4'>
         <AutoOrderConfigCard/>
         </div>
+        <div className='mt-10'>
+        </div>
       </div>
     </RetailerLayout>
   )

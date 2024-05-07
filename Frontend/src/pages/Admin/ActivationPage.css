@@ -46,13 +46,13 @@ h2 {
 }
 
 .close-button {
-  position: absolute;
+  position: relative;
   top: 0px;
   right: 0px;
   font-size: 24px;
   background: none;
   border: none;
-  color: #000000;
+  color: #dee2e6;
   cursor: pointer;
 }
 

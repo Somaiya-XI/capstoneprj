@@ -47,7 +47,7 @@ export default function Shipment({address, setAddress}) {
   };
 
   const fetchAddresses = async () => {
-    axios.get(`${API}/user/${user.id}`, {
+    axios.get(`${API}user/${user.id}`, {
       withCredentials: true,
     })
       .then(response => {
