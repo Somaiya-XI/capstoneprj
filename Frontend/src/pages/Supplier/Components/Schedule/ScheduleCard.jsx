@@ -25,8 +25,7 @@ import {
 } from "@nextui-org/react";
 import {Card, Popconfirm, TimePicker} from "antd";
 import {useUserContext, useCsrfContext} from "../../../../Contexts";
-import { EditIcon, DeleteIcon } from "@/Components";
-
+import { EditIcon, DeleteIcon } from '../../../../Components/Icons';
 import axios from "axios";
 import {API} from "../../../../backend";
 import {toast} from "sonner";

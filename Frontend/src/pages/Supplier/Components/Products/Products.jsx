@@ -202,7 +202,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Avatar, Button, Modal, ModalContent, ModalHeader, ModalFooter, ModalBody, Select, SelectItem } from "@nextui-org/react";
-import { SearchIcon, EditIcon, DeleteIcon, EyeIcon } from "@/Components";
+import { SearchIcon, EditIcon, DeleteIcon, EyeIcon } from '../../../../Components/Icons';
 import { Popconfirm } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons"; // Assuming these are icons from Ant Design
 import { useUserContext } from "@/Contexts";

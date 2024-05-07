@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Avatar, Button, Modal, ModalContent, ModalHeader, ModalFooter, ModalBody, Select, SelectItem } from "@nextui-org/react";
-import { SearchIcon, EditIcon, DeleteIcon, EyeIcon } from "@/Components";
 import { Popconfirm } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons"; // Assuming these are icons from Ant Design
 import { useUserContext } from "@/Contexts";
@@ -14,6 +13,7 @@ import SupplierLayout from "../Layout/SupplierLayout";
 import { useNavigate } from 'react-router-dom';
 import { useDisclosure } from "@nextui-org/react";
 import { fileToBase64 } from "@/Helpers";
+import { SearchIcon,EyeIcon } from '../../../../Components/Icons';
 
 export default function Products() {
 
