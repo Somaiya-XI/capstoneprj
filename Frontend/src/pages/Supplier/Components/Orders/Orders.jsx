@@ -83,53 +83,49 @@ export default function Products() {
   }, []);
 
   const columns = [
+    // {
+    //   title: 'Product Image',
+    //   dataIndex: 'product_img',
+    //   editable: true,
+    //   render: (text, record) => {
+    //     return (
+    //       <img
+    //         src={`http://127.0.0.1:8000${record.product_img}`}
+    //         alt="Product"
+    //         onError={(e) => {
+    //           e.target.src;
+    //           console.error('Error loading image:', e.target.src);
+    //         }}
+    //       />
+    //     );
+    //   }
+    // },
     {
-      title: 'Product Image',
-      dataIndex: 'product_img',
-      editable: true,
-      render: (text, record) => {
-        return (
-          <img
-            src={`http://127.0.0.1:8000${record.product_img}`}
-            alt="Product"
-            onError={(e) => {
-              e.target.src;
-              console.error('Error loading image:', e.target.src);
-            }}
-          />
-        );
-      }
+      title: 'Order ID',
+      dataIndex: 'order_id',
     },
     {
-      title: 'Product Name',
-      dataIndex: 'product_name',
+      title: 'Retailer',
+      dataIndex: 'retailer',
     },
     {
-      title: 'Brand Name',
-      dataIndex: 'brand',
+      title: 'Order date',
+      dataIndex: 'order_date',
     },
     {
-      title: 'Category',
-      dataIndex: 'category',
+      title: 'Total Price',
+      dataIndex: 'total_price',
     },
     {
-      title: 'Price',
-      dataIndex: 'price',
+      title: 'Shipping Address',
+      dataIndex: 'shipping_address',
     },
+    // {
+    //   title: 'ordered_items',
+    //   dataIndex: 'ordered_items',
+    // },
     {
-      title: 'Discount',
-      dataIndex: 'discount_percentage',
-    },
-    {
-      title: 'Quantity',
-      dataIndex: 'quantity',
-    },
-    {
-      title: 'Min order quantity',
-      dataIndex: 'min_order_quantity',
-    },
-    {
-      title: 'Actions',
+      title: 'Orderd Items',
       dataIndex: 'actions'
     },
 
@@ -181,12 +177,12 @@ export default function Products() {
             <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
               <EyeIcon onClick={() => navigate(`/product/${product.key}`)} />
             </span>
-            <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
+            {/* <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
               <EditIcon onClick={() => navigate(`/product/${product.key}`)} />
-            </span>
-            <Popconfirm title='Sure to delete?' onConfirm={() => onDeleteProduct(product.key)}>
+            </span> */}
+            {/* <Popconfirm title='Sure to delete?' onConfirm={() => onDeleteProduct(product.key)}>
               <DeleteIcon className="text-lg text-danger cursor-pointer active:opacity-50" />
-            </Popconfirm>
+            </Popconfirm> */}
           </div>
         );
       default:

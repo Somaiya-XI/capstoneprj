@@ -47,11 +47,12 @@ const ProductDisplay = () => {
   const size = ["lg"];
 
 
-
+  const user_id = user.id;
   const loadWalletBalance = async () => {
     const { data } = await axios.get(
       `${API}payment/view-wallet-balance/`,
-      user.id
+        user_id
+      
     );
     setBalance(data.payment_wallet);
   };
@@ -91,8 +92,6 @@ const ProductDisplay = () => {
         shipping_address: address,
         order_type: "BASIC"
       };
-
-      // Step 0: Log the request payload before sending
       console.log("Step 0 - Request Payload:", requestData);
 
       const { data } = await axios.put(
@@ -134,7 +133,7 @@ const ProductDisplay = () => {
     const { data } = await axios.put(
       `${import.meta.env.VITE_API_URL}payment/charge-wallet/`,
       {
-        retailer: id,
+        user_id,
         amount: 1000,
       }
     );
@@ -159,6 +158,14 @@ const ProductDisplay = () => {
           <BreadcrumbItem onClick={() => navigate('/cart')} startContent={<CiShoppingCart />}>Cart</BreadcrumbItem>
           <BreadcrumbItem startContent={<IoBagCheckOutline className='text-[#a3e189]' />}>Checkout</BreadcrumbItem>
         </Breadcrumbs>
+        <form
+            action={`${
+              import.meta.env.VITE_API_URL
+            }cart/create-checkout-session/`}
+            method="POST"
+          >
+            <Button type="submit">Pay By Credit Card</Button>
+          </form> 
 
         <section className="flex justify-between">
           <div className='container-fluid '>
@@ -322,6 +329,9 @@ const ProductDisplay = () => {
   );
 };
 
+          
+          
+  
 const Message = ({ message }) => (
   <section>
     <p>{message}</p>
