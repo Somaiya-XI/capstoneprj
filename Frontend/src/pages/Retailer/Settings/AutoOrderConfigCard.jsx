@@ -8,10 +8,10 @@ export default function AutoOrderConfigCard() {
 
     const {ax} = useCsrfContext();
     const [ConfigData, setConfigData] = useState({
-        quantity_reach_level: " ",
-        ordering_amount: " ",
-        confirmation_status: null,
+        quantity_reach_level: null,
+        ordering_amount: null,
     });
+    const [confirmationStatus, setConfirmationStatus] = useState(false)
 
     const loadConfig = async () => {
     try {
@@ -21,8 +21,8 @@ export default function AutoOrderConfigCard() {
             ...ConfigData,
             quantity_reach_level: data.quantity_reach_level,
             ordering_amount: data.ordering_amount,
-            confirmation_status: data.confirmation_status,
           });
+        setConfirmationStatus(data.confirmation_status)
       }
       catch (error) {
         console.error(error.message);
@@ -39,11 +39,52 @@ export default function AutoOrderConfigCard() {
     const updateConfig = async () => {
         try {
             const { data } = await ax.put(`${API}config/auto-order-config/update-default-config/`, {
-                quantity_reach_level: 16, 
-                ordering_amount: 39,
-                confirmation_status: true,
+                quantity_reach_level: ConfigData.quantity_reach_level, 
+                ordering_amount: ConfigData.ordering_amount,
+                confirmation_status: confirmationStatus,
             });
             console.log(data)
+            setConfigData({
+                ...ConfigData,
+                "quantity_reach_level": data.data.quantity_reach_level,
+                "ordering_amount": data.data.ordering_amount,
+              });
+              setConfirmationStatus(data.data.confirmation_status)
+        }catch (error) {
+        console.error(error.message);
+      }
+    }
+
+    const deleteConfig = async () => {
+        try {
+            const { data } = await ax.delete(`${API}config/auto-order-config/delete-default-config/`, {});
+            console.log(data)
+            setConfigData({
+                ...ConfigData,
+                "quantity_reach_level": data.data.quantity_reach_level,
+                "ordering_amount": data.data.ordering_amount,
+              });
+              setConfirmationStatus(data.data.confirmation_status)
+        }catch (error) {
+        console.error(error.message);
+      }
+    }
+
+    const applyToAll = async () => {
+        try {
+            const { data } = await ax.put(`${API}config/auto-order-config/default-config/apply-to-all/`, {});
+            console.log(data)
+            CustomSuccessToast({ msg: data.message, dur: 3000 });
+        }catch (error) {
+        console.error(error.message);
+      }
+    }
+
+    const deleteFromAll = async () => {
+        try {
+            const { data } = await ax.put(`${API}config/auto-order-config/default-config/delete-from-all/`, {});
+            console.log(data)
+            CustomSuccessToast({ msg: data.message, dur: 3000 });
         }catch (error) {
         console.error(error.message);
       }
@@ -77,7 +118,7 @@ export default function AutoOrderConfigCard() {
                         value={ConfigData.ordering_amount}
                         onChange={handleChange('ordering_amount')}
                     />
-                    <Checkbox color="success">
+                    <Checkbox color="success" isSelected={confirmationStatus} onValueChange={setConfirmationStatus}>
                         Confirmation required
                     </Checkbox>
                     <div className="flex gap-3">
@@ -85,10 +126,15 @@ export default function AutoOrderConfigCard() {
                         onClick={updateConfig}
                         >Save</Button>
                         <Button className="bg-[#fff] border-1 text-black mt-4 size-24 h-10 shadow-sm" 
-                        // onClick={handleEdit}
+                        onClick={deleteConfig}
                         >Delete</Button>
+                        <Button className="bg-[#023c07] text-default mt-4 ml-5 size-26 h-10" 
+                        onClick={applyToAll}
+                        >Apply to All Products</Button>
+                        <Button className="bg-[#fff] border-1 text-black mt-4 size-26 h-10 shadow-sm" 
+                        onClick={deleteFromAll}
+                        >Delete From All Products</Button>
                     </div>
-
                 </div>
             </CardBody>
         </Card>
