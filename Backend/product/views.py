@@ -26,9 +26,7 @@ import json
 def create_product(request):
 
     if request.user.is_anonymous:
-        return JsonResponse(
-            {'message': 'You are not authenticated, log in then try again'}, status=400
-        )
+        return JsonResponse({'message': 'You are not authenticated, log in then try again'}, status=400)
 
     data = request.data
     if request.user.is_authenticated:
@@ -75,59 +73,58 @@ def create_stripe_product():
 @api_view(['PUT', 'DELETE'])
 @permission_classes([AllowAny])
 def update_product(request):
-    if request.user.is_anonymous:
-        return JsonResponse(
-            {'message': 'You are not authenticated, log in then try again'}, status=400
-        )
-
-    print('the user updating is: ', request.user)
-    data = json.loads(request.body)
-    pk = data.get('id')
-    print(pk)
-
     try:
-        product = ProductCatalog.objects.get(pk=pk)
-    except ProductCatalog.DoesNotExist:
-        return JsonResponse({'error': 'This Product does not exist'}, status=404)
+        if request.user.is_anonymous:
+            return JsonResponse({'message': 'You are not authenticated, log in then try again'}, status=400)
 
-    if product.supplier_id != request.user.id:
-        return JsonResponse(
-            {'message': 'You are not authorized to update this product'}
-        )
+        print('the user updating is: ', request.user)
+        data = json.loads(request.body)
+        pk = data.get('id')
+        print(pk)
 
-    if request.method == 'PUT':
-        serializer = ProductCatalogSerializer(product, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
+        try:
+            product = ProductCatalog.objects.get(pk=pk)
+        except ProductCatalog.DoesNotExist:
+            return JsonResponse({'error': 'This Product does not exist'}, status=404)
 
-            load_dotenv()
-            stripe.api_key = os.environ['STRIPE_SECRET_KEY']
-            new_price = stripe.Price.create(
-                currency="usd",
-                unit_amount_decimal=serializer.data['new_price'] * 100,
-                product=serializer.data['product_id'],
-            )
-            stripe.Product.modify(
-                serializer.data['product_id'],
-                name=serializer.data['product_name'],
-                images=[serializer.data['product_img']],
-                default_price=new_price.id,
-            )
-            return JsonResponse({'message': f"Product {pk} updated"}, status=200)
-            return JsonResponse({'message': 'Product updated'}, status=200)
-        else:
-            return JsonResponse(serializer.errors, status=400)
+        if product.supplier_id != request.user.id:
+            return JsonResponse({'message': 'You are not authorized to update this product'})
 
-    elif request.method == 'DELETE':
-        product.delete()
+        if request.method == 'PUT':
+            serializer = ProductCatalogSerializer(product, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
 
-        load_dotenv()
-        stripe.api_key = os.environ['STRIPE_SECRET_KEY']
-        stripe.Product.modify(
-            product.product_id,
-            active=False,
-        )
-        return JsonResponse({'message': 'Product deleted'}, status=204)
+                load_dotenv()
+                stripe.api_key = os.environ['STRIPE_SECRET_KEY']
+                new_price = stripe.Price.create(
+                    currency="usd",
+                    unit_amount_decimal=serializer.data['new_price'] * 100,
+                    product=serializer.data['product_id'],
+                )
+                stripe.Product.modify(
+                    serializer.data['product_id'],
+                    name=serializer.data['product_name'],
+                    images=[serializer.data['product_img']],
+                    default_price=new_price.id,
+                )
+                return JsonResponse({'message': f"Product {pk} updated"}, status=200)
+                return JsonResponse({'message': 'Product updated'}, status=200)
+            else:
+                return JsonResponse(serializer.errors, status=400)
+
+        elif request.method == 'DELETE':
+            product.delete()
+            return JsonResponse({'message': 'Product deleted'}, status=200)
+
+            # load_dotenv()
+            # stripe.api_key = os.environ['STRIPE_SECRET_KEY']
+            # stripe.Product.modify(
+            #     product.product_id,
+            #     active=False,
+            # )
+    except Exception as e:
+        return JsonResponse({'error': f'something went wrong, err: {e}'})
 
 
 @ensure_csrf_cookie
@@ -173,8 +170,7 @@ def view_catalog_products(request):
 
         product_data = {
             'product_id': product_serialized.data['product_id'],
-            'product_img': os.environ['BASE_URL']
-            + product_serialized.data['product_img'],
+            'product_img': os.environ['BASE_URL'] + product_serialized.data['product_img'],
             'product_name': product_serialized.data['product_name'],
             'category': product_serialized.data['category'],
             'brand': product_serialized.data['brand'],
