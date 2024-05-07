@@ -15,8 +15,8 @@ class AutoOrderConfig(models.Model):
         Retailer, on_delete=models.CASCADE, verbose_name="Retailer"
     )
     type = models.CharField(choices=TYPE, default='DEFAULT', max_length=15)
-    qunt_reach_level = models.IntegerField("Reach Level", default=0)
-    ordering_amount = models.IntegerField("Ordering Amount", default=1)
+    qunt_reach_level = models.PositiveIntegerField("Reach Level", default=0)
+    ordering_amount = models.PositiveIntegerField("Ordering Amount", default=1)
     confirmation_status = models.BooleanField("Requires Confirmation", default=False)
 
     class Meta:

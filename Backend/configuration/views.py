@@ -13,6 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.request import Request
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
+from rest_framework.exceptions import ValidationError
 
 
 @csrf_exempt
@@ -44,25 +45,24 @@ def add_default_notification_config(request):
 #         retailer_id = product.retailer
 
 
-
-#     if hasattr(product, 'productbulk'): 
+#     if hasattr(product, 'productbulk'):
 #         days_to_expiry = ProductBulk.days_to_expiry
 #         if days_to_expiry == near_expiry_days:
 #             notification_message = f'Product "{product.product_name}" is near expiry. Expires in {near_expiry_days} days.'
 #             notifications.append(notification_message)
 
 #     return notifications
-    
+
+
 @csrf_exempt
 @api_view(['GET'])
-@permission_classes([AllowAny])  
+@permission_classes([AllowAny])
 def receive_notification_of_low_quantity_feature(request):
     products = SupermarketProduct.objects.all()
     expiry = ProductBulk.objects.all()
     notifications = []
     notification_configs = NotificationConfig.objects.all()
 
-    
     retailer_configs = {config.retailer: config for config in notification_configs}
 
     for product in products:
@@ -86,8 +86,11 @@ def receive_notification_of_low_quantity_feature(request):
     if notifications:
         return JsonResponse({'notifications': notifications}, status=200)
     else:
-        return JsonResponse({'message': 'All product quantities are within threshold'}, status=200)
-    
+        return JsonResponse(
+            {'message': 'All product quantities are within threshold'}, status=200
+        )
+
+
 @csrf_exempt
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -184,7 +187,6 @@ def update_default_notification_config(request):
     )
 
 
-# @csrf_exempt
 @csrf_protect
 @api_view(['PUT'])
 @permission_classes([AllowAny])
@@ -197,8 +199,6 @@ def update_default_order_config(request):
         )
 
     user_id = request.user.id
-
-    # user_id = 17
 
     # get the user object
     try:
@@ -228,26 +228,56 @@ def update_default_order_config(request):
         retailer=retailer, type="DEFAULT"
     )
 
-    # update the default auto order config to the new values
-    default_order_config[0].qunt_reach_level = quantity_reach_level
-    default_order_config[0].ordering_amount = ordering_amount
-    default_order_config[0].confirmation_status = confirmation_status
-    default_order_config[0].save()
-
-    # check whether a new object created or not
-    if default_order_config[1] == True:
-        return JsonResponse(
-            {'message': 'The default auto ordering configuration created successfully'},
-            status=201,
-        )
-
-    return JsonResponse(
-        {'message': 'The default auto ordering configuration updated successfully'},
-        status=200,
+    # update the default auto order config to the new values using serializer
+    config_serialized = AutoOrderConfigSerializer(
+        default_order_config[0],
+        data={
+            'qunt_reach_level': quantity_reach_level,
+            'ordering_amount': ordering_amount,
+            'confirmation_status': confirmation_status,
+        },
+        partial=True,
     )
 
+    # validate input fields
+    if config_serialized.is_valid():
+        config_serialized.save()
 
-# @csrf_exempt
+        # prepare the response data
+        data = {
+            'quantity_reach_level': config_serialized.data['qunt_reach_level'],
+            'ordering_amount': config_serialized.data['ordering_amount'],
+            'confirmation_status': config_serialized.data['confirmation_status'],
+        }
+
+        # check whether a new object created or not
+        if default_order_config[1] == True:
+            return JsonResponse(
+                {
+                    'message': 'The default auto ordering configuration created successfully',
+                    'data': data,
+                },
+                status=201,
+            )
+
+        return JsonResponse(
+            {
+                'message': 'The default auto ordering configuration updated successfully',
+                'data': data,
+            },
+            status=200,
+        )
+
+    # return empty fields with error message
+    data = {
+        'quantity_reach_level': '',
+        'ordering_amount': '',
+        'confirmation_status': '',
+    }
+
+    return JsonResponse({'error': config_serialized.errors, 'data': data})
+
+
 @csrf_protect
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -260,8 +290,6 @@ def view_default_order_config(request):
         )
 
     user_id = request.user.id
-
-    # user_id = 17
 
     # get the user object
     try:
@@ -300,7 +328,6 @@ def view_default_order_config(request):
     return JsonResponse(response_data, status=200)
 
 
-# @csrf_exempt
 @csrf_protect
 @api_view(['DELETE'])
 @permission_classes([AllowAny])
@@ -313,8 +340,6 @@ def delete_default_order_config(request):
         )
 
     user_id = request.user.id
-
-    # user_id = 17
 
     # get the user object
     try:
@@ -337,12 +362,21 @@ def delete_default_order_config(request):
     # delete the user default auto order config object
     default_order_config.delete()
 
+    data = {
+        'quantity_reach_level': '',
+        'ordering_amount': '',
+        'confirmation_status': '',
+    }
+
     return JsonResponse(
-        {'message': 'The default order configuration deleted successfully'}, status=204
+        {
+            'message': 'The default order configuration deleted successfully',
+            'data': data,
+        },
+        status=200,
     )
 
 
-# @csrf_exempt
 @csrf_protect
 @api_view(['PUT'])
 @permission_classes([AllowAny])
@@ -351,12 +385,10 @@ def apply_default_order_config_to_all_products(request):
     # access the authenticated user
     if request.user.is_anonymous:
         return JsonResponse(
-            {'message': 'You are not authenticated, log in then try again'}
+            {'error': 'You are not authenticated, log in then try again'}
         )
 
     user_id = request.user.id
-
-    # user_id = 17
 
     # get the user object
     try:
@@ -364,7 +396,7 @@ def apply_default_order_config_to_all_products(request):
     except Retailer.DoesNotExist:
         return JsonResponse(
             {
-                'message': 'You are not authorized to apply the auto order configuration to products'
+                'error': 'You are not authorized to apply the auto order configuration to products'
             }
         )
 
@@ -375,7 +407,7 @@ def apply_default_order_config_to_all_products(request):
         )
     except AutoOrderConfig.DoesNotExist:
         return JsonResponse(
-            {'message': 'please create a default order configuration first'}
+            {'error': 'please create a default order configuration first'}
         )
 
     # get all products in the retailer's supermarket
@@ -385,7 +417,7 @@ def apply_default_order_config_to_all_products(request):
     if not products:
         return JsonResponse(
             {
-                'message': 'You do not have products to apply the default auto order configuration to'
+                'error': 'You do not have products to apply the default auto order configuration to'
             }
         )
 
@@ -402,7 +434,6 @@ def apply_default_order_config_to_all_products(request):
     )
 
 
-# @csrf_exempt
 @csrf_protect
 @api_view(['PUT'])
 @permission_classes([AllowAny])
@@ -411,12 +442,10 @@ def delete_default_order_config_from_all_products(request):
     # access the authenticated user
     if request.user.is_anonymous:
         return JsonResponse(
-            {'message': 'You are not authenticated, log in then try again'}
+            {'error': 'You are not authenticated, log in then try again'}
         )
 
     user_id = request.user.id
-
-    # user_id = 17
 
     # get the user object
     try:
@@ -424,7 +453,7 @@ def delete_default_order_config_from_all_products(request):
     except Retailer.DoesNotExist:
         return JsonResponse(
             {
-                'message': 'You are not authorized to delete the auto order configuration from products'
+                'error': 'You are not authorized to delete the auto order configuration from products'
             }
         )
 
@@ -435,7 +464,7 @@ def delete_default_order_config_from_all_products(request):
     if not products:
         return JsonResponse(
             {
-                'message': 'You do not have products to delete the default auto order configuration from'
+                'error': 'You do not have products to delete the default auto order configuration from'
             }
         )
 
