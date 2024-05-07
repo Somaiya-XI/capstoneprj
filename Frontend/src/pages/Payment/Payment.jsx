@@ -29,7 +29,7 @@ import { IoBagCheckOutline } from "react-icons/io5";
 import Shipment from "../Cart/Shipment";
 import { Divider } from "antd";
 import CartItem from "../Cart/CartItem";
-import { API } from "@/backend";
+import { API, imgURL } from "@/backend";
 
 
 
@@ -253,7 +253,7 @@ const ProductDisplay = () => {
                           className="max-w-[57px] "
                           height={200}
                           shadow="md"
-                          src={`http://localhost:8000${p.image}`}
+                          src={`${imgURL}${p.image}`}
                           width={100}
                         />
                         

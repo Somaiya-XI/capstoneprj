@@ -1,4 +1,4 @@
-import {API} from '../../backend';
+import {API, imgURL} from '../../backend';
 import {Link} from 'react-router-dom';
 import './CartItem.css';
 import {useEffect, useState} from 'react';
@@ -79,7 +79,7 @@ const CartItem = ({image, id, product_name, unit_price, subtotal, quantity, min_
       <div className='card flex justify-content-center'></div>
       <ul className='item-flex-container'>
         <li className='img-cont'>
-          <div className='image-container'>{image && <img src={`${API}${image}`} alt={product_name} />}</div>
+          <div className='image-container'>{image && <img src={`${imgURL}${image}`} alt={product_name} />}</div>
         </li>
         <li className='product-name'>
           <h4>

@@ -16,7 +16,7 @@ const OrderCreated = () => {
 
     const OrderSummary = async () => {
         try {
-            const response = await axios.get(`${API}/order/d5aaf539-6860-4a2e-a68b-384cdd7ee40d/`, {
+            const response = await axios.get(`${API}order/d5aaf539-6860-4a2e-a68b-384cdd7ee40d/`, {
                 withCredentials: true,
             });
             console.log("Fetched data:", response.data);
