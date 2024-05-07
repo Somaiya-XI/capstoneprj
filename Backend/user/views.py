@@ -64,7 +64,6 @@ def login_view(request):
         if not user.is_active:
             return JsonResponse({'error': 'your account has not been activated'}, status=400)
     except KeyError as e:
-        print('except entered!')
         password = SOCIAL_AUTH_PWD
 
     account = authenticate(email=email, password=password)
