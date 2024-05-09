@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from "react";
-import {FiTrash2} from "react-icons/fi";
-import {CiEdit} from "react-icons/ci";
-import {useNavigate, useParams} from "react-router-dom";
+import React, {useEffect, useState} from 'react';
+import {FiTrash2} from 'react-icons/fi';
+import {CiEdit} from 'react-icons/ci';
+import {useNavigate, useParams} from 'react-router-dom';
 import {
   Modal,
   ModalContent,
@@ -22,43 +22,43 @@ import {
   TableRow,
   TableCell,
   Tooltip,
-} from "@nextui-org/react";
-import {Card, Popconfirm, TimePicker} from "antd";
-import {useUserContext, useCsrfContext} from "../../../../Contexts";
-import { EditIcon, DeleteIcon } from '@/Components/Icons';
-import axios from "axios";
-import {API} from "../../../../backend";
-import {toast} from "sonner";
+} from '@nextui-org/react';
+import {Card, Popconfirm, TimePicker} from 'antd';
+import {useUserContext, useCsrfContext} from '../../../../Contexts';
+import {EditIcon, DeleteIcon} from '@/Components/Icons';
+import axios from 'axios';
+import {API} from '../../../../backend';
+import {toast} from 'sonner';
 
 const ScheduleCard = () => {
   const [dataForm, setFormData] = useState({});
   const [selectedKey, setSelectedKey] = useState(null);
 
-  const [editedData, setEditedData] = useState({day: "", time: ""});
+  const [editedData, setEditedData] = useState({day: '', time: ''});
   const {isOpen, onOpen, onClose} = useDisclosure();
 
   const {user} = useUserContext();
   const {csrf} = useCsrfContext();
   const {id} = useParams();
   const days = [
-    {value: "sun", label: "Sunday"},
-    {value: "mon", label: "Monday"},
-    {value: "tue", label: "Tuesday"},
-    {value: "wed", label: "Wednesday"},
-    {value: "thu", label: "Thursday"},
-    {value: "fri", label: "Friday"},
-    {value: "sat", label: "Saturday"},
+    {value: 'sun', label: 'Sunday'},
+    {value: 'mon', label: 'Monday'},
+    {value: 'tue', label: 'Tuesday'},
+    {value: 'wed', label: 'Wednesday'},
+    {value: 'thu', label: 'Thursday'},
+    {value: 'fri', label: 'Friday'},
+    {value: 'sat', label: 'Saturday'},
   ];
 
   const getFullWeekdayName = (abbreviation) => {
     const days = {
-      sun: "Sunday",
-      mon: "Monday",
-      tue: "Tuesday",
-      wed: "Wednesday",
-      thu: "Thursday",
-      fri: "Friday",
-      sat: "Saturday",
+      sun: 'Sunday',
+      mon: 'Monday',
+      tue: 'Tuesday',
+      wed: 'Wednesday',
+      thu: 'Thursday',
+      fri: 'Friday',
+      sat: 'Saturday',
     };
     return days[abbreviation.toLowerCase()] || abbreviation;
   };
@@ -68,7 +68,7 @@ const ScheduleCard = () => {
       const response = await axios.get(`${API}schedule/view/${user.id}`);
       setFormData(response.data);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error('Error fetching data:', error);
     }
   };
   useEffect(() => {
@@ -84,7 +84,7 @@ const ScheduleCard = () => {
       .delete(`${API}schedule/delete/`, {
         data: {id: key},
         headers: {
-          "X-CSRFToken": csrf,
+          'X-CSRFToken': csrf,
         },
         withCredentials: true,
       })
@@ -93,7 +93,7 @@ const ScheduleCard = () => {
         toast.success(response.data.message);
       })
       .catch((error) => {
-        console.error("Error deleting product:", error);
+        console.error('Error deleting product:', error);
       });
     fetchSchedules();
   };
@@ -110,7 +110,7 @@ const ScheduleCard = () => {
     try {
       const response = await axios.put(`${API}schedule/update/`, editedData, {
         headers: {
-          "X-CSRFToken": csrf,
+          'X-CSRFToken': csrf,
         },
         withCredentials: true,
       });
@@ -118,9 +118,9 @@ const ScheduleCard = () => {
       toast.success(response.data.message);
       onClose();
     } catch (error) {
-      console.log("Error!!:", error.message);
+      console.log('Error!!:', error.message);
       if (error.response) {
-        console.log("Server Response Data:", error.response.data);
+        console.log('Server Response Data:', error.response.data);
       }
     }
     setEditedData({day: editedData.day, ...editedData});
@@ -129,7 +129,7 @@ const ScheduleCard = () => {
 
   return (
     <>
-      <Table aria-label="Schedule table">
+      <Table aria-label='Schedule table'>
         <TableHeader>
           <TableColumn>Day</TableColumn>
           <TableColumn>Time</TableColumn>
@@ -142,8 +142,8 @@ const ScheduleCard = () => {
                 <TableCell>{getFullWeekdayName(dataForm[key].day)}</TableCell>
                 <TableCell>{dataForm[key].time}</TableCell>
                 <TableCell>
-                  <div className="relative flex items-center gap-3">
-                  <span
+                  <div className='relative flex items-center gap-3'>
+                    <span
                       className='text-lg text-default-400 cursor-pointer active:opacity-50'
                       onClick={() => handleEdit(key)}
                     >
@@ -151,10 +151,10 @@ const ScheduleCard = () => {
                     </span>
 
                     <Popconfirm
-                      title="Sure to delete?"
+                      title='Sure to delete?'
                       onConfirm={() => onDeleteProduct(dataForm[key].id, selectedKey)}
                     >
-                      <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                      <span className='text-lg text-danger cursor-pointer active:opacity-50'>
                         <DeleteIcon />
                       </span>
                     </Popconfirm>
@@ -166,19 +166,19 @@ const ScheduleCard = () => {
             ))}
         </TableBody>
       </Table>
-      <Modal isOpen={isOpen} onOpenChange={onClose} placement="top-center">
+      <Modal isOpen={isOpen} onOpenChange={onClose} placement='top-center'>
         <ModalContent>
           <>
-            <ModalHeader className="flex flex-col gap-1">Edit Schedule</ModalHeader>
+            <ModalHeader className='flex flex-col gap-1'>Edit Schedule</ModalHeader>
             <ModalBody>
               <ModalBody>
                 <Select
                   required
                   items={days}
                   autoFocus
-                  label="Day"
-                  placeholder="Select day"
-                  variant="bordered"
+                  label='Day'
+                  placeholder='Select day'
+                  variant='bordered'
                   value={editedData.day}
                   onChange={(selectedDay) =>
                     setEditedData({
@@ -192,10 +192,10 @@ const ScheduleCard = () => {
 
                 <Input
                   required
-                  label="Time"
-                  placeholder="Enter your time"
-                  type="time"
-                  variant="bordered"
+                  label='Time'
+                  placeholder='Enter your time'
+                  type='time'
+                  variant='bordered'
                   value={editedData.time}
                   onChange={(e) => setEditedData({...editedData, time: e.target.value})}
                 />
@@ -203,10 +203,10 @@ const ScheduleCard = () => {
             </ModalBody>
 
             <ModalFooter>
-              <Button color="danger" variant="flat" onClick={onClose}>
+              <Button color='danger' variant='flat' onClick={onClose}>
                 Cancel
               </Button>
-              <Button color="primary" onClick={handleSubmit}>
+              <Button color='primary' onClick={handleSubmit}>
                 Submit
               </Button>
             </ModalFooter>

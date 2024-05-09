@@ -31,6 +31,7 @@ def manage_social_user(provider, email, company_name):
     import requests
 
     headers = {'Content-Type': 'application/json'}
+
     user = User.objects.filter(email=email)
 
     if user.exists():
@@ -53,7 +54,7 @@ def manage_social_user(provider, email, company_name):
         "password": SOCIAL_AUTH_PWD,
     }
     payload = json.dumps(new_user)
-    response = requests.request("POST", f'{BASE_URL}/user/', headers=headers, data=payload)
+    response = requests.request("POST", f'{url}user/', headers=headers, data=payload)
     user = response.json()
     log_social_user_in(email, SOCIAL_AUTH_PWD)
     return {'email': email}
