@@ -13,7 +13,7 @@ import SupplierLayout from "../Layout/SupplierLayout";
 import { useNavigate } from 'react-router-dom';
 import { useDisclosure } from "@nextui-org/react";
 import { fileToBase64 } from "@/Helpers";
-import { SearchIcon,EyeIcon } from '../../../../Components/Icons';
+import { SearchIcon,EyeIcon } from '@/Components/Icons';
 
 export default function Products() {
 

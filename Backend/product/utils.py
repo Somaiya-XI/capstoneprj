@@ -1,5 +1,6 @@
 import json
 import re
+import os
 import requests
 from datetime import date, datetime
 
@@ -18,7 +19,7 @@ from .signals import product_removed, date_updated
 
 from celery import shared_task
 from django.db.models import F
-from WiseR.consumers import NotificationManager as notify
+from WiseR.consumers import NotificationManager as notify, push_updates
 
 
 class SupermarketProductManager:
@@ -30,30 +31,37 @@ class SupermarketProductManager:
         try:
             data = json.loads(payload)
             p = SupermarketProductManager()
+            # validate the recieved data format:
             if isinstance(data, list) and len(data) > 0:
+                # extract the required data:
                 for obj in data:
                     device_id = obj.get('device_id')
                     tag_id = obj.get('tag_id')
                     expiry_date = obj.get('expiry_date')
+
+                    # find the retailer, product, bulk from extracted data:
                     try:
-                        device = HardwareSet.objects.get(id=device_id)
+                        device = HardwareSet.objects.get(gateway_id=device_id)
                         product = SupermarketProduct.objects.get(tag_id=tag_id, retailer=device.retailer)
                         bulk = ProductBulk.objects.filter(product=product, expiry_date=expiry_date).first()
-                        print('bulk is: ', bulk)
+
+                        # add or remove from product quantity based on recieved action:
                         if topic.lower().find('add') != -1:
                             self.add_to_shelf(product, bulk)
-                            print('added')
                         if topic.lower().find('remove') != -1:
                             self.remove_from_shelf(product, bulk)
-                            print('removed')
+
+                        # create new bulk if no bulk with recieved exp-date:
                         if not bulk:
                             self.create_new_bulk(product, expiry_date)
-                            print('new bulk for: ', bulk)
+
                     except HardwareSet.DoesNotExist:
                         return 'This device is not registered'
+
+                    # create new product if no product with recieved tag_id exists:
                     except SupermarketProduct.DoesNotExist:
                         product = p.create_new_product(device.retailer, tag_id, expiry_date)
-                        print('created')
+
         except json.JSONDecodeError as e:
             return "Error decoding JSON payload:", e
 
@@ -147,8 +155,7 @@ class SupermarketProductManager:
 
     ## request to limited access database if not found on 1st##
     def get_details_API(self, tag_id):
-        # APIKEY = os.getenv("LOOKUP_KEY")
-        APIKEY = "333"
+        APIKEY = os.getenv("LOOKUP_KEY")
         url = f"https://api.barcodelookup.com/v3/products?barcode={tag_id}&key={APIKEY}"
 
         response = requests.get(url)
@@ -190,13 +197,14 @@ class SupermarketProductManager:
         product.product_name = name
 
         product.save()
-
+        push_updates(None)  ##  only for simulation  ##
         self.create_new_bulk(product, exp_date)
         return product
 
     def add_to_shelf(self, product, bulk):
         product.quantity = product.quantity + 1
         product.save()
+        push_updates(None)  ##  only for simulation  ##
         if bulk:
             self.add_to_bulk(bulk)
 
@@ -206,6 +214,7 @@ class SupermarketProductManager:
         current_q = product.quantity
         product.quantity = product.quantity - 1
         product.save()
+        push_updates(None)  ##  only for simulation  ##
         if bulk:
             self.remove_from_bulk(bulk)
         product_removed.send(sender=self.__class__, product=product, quantity=current_q)
@@ -248,13 +257,14 @@ class SupermarketProductManager:
         old_quant = kwargs['quantity']
         quant = product.quantity
         if old_quant != quant:
-            quantity_order_config_manager(product=product)
-            quantity_notification_config_manager(product=product)
+            q_ord_result = quantity_order_config_manager(product=product)
+            q_notify_result = quantity_notification_config_manager(product=product)
+            return q_ord_result, q_notify_result
 
     @staticmethod
     @receiver(date_updated)
     def track_expiry_date(sender, **kwargs):
-        bulks = kwargs['bulks']
+        bulks = ProductBulk.objects.all()
         for bulk in bulks:
             try:
                 config = NotificationConfig.objects.get(retailer=bulk.product.retailer)
@@ -270,7 +280,4 @@ class SupermarketProductManager:
     @shared_task
     def reduce_days_to_expiry(self):
         ProductBulk.objects.filter(days_to_expiry__gt=0).update(days_to_expiry=F('days_to_expiry') - 1)
-
-        bulks = ProductBulk.objects.all()
-
-        date_updated.send(sender=self.reduce_days_to_expiry, bulks=bulks)
+        date_updated.send(sender=self.reduce_days_to_expiry)

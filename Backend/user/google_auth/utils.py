@@ -27,18 +27,14 @@ def log_social_user_in(email, password):
     return user
 
 
-def manage_social_user(
-    provider,
-    email,
-    company_name,
-):
+def manage_social_user(provider, email, company_name):
     import requests
 
     headers = {'Content-Type': 'application/json'}
-
     user = User.objects.filter(email=email)
+
     if user.exists():
-        user = user[0]
+        user = user.first()
         if provider == user.auth_provider:
             log_social_user_in(email, SOCIAL_AUTH_PWD)
             if not user.is_active:
@@ -48,7 +44,7 @@ def manage_social_user(
             raise AuthenticationFailed(
                 detail=f"this email isn't authenticated using {provider} please try another way!"
             )
-    # CREATE THE NEW USER USING THE SERIALIZER:
+    # CREATE THE NEW USER USING THE USER SERIALIZER:
     new_user = {
         'email': email,
         'company_name': company_name,

@@ -6,12 +6,23 @@ import {Card, CardBody, Button, Tabs, Tab} from '@nextui-org/react';
 import {Link} from 'react-router-dom';
 import {useEffect, useState} from 'react';
 import axios from 'axios';
-import {API, ESP_URL} from '../../backend';
+import {API, ESP_URL, WS_API} from '../../backend';
 import RetTable from './SimulationTable';
 
 const HardwareSimulation = () => {
   const [data, setData] = useState();
   const [load, setLoad] = useState(0);
+
+  useEffect(() => {
+    const socket = new WebSocket(`${WS_API}/ws/updates/`);
+
+    socket.addEventListener('message', (event) => {
+      const data = JSON.parse(event.data);
+      const msg = data.message;
+      console.log('Message from server ', msg);
+      setLoad((l) => l + 1);
+    });
+  }, []);
 
   const Default = (
     <>
@@ -72,9 +83,6 @@ const HardwareSimulation = () => {
       .get(url)
       .then((response) => {
         console.log('Response:', response.data);
-        setTimeout(() => {
-          setLoad((l) => l + 1);
-        }, 2500);
       })
       .catch((error) => {
         console.error('Error:', error);
