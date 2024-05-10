@@ -22,45 +22,40 @@ export default function Products() {
   const [categories, setCategories] = useState([])
   const [filterValue, setFilterValue] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const {ax} = useCsrfContext();
+  const { ax } = useCsrfContext();
   const hasSearchFilter = Boolean(filterValue);
   const { user } = useUserContext();
   const [img, setImg] = useState();
   const { csrf } = useCsrfContext();
   const [dataSource, setDataSource] = useState([{
-    product_img: '',
-    product_id: '',
-    product_name: '',
-    brand: '',
-    description: '',
-    category: '',
-    price: '',
-    new_price: '',
-    discount_percentage: '',
-    quantity: '',
-    min_order_quantity: '',
-    tag_id: '',
-    key: ''
+    order_id: '',
+    retailer: '',
+    order_date: '',
+    total_price: '',
+    shipping_address: '',
+
   }]);
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${API}product/get-user-products/${user.id}/`, {
+      const response = await axios.get(`${API}order/view-supplier-orders/`, {
         withCredentials: true,
       });
       console.log("Check it:", csrf);
-
-      const productsWithKeys = response.data.map((product) => ({
-        ...product,
-        key: product.product_id,
+  
+      const productsWithKeys = response.data.map((order) => ({
+        ...order,
+        key: order.order_id // Or some unique identifier generation logic
       }));
+      
       setDataSource(productsWithKeys);
-
+  
       console.log(productsWithKeys);
     } catch (error) {
       console.error(error.data);
     }
   };
+  
 
   useEffect(() => {
     fetchProducts();
@@ -145,7 +140,7 @@ export default function Products() {
 
       console.log("Product deleted successfully:", id);
 
-      const updatedData = dataSource.filter(item => item.key !== id);
+      // const updatedData = dataSource.filter(item => item.key !== id);
       setDataSource(updatedData);
     } catch (error) {
       if (error.response) {
@@ -221,13 +216,13 @@ export default function Products() {
         setImg(file64);
       }
     } else {
-      const dataIndex = dataSource.findIndex(item => item.key === name);
+      // const dataIndex = dataSource.findIndex(item => item.key === name);
       const updatedDataSource = [...dataSource];
       updatedDataSource[dataIndex] = e.target.value;
       setDataSource(updatedDataSource);
     }
   };
-  
+
 
   const handleSubmit = async () => {
     try {
@@ -245,9 +240,9 @@ export default function Products() {
       console.log(err.response.data);
     }
   };
-  
-  
-  
+
+
+
 
   const topContent = useMemo(() => {
     return (
@@ -329,14 +324,14 @@ export default function Products() {
                 isRequired
               />
               <Input
-                  type='file'
-                  label='Product Image'
-                  placeholder='   '
-                  className='w-full mb-3'
-                  labelPlacement='inside'
-                  value={dataSource.product_img}
-                  onChange={handleChange('product_img')}
-                />
+                type='file'
+                label='Product Image'
+                placeholder='   '
+                className='w-full mb-3'
+                labelPlacement='inside'
+                value={dataSource.product_img}
+                onChange={handleChange('product_img')}
+              />
               <Input
                 label='description'
                 className='w-full'

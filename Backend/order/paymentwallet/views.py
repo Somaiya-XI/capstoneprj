@@ -83,21 +83,19 @@ def charge_wallet(request):
     return JsonResponse({'payment_wallet': payment_wallet[0].balance}, status=200)
 
 
-# @csrf_protect
-@csrf_exempt
+@csrf_protect
+# @csrf_exempt
 @api_view(['PUT'])
 @permission_classes([AllowAny])
 def pay_by_wallet(request):
 
-    # access the authenticated user
-    # if request.user.is_anonymous:
-    #     return JsonResponse(
-    #         {'message': 'You are not authenticated, log in then try again'}
-    #     )
+    
+    if request.user.is_anonymous:
+        return JsonResponse(
+            {'message': 'You are not authenticated, log in then try again'}
+        )
 
-    # user_id = request.user.id
-
-    user_id = 17
+    user_id = request.user.id
 
     # get the user object
     try:
@@ -146,13 +144,14 @@ def pay_by_wallet(request):
 
     # create new order
     payment_method = 'wallet'
-    order_id = make_order(retailer.pk, order_type, payment_method, shipping_address)
+    order_id = make_order(retailer.pk, order_type, payment_method, shipping_address, payment_session_id=None)
 
     return JsonResponse(
         {
             'payment_wallet': payment_wallet[0].balance,
             'success': True,
             'order_id': order_id,
+            # Once the payment is done, this Json will be returned to this I will create an endpoint to display this object summary
         }
     )
 

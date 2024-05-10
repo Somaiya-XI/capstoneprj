@@ -6,7 +6,7 @@ import axios from "axios";
 import CustomErrorAlert from "@/Components/FormComponents/CustomAlerts";
 import { CustomErrorToast } from "@/Components";
 
-import { useCartContext, useUserContext } from "../../Contexts";
+import { useCartContext, useCsrfContext, useUserContext } from "../../Contexts";
 import { CustomSuccessToast } from "@/Components/FormComponents/CustomAlerts";
 import { toast } from "sonner";
 import {
@@ -33,6 +33,7 @@ import { API, imgURL } from "@/backend";
 
 
 
+
 const ProductDisplay = () => {
   const [address, setAddress] = useState([]);
   const navigate = useNavigate();
@@ -48,6 +49,7 @@ const ProductDisplay = () => {
 
 
   const user_id = user.id;
+  const {ax} = useCsrfContext();
   const loadWalletBalance = async () => {
     const { data } = await axios.get(
       `${API}payment/view-wallet-balance/`,
@@ -57,12 +59,69 @@ const ProductDisplay = () => {
     setBalance(data.payment_wallet);
   };
 
+
+  const PayByCreditCard = async () => {
+    try {
+      const requestData = {
+        user_id: user.id,
+        shipping_address: address,
+        order_type: "BASIC"
+      };
+  
+      const form = document.createElement('form');
+      form.setAttribute('method', 'POST');
+      form.setAttribute('action', `${import.meta.env.VITE_API_URL}order/create-checkout-session/`);
+  
+      // Add data as hidden input fields to the form
+      Object.keys(requestData).forEach(key => {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'hidden');
+        input.setAttribute('name', key);
+        input.setAttribute('value', requestData[key]);
+        form.appendChild(input);
+      });
+  
+      // Append the form to the document body and submit it
+      document.body.appendChild(form);
+      form.submit();
+    } catch (error) {
+      console.error("Error:", error);
+      // Handle error if necessary
+    }
+  };
+  
+  const PayByWallet = async () => {
+    try {
+      const requestData = {
+        shipping_address: address,
+        order_type: "BASIC"
+      };
+  
+      const { data } = await ax.put(
+        `${API}payment/pay-by-wallet/`,
+         requestData
+      );
+  
+      console.log("Response Data:", data);
+  
+      if (data.success === true) {
+        setBalance(data.payment_wallet);
+        toast.success("Payment successful");
+         
+      } else {
+        setError(data.error);
+        CustomErrorToast({ msg: 'Please recharge your wallet', duration: 1500 });
+      }
+    } catch (error) {
+      CustomErrorToast({ msg: 'Something went wrong! please try again', duration: 1500 });
+    }
+  };
   const PlaceOrder = () => {
     if (address.length === 0) {
       CustomErrorToast({ msg: 'Shipping Address must be added', duration: 1500 });
       return;
     }
-
+  
     const isValid = address.every(addr => {
       const valid = addr.state && addr.city && addr.district && addr.street;
       if (!valid) {
@@ -70,65 +129,20 @@ const ProductDisplay = () => {
       }
       return valid;
     });
-
+  
     if (isValid) {
-      if (selected) {
-        CustomSuccessToast({ msg: 'Redirecting .. ', duration: 3000 });
-        setTimeout(() => navigate('/order-created'), 2000);
+      if (selected === "credit-card") {
+        PayByCreditCard();
+      } else if (selected === "wiser-wallet") {
+        PayByWallet();
       } else {
         CustomErrorToast({ msg: 'Choose payment method!', duration: 3000 });
       }
     }
-
+  
     return isValid;
-
   };
-
-
-  const PayByWallet = async () => {
-    try {
-      const requestData = {
-        user_id: user.id,
-        shipping_address: address,
-        order_type: "BASIC"
-      };
-      console.log("Step 0 - Request Payload:", requestData);
-
-      const { data } = await axios.put(
-        `${import.meta.env.VITE_API_URL}payment/pay-by-wallet/`,
-        requestData
-      );
-
-      // Step 1: Log the received data
-      console.log("Step 1 - Response Data:", data);
-
-      // Step 2: Update success state
-      setSuccess(data.success);
-      console.log("Step 2 - Success State Updated:", data.success);
-
-      if (data.success === true) {
-        // Step 3: Update balance if payment was successful
-        setBalance(data.payment_wallet);
-        console.log("Step 3 - Balance Updated:", data.payment_wallet);
-
-        // Step 4: Display success toast
-        toast.success("Success");
-        console.log("Step 4 - Success Toast Displayed");
-
-        // Additional Step: Log the conducted amount
-        console.log("Conducted Amount:", data.conducted_amount);
-      } else {
-        // Step 5: Handle error if payment was unsuccessful
-        setError(data.error);
-        console.log("Step 5 - Error Set:", data.error);
-      }
-    } catch (error) {
-      // Step 6: Catch and log any errors that occur during the process
-      console.error("Error:", error);
-    }
-  };
-
-
+  
   const ChargeWallet = async () => {
     const { data } = await axios.put(
       `${import.meta.env.VITE_API_URL}payment/charge-wallet/`,
@@ -220,14 +234,14 @@ const ProductDisplay = () => {
                         />
                       </Card>
                       <div className="flex justify-center">
-                        <Button className='bg-[#023c07] text-default w-2/5' onClick={PayByWallet}>
+                        {/* <Button className='bg-[#023c07] text-default w-2/5' onClick={PayByWallet}>
                           Buy $
-                        </Button>
+                        </Button> */}
                         <Button className='bg-white border-1 border-[#243c5a]-100 border-[#023c07] text-[#243c5a] w-2/5 mx-2' onClick={ChargeWallet}>Charge +</Button>
                       </div>
                     </Card>
                   )}
-                  <Radio value="creadit-card" classNames={{
+                  <Radio value="credit-card" classNames={{
                     base: cn(
                       "inline-flex m-0 bg-content1 hover:bg-content2 items-center justify-between",
                       "flex-row-reverse max-w-[300px] cursor-pointer rounded-lg gap-4 p-4 border-1",
