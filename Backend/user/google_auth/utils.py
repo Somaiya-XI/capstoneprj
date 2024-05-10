@@ -7,6 +7,7 @@ import json
 import os
 
 SOCIAL_AUTH_PWD = os.getenv('SOCIAL_AUTH_PWD')
+BASE_URL = os.getenv('BASE_URL')
 
 
 class Google:
@@ -26,28 +27,16 @@ def log_social_user_in(email, password):
     return user
 
 
-def manage_social_user(
-    provider,
-    email,
-    company_name,
-):
+def manage_social_user(provider, email, company_name):
     import requests
 
-    url = "http://127.0.0.1:8000/"
     headers = {'Content-Type': 'application/json'}
 
-    login_data = {'email': email, 'password': SOCIAL_AUTH_PWD}
-
     user = User.objects.filter(email=email)
+
     if user.exists():
-        user = user[0]
+        user = user.first()
         if provider == user.auth_provider:
-            user_data = {
-                'id': user.id,
-                'email': user.email,
-                'company_name': user.company_name,
-                'role': user.role,
-            }
             log_social_user_in(email, SOCIAL_AUTH_PWD)
             if not user.is_active:
                 return {'error': 'your account has not been activated'}
@@ -56,7 +45,7 @@ def manage_social_user(
             raise AuthenticationFailed(
                 detail=f"this email isn't authenticated using {provider} please try another way!"
             )
-    # CREATE THE NEW USER USING THE SERIALIZER:
+    # CREATE THE NEW USER USING THE USER SERIALIZER:
     new_user = {
         'email': email,
         'company_name': company_name,
@@ -67,11 +56,5 @@ def manage_social_user(
     payload = json.dumps(new_user)
     response = requests.request("POST", f'{url}user/', headers=headers, data=payload)
     user = response.json()
-    user_data = {
-        'id': user.get('id'),
-        'email': user.get('email'),
-        'company_name': user.get('company_name'),
-        'role': user.get('role'),
-    }
     log_social_user_in(email, SOCIAL_AUTH_PWD)
     return {'email': email}

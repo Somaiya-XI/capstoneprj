@@ -1,51 +1,76 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { Link } from "react-router-dom";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Avatar, Button, Modal, ModalContent, ModalHeader, ModalFooter, ModalBody, Select, SelectItem } from "@nextui-org/react";
-import { SearchIcon, EditIcon, DeleteIcon, EyeIcon } from "@/Components";
-import { Popconfirm } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons"; // Assuming these are icons from Ant Design
-import { useUserContext } from "@/Contexts";
-import { useCsrfContext } from "@/Contexts";
-import { API } from "@/backend";
-import { useParams } from "react-router-dom";
-import axios from "axios";
-import { imgURL } from "@/backend";
-import SupplierLayout from "../Layout/SupplierLayout";
-import { useNavigate } from 'react-router-dom';
-import { useDisclosure } from "@nextui-org/react";
-import { fileToBase64 } from "@/Helpers";
+import React, {useState, useEffect, useMemo, useCallback} from 'react';
+import {Link} from 'react-router-dom';
+import {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Input,
+  Avatar,
+  Button,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  Select,
+  SelectItem,
+} from '@nextui-org/react';
+import {Popconfirm} from 'antd';
+import {EditOutlined, DeleteOutlined} from '@ant-design/icons'; // Assuming these are icons from Ant Design
+import {useUserContext} from '@/Contexts';
+import {useCsrfContext} from '@/Contexts';
+import {API} from '@/backend';
+import {useParams} from 'react-router-dom';
+import axios from 'axios';
+import {imgURL} from '@/backend';
+import SupplierLayout from '../Layout/SupplierLayout';
+import {useNavigate} from 'react-router-dom';
+import {useDisclosure} from '@nextui-org/react';
+import {fileToBase64} from '@/Helpers';
+import {SearchIcon, EyeIcon} from '@/Components/Icons';
 
 export default function Products() {
-
   const navigate = useNavigate();
-  const { id } = useParams();
-  const [categories, setCategories] = useState([])
-  const [filterValue, setFilterValue] = useState("");
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const { ax } = useCsrfContext();
+  const {id} = useParams();
+  const [categories, setCategories] = useState([]);
+  const [filterValue, setFilterValue] = useState('');
+  const {isOpen, onOpen, onClose} = useDisclosure();
+  const {ax} = useCsrfContext();
   const hasSearchFilter = Boolean(filterValue);
-  const { user } = useUserContext();
+  const {user} = useUserContext();
   const [img, setImg] = useState();
-  const { csrf } = useCsrfContext();
-  const [dataSource, setDataSource] = useState([{
-    order_id: '',
-    retailer: '',
-    order_date: '',
-    total_price: '',
-    shipping_address: '',
-
-  }]);
+  const {csrf} = useCsrfContext();
+  const [dataSource, setDataSource] = useState([
+    {
+      product_img: '',
+      product_id: '',
+      product_name: '',
+      brand: '',
+      description: '',
+      category: '',
+      price: '',
+      new_price: '',
+      discount_percentage: '',
+      quantity: '',
+      min_order_quantity: '',
+      tag_id: '',
+      key: '',
+    },
+  ]);
 
   const fetchProducts = async () => {
     try {
       const response = await axios.get(`${API}order/view-supplier-orders/`, {
         withCredentials: true,
       });
-      console.log("Check it:", csrf);
-  
-      const productsWithKeys = response.data.map((order) => ({
-        ...order,
-        key: order.order_id // Or some unique identifier generation logic
+      console.log('Check it:', csrf);
+
+      const productsWithKeys = response.data.map((product) => ({
+        ...product,
+        key: product.product_id,
       }));
       
       setDataSource(productsWithKeys);
@@ -62,15 +87,16 @@ export default function Products() {
   }, []);
 
   const fetchCategories = () => {
-    axios.get(`${API}category/get`)
-      .then(response => {
-        console.log(response.data)
-        setCategories(response.data)
+    axios
+      .get(`${API}category/get`)
+      .then((response) => {
+        console.log(response.data);
+        setCategories(response.data);
       })
-      .catch(error => {
-        console.log(error)
-      })
-  }
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   useEffect(() => {
     fetchProducts();
@@ -121,26 +147,24 @@ export default function Products() {
     // },
     {
       title: 'Orderd Items',
-      dataIndex: 'actions'
+      dataIndex: 'actions',
     },
-
   ];
   const onDeleteProduct = async (id) => {
     try {
-      console.log("Attempting to delete product with ID:", id);
-
+      console.log('Attempting to delete product with ID:', id);
 
       await axios.delete(`${API}product/catalog/update/`, {
-        data: { id: id },
+        data: {id: id},
         headers: {
-          "X-CSRFToken": csrf,
+          'X-CSRFToken': csrf,
         },
         withCredentials: true,
       });
 
-      console.log("Product deleted successfully:", id);
+      console.log('Product deleted successfully:', id);
 
-      // const updatedData = dataSource.filter(item => item.key !== id);
+      const updatedData = dataSource.filter((item) => item.key !== id);
       setDataSource(updatedData);
     } catch (error) {
       if (error.response) {
@@ -163,7 +187,7 @@ export default function Products() {
             name={product['product_name']}
             showFallback
             src={`${imgURL}${cellValue}`}
-            classNames={{ img: cellValue ? 'opacity-1' : 'opacity-0' }}
+            classNames={{img: cellValue ? 'opacity-1' : 'opacity-0'}}
           ></Avatar>
         );
       case 'actions':
@@ -201,10 +225,9 @@ export default function Products() {
     if (value) {
       setFilterValue(value);
     } else {
-      setFilterValue("");
+      setFilterValue('');
     }
   }, []);
-
 
   const handleChange = (name) => async (e) => {
     e.preventDefault();
@@ -216,24 +239,20 @@ export default function Products() {
         setImg(file64);
       }
     } else {
-      // const dataIndex = dataSource.findIndex(item => item.key === name);
+      const dataIndex = dataSource.findIndex((item) => item.key === name);
       const updatedDataSource = [...dataSource];
       updatedDataSource[dataIndex] = e.target.value;
       setDataSource(updatedDataSource);
     }
   };
 
-
   const handleSubmit = async () => {
     try {
-      const response = await ax.post(
-        `${API}product/catalog/create/`,
-        dataSource
-      );
+      const response = await ax.post(`${API}product/catalog/create/`, dataSource);
 
       console.log(response.data);
-      alert("Data Sent");
-      navigate("/supplier-dashboard/products");
+      alert('Data Sent');
+      navigate('/supplier-dashboard/products');
     } catch (err) {
       toast.error('Error occurred while submitting data. Please try again.');
       // alert("Error occurred while submitting data. Please try again.");
@@ -241,17 +260,14 @@ export default function Products() {
     }
   };
 
-
-
-
   const topContent = useMemo(() => {
     return (
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between gap-3 items-end">
+      <div className='flex flex-col gap-4'>
+        <div className='flex justify-between gap-3 items-end'>
           <Input
             isClearable
-            className="w-full sm:max-w-[30%]"
-            placeholder="Search by product name or id..."
+            className='w-full sm:max-w-[30%]'
+            placeholder='Search by product name or id...'
             startContent={<SearchIcon />}
             value={filterValue}
             onValueChange={onSearchChange}
@@ -269,13 +285,15 @@ export default function Products() {
       <SupplierLayout>
         <div className='mx-4'>
           <div className='retailer-dashboard-cont'>
-            <h3 className='d-block font-bold' aria-label="Product-Details">Incoming Orders</h3>
+            <h3 className='d-block font-bold' aria-label='Product-Details'>
+              Incoming Orders
+            </h3>
           </div>
           <div className='mt-4'>
             <Table topContent={topContent}>
               <TableHeader columns={columns}>
                 {(column) => (
-                  <TableColumn key={column.dataIndex} align={column.dataIndex === "product_name" ? "start" : "center"}>
+                  <TableColumn key={column.dataIndex} align={column.dataIndex === 'product_name' ? 'start' : 'center'}>
                     {column.title}
                   </TableColumn>
                 )}
@@ -290,14 +308,11 @@ export default function Products() {
             </Table>
           </div>
         </div>
-
       </SupplierLayout>
-      <Modal isOpen={isOpen} onOpenChange={onClose} placement="top-center">
+      <Modal isOpen={isOpen} onOpenChange={onClose} placement='top-center'>
         <ModalContent>
           <>
-            <ModalHeader className="flex flex-col gap-1">
-              Add New Product
-            </ModalHeader>
+            <ModalHeader className='flex flex-col gap-1'>Add New Product</ModalHeader>
             <ModalBody>
               <Input
                 label='Tag ID'
@@ -355,11 +370,7 @@ export default function Products() {
                   </div>
                 }
               />
-              <Select
-                label="Select Category"
-                className="bg-default-100"
-                isRequired
-              >
+              <Select label='Select Category' className='bg-default-100' isRequired>
                 {categories.map((categor) => (
                   <SelectItem key={categor} value={categor}>
                     {categor}
@@ -391,14 +402,12 @@ export default function Products() {
                 onChange={handleChange('min_order_quantity')}
                 isRequired
               />
-
-
             </ModalBody>
             <ModalFooter>
-              <Button color="danger" variant="flat" onClick={onClose}>
+              <Button color='danger' variant='flat' onClick={onClose}>
                 Cancel
               </Button>
-              <Button color="primary" onClick={handleSubmit}>
+              <Button color='primary' onClick={handleSubmit}>
                 Submit
               </Button>
             </ModalFooter>
@@ -407,7 +416,4 @@ export default function Products() {
       </Modal>
     </>
   );
-
 }
-
-

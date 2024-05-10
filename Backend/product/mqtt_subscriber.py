@@ -5,9 +5,6 @@ import os
 import sys
 from .utils import SupermarketProductManager
 
-### THIS FILE WILL INCLUDE BACKGROUND TASKS >> CELERY WORKERS && REGULAR PYTHON THREADS ###
-
-
 manager = SupermarketProductManager()
 
 
@@ -39,15 +36,14 @@ class MqttTasks:
 
     def client_subscribe(self, client):
         for topic in self.mqtt_topics:
-            client.subscribe(topic, qos=1)
+            client.subscribe(topic, qos=2)
 
     # whenever a message arrives, this method is executed
     def on_message(self, client, userdata, message):
         topic = message.topic
         payload = message.payload.decode("utf-8")
-        print("Received message:", payload, 'from:', topic)
+        # print("Received message:", payload, 'from:', topic)
         state = manager.products_reciever(payload, topic)
-        print(state)
 
     # connect to the MQTT broker, subscribe to the topic, and wait for any message
     def mqtt_subscribe(self):

@@ -3,7 +3,7 @@ from order.cart.models import Cart, CartItem
 
 from celery import shared_task
 import json
-
+import re
 from .models import AutoOrderConfig, NotificationConfig
 from .serializers import AutoOrderConfigSerializer, NotificationConfigSerializer
 from product.models import SupermarketProduct
@@ -11,12 +11,21 @@ from product.serializers import SupermarketProductSerializer
 from WiseR.consumers import NotificationManager as notify
 
 
+def beautify_product_name(product_name):
+    match = re.search(r'\b\d', product_name)
+    if match:
+        index = match.start()
+        return product_name[:index].strip()
+    else:
+        return product_name
+
+
 @shared_task
-def add_to_auto_order_list_task(config_data, product_data):
-    conf_data = json.loads(config_data)
+def add_to_auto_order_list_task(product_data):
+
     prod_data = json.loads(product_data)
 
-    config = AutoOrderConfig.objects.get(pk=conf_data['id'])
+    config = AutoOrderConfig.objects.get(supermarketproduct=prod_data['product_id'])
     product = SupermarketProduct.objects.get(pk=prod_data['product_id'])
 
     catalog_prods = ProductCatalog.objects.filter(tag_id=product.tag_id)
@@ -39,21 +48,18 @@ def quantity_order_config_manager(product, **kwargs):
     order_config = product.order_config
 
     if order_config and product.quantity <= order_config.qunt_reach_level:
-        serialized_order_config = AutoOrderConfigSerializer(instance=order_config)
         serialized_product = SupermarketProductSerializer(instance=product)
-        serialized_order_config = json.dumps(serialized_order_config.data)
         serialized_product = json.dumps(serialized_product.data)
-        add_to_auto_order_list_task.delay(serialized_order_config, serialized_product)
+        return add_to_auto_order_list_task.delay(serialized_product)
 
 
 def quantity_notification_config_manager(product, **kwargs):
     try:
         config = NotificationConfig.objects.get(retailer=product.retailer)
-        print('found config', config.pk)
-        if product.quantity <= config.low_quantity_threshold:
-            print('raeched threshold will Notify ', product.retailer.pk)
+        if product.quantity == config.low_quantity_threshold:
             notify.send_notification(
-                message=f'Product {product.product_name} quantity has reached or fallen below threshold level. Current quantity: {product.quantity}',
+                message=f'''{beautify_product_name(product.product_name)} has reached or 
+                fallen below quantity threshold''',
                 user_id=product.retailer.pk,
             )
     except NotificationConfig.DoesNotExist:

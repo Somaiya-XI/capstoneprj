@@ -248,7 +248,7 @@ USING PRE-DEPLOYED REDIS INSTANCES
 #         "CONFIG": {
 #             "hosts": [
 #                 {
-#                     "address": "redis://default:OMVVqGqxipkZNOKtbCJVdGvVBNUGiQWi@monorail.proxy.rlwy.net:54598",
+#                     "address": os.getenv('REDIS_URL'),
 #                 }
 #             ]
 #         },

@@ -1,9 +1,7 @@
-from channels.generic.websocket import WebsocketConsumer
+from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 import json
-from asgiref.sync import async_to_sync, sync_to_async
+from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from celery import shared_task
-from user.models import User
 
 
 class NotificationConsumer(WebsocketConsumer):
@@ -20,9 +18,11 @@ class NotificationConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_discard)(self.user_channel, self.channel_name)
 
     def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
-
+        try:
+            text_data_json = json.loads(text_data)
+            message = text_data_json["message"]
+        except Exception as e:
+            message = text_data
         async_to_sync(self.channel_layer.group_send)(
             self.user_channel, {"type": "notify_user", "message": message}
         )
@@ -39,3 +39,30 @@ class NotificationManager:
         user_channel = "user_%s" % str(user_id)
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(user_channel, {"type": "notify_user", "message": message})
+
+
+class SimulationConsumer(AsyncWebsocketConsumer):
+
+    async def connect(self):
+        await self.channel_layer.group_add('simulation', self.channel_name)
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard('simulation', self.channel_name)
+
+    async def receive(self, text_data):
+        await self.channel_layer.group_send(
+            "simulation",
+            {
+                "type": "notify_user",
+                "message": text_data + ', Success!',
+            },
+        )
+
+    async def update_user(self, event):
+        await self.send(text_data=json.dumps({'message': event['message']}))
+
+
+def push_updates(message):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)("simulation", {"type": 'update_user', "message": message})
