@@ -37,9 +37,9 @@ class NotificationConsumer(WebsocketConsumer):
             message = text_data
 
         # send back the message for validation
-        async_to_sync(self.channel_layer.group_send)(
-            self.user_channel, {"type": "notify_user", "message": message + ' ,sucess!'}
-        )
+        # async_to_sync(self.channel_layer.group_send)(
+        #     self.user_channel, {"type": "notify_user", "message": 'sucess!'}
+        # )
 
     def notify_user(self, event):
         message = event["message"]
@@ -68,13 +68,14 @@ class SimulationConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard('simulation', self.channel_name)
 
     async def receive(self, text_data):
-        await self.channel_layer.group_send(
-            "simulation",
-            {
-                "type": "notify_user",
-                "message": text_data + ', Success!',
-            },
-        )
+        # await self.channel_layer.group_send(
+        #     "simulation",
+        #     {
+        #         "type": "notify_user",
+        #         "message": text_data + ', Success!',
+        #     },
+        # )
+        pass
 
     async def update_user(self, event):
         await self.send(text_data=json.dumps({'message': event['message']}))

@@ -181,7 +181,7 @@ def view_catalog_products(request):
 
         product_data = {
             'product_id': product_serialized.data['product_id'],
-            'product_img': os.environ['BASE_URL'] + product_serialized.data['product_img'],
+            'product_img': os.environ['BASE_URL'] + str(product_serialized.data['product_img']),
             'product_name': product_serialized.data['product_name'],
             'category': product_serialized.data['category'],
             'brand': product_serialized.data['brand'],

@@ -6,8 +6,7 @@ from datetime import date, datetime
 
 from user.retailer.hardware_set.models import HardwareSet
 from .models import SupermarketProduct, ProductBulk
-from .serializers import SupermarketProductSerializer
-from configuration.serializers import AutoOrderConfigSerializer
+
 from bs4 import BeautifulSoup
 from django.dispatch import receiver
 from django.db.models.signals import pre_save
@@ -15,10 +14,9 @@ from django.db.models.signals import pre_save
 from configuration.models import NotificationConfig
 from configuration.utils_config import quantity_order_config_manager, quantity_notification_config_manager
 
-from .signals import product_removed, date_updated
+from .signals import date_updated, product_removed
 
-from celery import shared_task
-from django.db.models import F
+
 from WiseR.consumers import NotificationManager as notify, push_updates
 
 
@@ -178,7 +176,7 @@ class SupermarketProductManager:
             # extract product data [name, brand]
             eng_product_data, ara_product_data = self.get_product_details(tag_id)
 
-            # return error if data not found for given tag_id
+            # return error msg if data not found for given tag_id
             if not (eng_product_data and not ara_product_data) or 'error' in eng_product_data:
                 return {'error': 'Failed, It looks like you have to provide the product name'}
 
@@ -242,6 +240,7 @@ class SupermarketProductManager:
         bulk.bulk_qyt = bulk.bulk_qyt - 1
         bulk.save()
 
+    # bulk obj creation
     def create_new_bulk(self, product, exp):
         bulk = ProductBulk()
         bulk.product = product
@@ -252,13 +251,17 @@ class SupermarketProductManager:
     @staticmethod
     @receiver(pre_save, sender=ProductBulk)
     def calculate_days_to_exp(sender, instance, *args, **kwargs):
+        # validate and set expiry date
         if isinstance(instance.expiry_date, str):
             expiry_date = datetime.strptime(instance.expiry_date, '%Y-%m-%d').date()
         else:
             expiry_date = instance.expiry_date
 
+        # check if instance is newley created to calculate days to expiry
         if not instance.pk:
             instance.days_to_expiry = (expiry_date - date.today()).days
+
+        # check if instance expiry date is changed to re-calculate days to expiry
         if instance.pk:
             original_instance = sender.objects.get(pk=instance.pk)
             old_exp = original_instance.expiry_date
@@ -296,9 +299,3 @@ class SupermarketProductManager:
                     )
             except NotificationConfig.DoesNotExist:
                 return None
-
-    @staticmethod
-    @shared_task
-    def reduce_days_to_expiry(self):
-        ProductBulk.objects.filter(days_to_expiry__gt=0).update(days_to_expiry=F('days_to_expiry') - 1)
-        date_updated.send(sender=self.reduce_days_to_expiry)

@@ -222,11 +222,11 @@ def clear_cart(request):
 @api_view(['GET'])
 def view_smart_cart(request):
     try:
-        if request.user.is_anonymous:
-            return JsonResponse({'message': 'You must be logged in to get a cart'}, status=400)
+        # if request.user.is_anonymous:
+        #     return JsonResponse({'message': 'You must be logged in to get a cart'}, status=400)
 
         # access the user
-        user = request.user
+        user = 17
 
         # get user cart if it exists
         cart = Cart.objects.filter(user=user, type='SMART').first()
@@ -237,11 +237,7 @@ def view_smart_cart(request):
         # get cart items
         cart_items = CartItem.objects.filter(cart=cart)
 
-        response_data = {
-            'cart': cart.cart_id,
-            'products': [],
-            'total': cart.total,
-        }
+        response_data = []
 
         # add all cart items data
         for cart_item in cart_items:
@@ -255,8 +251,8 @@ def view_smart_cart(request):
                 'subtotal': cart_item.subtotal,
             }
 
-            response_data['products'].append(item_data)
-        return JsonResponse(response_data)
+            response_data.append(item_data)
+        return JsonResponse(response_data, safe=False)
     except Exception as e:
         return JsonResponse({'error': f'something went wrong, err: {e}'}, status=400)
 
