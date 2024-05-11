@@ -11,7 +11,6 @@ import {Link} from 'react-router-dom';
 import {ProfileSheet} from '@/Components';
 
 const Navbar = ({children}) => {
-  const options = ['Your Location', 'New york', 'albania'];
   const {user} = useUserContext();
   const {logUserOut, isAuthenticated} = useCsrfContext();
 

@@ -70,7 +70,7 @@ const Home = () => {
                 <div className='tab-pane fade active show'>
                   <div className='row'>
                     {products.map((product, index) =>
-                      product.discount_percentage !== '0.00' ? (
+                      product.discount_percentage !== '0.00' & product.product_name.includes("ee") ? (
                         <ProductCard
                           productID={product.product_id}
                           productImage={product.product_img}
