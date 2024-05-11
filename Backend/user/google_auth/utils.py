@@ -32,12 +32,19 @@ def manage_social_user(provider, email, company_name):
 
     headers = {'Content-Type': 'application/json'}
 
+    # check if the user email exists
     user = User.objects.filter(email=email)
 
     if user.exists():
         user = user.first()
+
+        # check if the user registered using th same auth provider he tries to log in with
         if provider == user.auth_provider:
+
+            # authenticate the user data
             log_social_user_in(email, SOCIAL_AUTH_PWD)
+
+            # check account activation status
             if not user.is_active:
                 return {'error': 'your account has not been activated'}
             return {'email': email}
@@ -45,7 +52,8 @@ def manage_social_user(provider, email, company_name):
             raise AuthenticationFailed(
                 detail=f"this email isn't authenticated using {provider} please try another way!"
             )
-    # CREATE THE NEW USER USING THE USER SERIALIZER:
+
+    # if the user not exists, register him as new user using the serializer
     new_user = {
         'email': email,
         'company_name': company_name,
@@ -54,7 +62,9 @@ def manage_social_user(provider, email, company_name):
         "password": SOCIAL_AUTH_PWD,
     }
     payload = json.dumps(new_user)
-    response = requests.request("POST", f'{url}user/', headers=headers, data=payload)
+    response = requests.request("POST", f'{BASE_URL}/user/', headers=headers, data=payload)
     user = response.json()
+
+    # authenticate the user data
     log_social_user_in(email, SOCIAL_AUTH_PWD)
     return {'email': email}

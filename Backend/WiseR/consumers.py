@@ -7,33 +7,49 @@ from channels.layers import get_channel_layer
 class NotificationConsumer(WebsocketConsumer):
 
     def connect(self):
+        # get the connected user id
         self.user_connected = self.scope["url_route"]["kwargs"]["user_id"]
+
+        # validate incoming id
+        if self.user_connected in ['null', 'undefined']:
+            self.close()
+            return
+
+        # create user channel based on id
         self.user_channel = "user_%s" % self.user_connected
-        print(self.user_channel)
+
+        # add user to his channel group
         async_to_sync(self.channel_layer.group_add)(self.user_channel, self.channel_name)
 
+        # accept connection
         self.accept()
 
     def disconnect(self, close_code):
-        async_to_sync(self.channel_layer.group_discard)(self.user_channel, self.channel_name)
+        if hasattr(self, 'user_channel'):
+            async_to_sync(self.channel_layer.group_discard)(self.user_channel, self.channel_name)
 
     def receive(self, text_data):
+        # access sent data based on format
         try:
             text_data_json = json.loads(text_data)
             message = text_data_json["message"]
         except Exception as e:
             message = text_data
+
+        # send back the message for validation
         async_to_sync(self.channel_layer.group_send)(
-            self.user_channel, {"type": "notify_user", "message": message}
+            self.user_channel, {"type": "notify_user", "message": message + ' ,sucess!'}
         )
 
     def notify_user(self, event):
         message = event["message"]
 
+        # send notification to the user
         self.send(text_data=json.dumps({"message": message}))
 
 
 class NotificationManager:
+    # A method that takes the user, message and calls the notify user function
     @staticmethod
     def send_notification(message, user_id):
         user_channel = "user_%s" % str(user_id)
@@ -42,6 +58,7 @@ class NotificationManager:
 
 
 class SimulationConsumer(AsyncWebsocketConsumer):
+    # A class to manage callbacks of the simulation
 
     async def connect(self):
         await self.channel_layer.group_add('simulation', self.channel_name)

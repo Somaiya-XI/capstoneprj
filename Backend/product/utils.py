@@ -172,11 +172,17 @@ class SupermarketProductManager:
     def create_new_product(self, retailer_id, tag_id, exp_date, *args, **kwargs):
         product = SupermarketProduct()
 
+        # check if product name is not given
         if 'product_name' not in kwargs or not kwargs['product_name']:
+
+            # extract product data [name, brand]
             eng_product_data, ara_product_data = self.get_product_details(tag_id)
-            print('data extracted: ', ara_product_data, eng_product_data)
+
+            # return error if data not found for given tag_id
             if not (eng_product_data and not ara_product_data) or 'error' in eng_product_data:
                 return {'error': 'Failed, It looks like you have to provide the product name'}
+
+            # process the given name
             else:
                 if "product_name" in eng_product_data and eng_product_data["product_name"]:
                     name = eng_product_data.get('product_name')
@@ -187,9 +193,12 @@ class SupermarketProductManager:
                     product.brand = eng_product_data.get('brand')
                 else:
                     product.brand = ara_product_data.get('brand')
+
+        # assign product name if given [manually]
         else:
             name = kwargs['product_name']
 
+        # create product with the data
         product.tag_id = tag_id
         product.retailer = retailer_id
         product.price = 00
@@ -201,6 +210,7 @@ class SupermarketProductManager:
         self.create_new_bulk(product, exp_date)
         return product
 
+    # increment product quantity
     def add_to_shelf(self, product, bulk):
         product.quantity = product.quantity + 1
         product.save()
@@ -208,6 +218,7 @@ class SupermarketProductManager:
         if bulk:
             self.add_to_bulk(bulk)
 
+    # decrement product quantity
     def remove_from_shelf(self, product, bulk):
         if product.quantity == 0:
             return
@@ -217,12 +228,16 @@ class SupermarketProductManager:
         push_updates(None)  ##  only for simulation  ##
         if bulk:
             self.remove_from_bulk(bulk)
+
+        # send a signal of removal to the quantity tracker
         product_removed.send(sender=self.__class__, product=product, quantity=current_q)
 
+    # increment bulk quantity
     def add_to_bulk(self, bulk):
         bulk.bulk_qyt = bulk.bulk_qyt + 1
         bulk.save()
 
+    # decrement bulk quantity
     def remove_from_bulk(self, bulk):
         bulk.bulk_qyt = bulk.bulk_qyt - 1
         bulk.save()
@@ -256,15 +271,21 @@ class SupermarketProductManager:
         product = kwargs['product']
         old_quant = kwargs['quantity']
         quant = product.quantity
+        # validate if quantity really cahnged
         if old_quant != quant:
+            # check auto-order configurations
             q_ord_result = quantity_order_config_manager(product=product)
+            # check notification configurations
             q_notify_result = quantity_notification_config_manager(product=product)
+
             return q_ord_result, q_notify_result
 
     @staticmethod
     @receiver(date_updated)
     def track_expiry_date(sender, **kwargs):
+        # get all bulks
         bulks = ProductBulk.objects.all()
+        # chaeck if its updated date reaches the configured near expiry threshold
         for bulk in bulks:
             try:
                 config = NotificationConfig.objects.get(retailer=bulk.product.retailer)

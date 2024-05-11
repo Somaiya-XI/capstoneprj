@@ -32,7 +32,10 @@ const CartContextProvider = ({children}) => {
       console.log('cart fetched');
       fetchCart();
     }
-  }, []);
+    if (user.role !== 'RETAILER') {
+      setCart(null);
+    }
+  }, [user]);
 
   const getProductQuantity = (productId) => {
     const product = cart?.products?.find((item) => item.product_id === productId);

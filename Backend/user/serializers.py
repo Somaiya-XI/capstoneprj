@@ -77,7 +77,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             'commercial_reg',
             'role',
             'profile_picture',
-            'session_token',
             'auth_provider',
             'is_authenticated',
             "is_active",

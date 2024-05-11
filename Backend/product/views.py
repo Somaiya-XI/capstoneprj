@@ -20,38 +20,44 @@ from order.serializers import OrderSerializer
 import json
 
 
-@csrf_exempt
 @api_view(['POST'])
-@permission_classes([AllowAny])
 def create_product(request):
+    try:
+        if request.user.is_anonymous:
+            return JsonResponse({'message': 'You are not authenticated, log in then try again'}, status=400)
 
-    if request.user.is_anonymous:
-        return JsonResponse({'message': 'You are not authenticated, log in then try again'}, status=400)
+        # access request data
+        data = request.data
 
-    data = request.data
-    if request.user.is_authenticated:
-        data['supplier'] = request.user.id
-        print(data)
+        # add the authenticated user as supplier
+        if request.user.is_authenticated:
+            data['supplier'] = request.user.id
+            print(data)
 
-    serializer = ProductCatalogSerializer(data=data)
+        # create the product using the serializer
+        serializer = ProductCatalogSerializer(data=data)
 
-    if serializer.is_valid():
-        serializer.save()
+        if serializer.is_valid():
+            serializer.save()
 
-        load_dotenv()
-        stripe.api_key = os.environ['STRIPE_SECRET_KEY']
-        stripe.Product.create(
-            id=serializer.data['product_id'],
-            name=serializer.data['product_name'],
-            default_price_data={
-                "currency": 'usd',
-                "unit_amount_decimal": serializer.data['new_price'] * 100,
-            },
-            images=[serializer.data['product_img']],
-        )
-        return JsonResponse({'message': 'Product created successfully.'}, status=201)
-    else:
-        return JsonResponse(serializer.errors, status=400)
+            load_dotenv()
+
+            # create the product in stripe
+            stripe.api_key = os.environ['STRIPE_SECRET_KEY']
+            stripe.Product.create(
+                id=serializer.data['product_id'],
+                name=serializer.data['product_name'],
+                default_price_data={
+                    "currency": 'usd',
+                    "unit_amount_decimal": serializer.data['new_price'] * 100,
+                },
+                images=[serializer.data['product_img']],
+            )
+            return JsonResponse({'message': 'Product created successfully.'}, status=201)
+        else:
+            return JsonResponse(serializer.errors, status=400)
+    except Exception as e:
+        return JsonResponse({'error': f'something went wrong, err: {e}'})
 
 
 def create_stripe_product():
@@ -69,32 +75,35 @@ def create_stripe_product():
     return JsonResponse({'message': 'product created successfully'})
 
 
-@csrf_exempt
 @api_view(['PUT', 'DELETE'])
-@permission_classes([AllowAny])
 def update_product(request):
     try:
         if request.user.is_anonymous:
             return JsonResponse({'message': 'You are not authenticated, log in then try again'}, status=400)
 
-        print('the user updating is: ', request.user)
+        # access the request data
         data = json.loads(request.body)
         pk = data.get('id')
-        print(pk)
 
         try:
+
+            # find the product to update
             product = ProductCatalog.objects.get(pk=pk)
         except ProductCatalog.DoesNotExist:
             return JsonResponse({'error': 'This Product does not exist'}, status=404)
 
+        # check if the user updating is the actual supplier
         if product.supplier_id != request.user.id:
             return JsonResponse({'message': 'You are not authorized to update this product'})
 
         if request.method == 'PUT':
+
+            # update the product using the serializer
             serializer = ProductCatalogSerializer(product, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
 
+                # update the product in stripe
                 load_dotenv()
                 stripe.api_key = os.environ['STRIPE_SECRET_KEY']
                 new_price = stripe.Price.create(
@@ -109,13 +118,15 @@ def update_product(request):
                     default_price=new_price.id,
                 )
                 return JsonResponse({'message': f"Product {pk} updated"}, status=200)
-                return JsonResponse({'message': 'Product updated'}, status=200)
             else:
                 return JsonResponse(serializer.errors, status=400)
 
         elif request.method == 'DELETE':
+            # delete the product if the request is delete
             product.delete()
             return JsonResponse({'message': 'Product deleted'}, status=200)
+
+            # delete the product in stripe
 
             # load_dotenv()
             # stripe.api_key = os.environ['STRIPE_SECRET_KEY']
@@ -124,7 +135,7 @@ def update_product(request):
             #     active=False,
             # )
     except Exception as e:
-        return JsonResponse({'error': f'something went wrong, err: {e}'})
+        return JsonResponse({'error': f'something went wrong, err: {e}'}, status=400)
 
 
 @ensure_csrf_cookie
@@ -223,12 +234,13 @@ def view_product(request, product_id):
 
 @ensure_csrf_cookie
 @api_view(['GET'])
-@permission_classes([AllowAny])
 def view_user_products(request, supplier_id):
 
+    # get the products of the supplier
     products = ProductCatalog.objects.filter(supplier=supplier_id)
     response_data = []
 
+    # serialize all products and add them to the list
     for product in products:
         product_serializer = ProductCatalogSerializer(instance=product)
         response_data.append(product_serializer.data)
@@ -236,7 +248,6 @@ def view_user_products(request, supplier_id):
     return JsonResponse(response_data, safe=False)
 
 
-# Create your views here.
 class CatalogViewSet(viewsets.ModelViewSet):
     queryset = ProductCatalog.objects.all()
     serializer_class = ProductCatalogSerializer

@@ -9,39 +9,41 @@ from django.http import JsonResponse
 import json
 
 
-@csrf_exempt
 @api_view(['POST'])
-@permission_classes([AllowAny])
 def create(request):
-    if request.user.is_authenticated:
-        retailer = request.user.id
-        id = request.data['gateway_id']
-        print(retailer)
-        print(id)
-        serializer = HardwareSetSerializer(
-            data={
-                'retailer': retailer,
-                'gateway_id': id,
-            }
-        )
+    try:
+        if request.user.is_authenticated:
 
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse({'message': 'Device registered successfully.'}, status=201)
-        else:
-            return JsonResponse(serializer.errors, status=400)
+            # access authenticated user
+            retailer = request.user.id
 
-    return JsonResponse({'error': 'you are not authenticated!'}, status=400)
+            # access entered gateway id
+            id = request.data['gateway_id']
+
+            # create a device using the serializer
+            serializer = HardwareSetSerializer(data={'retailer': retailer, 'gateway_id': id})
+
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse({'message': 'Device registered successfully.'}, status=201)
+            else:
+                return JsonResponse(serializer.errors, status=400)
+
+        return JsonResponse({'error': 'you are not authenticated!'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': f'something went wrong, err: {e}'}, status=400)
 
 
-@csrf_exempt
 @api_view(['GET'])
-@permission_classes([AllowAny])
 def get_device(request):
     if request.user.is_authenticated:
+
+        # access authenticated user
         retailer = request.user.id
-        print(retailer)
+
+        # find the user's device
         device = HardwareSet.objects.filter(retailer=retailer).first()
+
         if device:
             return JsonResponse({'id': device.gateway_id}, status=201)
         else:

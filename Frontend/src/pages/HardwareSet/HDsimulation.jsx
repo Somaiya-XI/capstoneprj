@@ -58,7 +58,7 @@ const HardwareSimulation = () => {
         console.log(error);
       });
   };
-  const reset = <span class='icon-[mdi--loop] text-white ml-2 cursor-pointer' onClick={handleReset}></span>;
+  const reset = <span className='icon-[mdi--loop] text-white ml-2 cursor-pointer' onClick={handleReset}></span>;
 
   useEffect(() => {
     fetchProducts();

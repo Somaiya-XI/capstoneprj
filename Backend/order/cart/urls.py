@@ -12,5 +12,6 @@ urlpatterns = [
     path('remove-from-cart/', views.remove_from_cart, name='remove_from_cart'),
     path('view-cart/', views.view_cart, name='view_cart'),
     path('clear-cart/', views.clear_cart, name='clear_cart'),
+    path('view_smart_cart/', views.view_smart_cart),
     path("", include(router.urls)),
 ]
