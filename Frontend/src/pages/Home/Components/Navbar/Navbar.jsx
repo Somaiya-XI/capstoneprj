@@ -10,7 +10,7 @@ import {useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import {ProfileSheet} from '@/Components';
 
-const Navbar = ({children}) => {
+const Navbar = ({children, handleChange}) => {
   const {user} = useUserContext();
   const {logUserOut, isAuthenticated} = useCsrfContext();
 
@@ -23,7 +23,7 @@ const Navbar = ({children}) => {
               <p className='font-bold text-[#023c07] text-center text-4xl logo'>WiseR</p>
             </Link>
           </div>
-          <InputGroup />
+          <InputGroup handleChange={handleChange} />
           <div className='button_group '>
             {!isAuthenticated && (
               <>

@@ -23,9 +23,9 @@ const Home = () => {
   const [products, setProducts] = useState([]);
   const [searchInput, setSearchInput] = useState("");
 
-  const handleChange = () => {
-    //setSearchInput(  e.target.value );
-    console.log("1234")
+  const handleChange = (e) => {
+    setSearchInput(  e.target.value );
+    console.log(e.target.value)
 };
 
   const loadCategories = async () => {
@@ -50,7 +50,7 @@ const Home = () => {
       <div id='c'>
         <Header />
         <div id='c' className='md:container md:mx-auto mt-5'>
-          <Navbar />
+          <Navbar handleChange={handleChange}/>
           <NavbarMega />
           <Hero />
           <div className='feature_category'>
@@ -76,9 +76,9 @@ const Home = () => {
                 <div className='tab-pane fade active show'>
                   <div className='row'>
                     {products.map((product, index) =>
-                      product.discount_percentage !== '0.00' && product.product_name.toLowerCase().includes(searchInput.toLowerCase()) || 
+                      product.discount_percentage !== '0.00' && (product.product_name.toLowerCase().includes(searchInput.toLowerCase()) || 
                       product.company_name.toLowerCase().includes(searchInput.toLowerCase()) || 
-                      product.brand.toLowerCase().includes(searchInput.toLowerCase()) ? (
+                      product.brand.toLowerCase().includes(searchInput.toLowerCase())) ? (
                         <ProductCard
                           productID={product.product_id}
                           productImage={product.product_img}
@@ -131,7 +131,9 @@ const Home = () => {
                   <div className='tab-pane fade active show'>
                     <div className='row'>
                       {products.map((product, index) =>
-                        product.category === category ? (
+                        product.category === category && (product.product_name.toLowerCase().includes(searchInput.toLowerCase()) || 
+                        product.company_name.toLowerCase().includes(searchInput.toLowerCase()) || 
+                        product.brand.toLowerCase().includes(searchInput.toLowerCase())) ? (
                           <ProductCard
                             productID={product.product_id}
                             productImage={product.product_img}

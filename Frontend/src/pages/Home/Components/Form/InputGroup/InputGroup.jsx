@@ -2,7 +2,7 @@ import "./inputgroup.css";
 import logo from "../../../images/Search.png";
 import { useState, useEffect } from "react";
 
-const InputGroup = (handleChange) => {
+const InputGroup = ({handleChange}) => {
 
   return (
     <div className="w-100 input_group">
@@ -16,8 +16,7 @@ const InputGroup = (handleChange) => {
               type="text"
               placeholder="Search for items"
               className="w-100 outline-none"
-              // value={searchInput}
-              defaultValue={"kk"}
+              defaultValue={""}
               onChange={handleChange}
             />
           </div>
