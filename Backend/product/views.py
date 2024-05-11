@@ -24,7 +24,10 @@ import json
 def create_product(request):
     try:
         if request.user.is_anonymous:
-            return JsonResponse({'message': 'You are not authenticated, log in then try again'}, status=400)
+            return JsonResponse(
+                {'message': 'You are not authenticated, log in then try again'},
+                status=400,
+            )
 
         # access request data
         data = request.data
@@ -60,17 +63,18 @@ def create_product(request):
         return JsonResponse({'error': f'something went wrong, err: {e}'})
 
 
-def create_stripe_product():
+def create_stripe_product(id, name, price, image):
 
     load_dotenv()
     stripe.api_key = os.environ['STRIPE_SECRET_KEY']
     stripe.Product.create(
-        id="ac28640c-e087-41ba-b38b-0b6feeab21a1",
-        name="Salted wrapped rice",
+        id=id,
+        name=name,
         default_price_data={
             "currency": 'usd',
-            "unit_amount_decimal": 49.5 * 100,
+            "unit_amount_decimal": price * 100,
         },
+        images=image,
     )
     return JsonResponse({'message': 'product created successfully'})
 
@@ -79,7 +83,10 @@ def create_stripe_product():
 def update_product(request):
     try:
         if request.user.is_anonymous:
-            return JsonResponse({'message': 'You are not authenticated, log in then try again'}, status=400)
+            return JsonResponse(
+                {'message': 'You are not authenticated, log in then try again'},
+                status=400,
+            )
 
         # access the request data
         data = json.loads(request.body)

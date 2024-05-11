@@ -1,6 +1,7 @@
 import RetailerLayout from '../RetailerLayout';
 import '../retailer.css';
 import ProductBulkTable from './BulkTable';
+import AutoOrderConfigView from './AutoOrderConfigView';
 import {useParams} from 'react-router-dom';
 import {useState} from 'react';
 
@@ -17,6 +18,12 @@ const BulkView = () => {
         </div>
         <div className='mt-4'>
           <ProductBulkTable product_id={product_id} setProductName={setProductName}></ProductBulkTable>
+        </div>
+        <div className='retailer-dashboard-cont'>
+          <h3 className='d-block font-bold'>Auto-order Configuration of {productName}</h3>
+        </div>
+        <div className='mt-4'>
+          <AutoOrderConfigView product_id={product_id} />
         </div>
       </div>
     </RetailerLayout>
