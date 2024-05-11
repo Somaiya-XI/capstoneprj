@@ -21,6 +21,12 @@ import { API } from "@/backend";
 const Home = () => {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
+
+  const handleChange = () => {
+    //setSearchInput(  e.target.value );
+    console.log("1234")
+};
 
   const loadCategories = async () => {
     const {data} = await axios.get(`${API}product/catalog-product/get-categories/`);
@@ -70,7 +76,9 @@ const Home = () => {
                 <div className='tab-pane fade active show'>
                   <div className='row'>
                     {products.map((product, index) =>
-                      product.discount_percentage !== '0.00' & product.product_name.includes("ee") ? (
+                      product.discount_percentage !== '0.00' && product.product_name.toLowerCase().includes(searchInput.toLowerCase()) || 
+                      product.company_name.toLowerCase().includes(searchInput.toLowerCase()) || 
+                      product.brand.toLowerCase().includes(searchInput.toLowerCase()) ? (
                         <ProductCard
                           productID={product.product_id}
                           productImage={product.product_img}

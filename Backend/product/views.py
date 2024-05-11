@@ -24,7 +24,10 @@ import json
 def create_product(request):
     try:
         if request.user.is_anonymous:
-            return JsonResponse({'message': 'You are not authenticated, log in then try again'}, status=400)
+            return JsonResponse(
+                {'message': 'You are not authenticated, log in then try again'},
+                status=400,
+            )
 
         # access request data
         data = request.data
@@ -53,24 +56,27 @@ def create_product(request):
                 },
                 images=[serializer.data['product_img']],
             )
-            return JsonResponse({'message': 'Product created successfully.'}, status=201)
+            return JsonResponse(
+                {'message': 'Product created successfully.'}, status=201
+            )
         else:
             return JsonResponse(serializer.errors, status=400)
     except Exception as e:
         return JsonResponse({'error': f'something went wrong, err: {e}'})
 
 
-def create_stripe_product():
+def create_stripe_product(id, name, price, image):
 
     load_dotenv()
     stripe.api_key = os.environ['STRIPE_SECRET_KEY']
     stripe.Product.create(
-        id="ac28640c-e087-41ba-b38b-0b6feeab21a1",
-        name="Salted wrapped rice",
+        id=id,
+        name=name,
         default_price_data={
             "currency": 'usd',
-            "unit_amount_decimal": 49.5 * 100,
+            "unit_amount_decimal": price * 100,
         },
+        images=image,
     )
     return JsonResponse({'message': 'product created successfully'})
 
@@ -79,7 +85,10 @@ def create_stripe_product():
 def update_product(request):
     try:
         if request.user.is_anonymous:
-            return JsonResponse({'message': 'You are not authenticated, log in then try again'}, status=400)
+            return JsonResponse(
+                {'message': 'You are not authenticated, log in then try again'},
+                status=400,
+            )
 
         # access the request data
         data = json.loads(request.body)
@@ -94,12 +103,16 @@ def update_product(request):
 
         # check if the user updating is the actual supplier
         if product.supplier_id != request.user.id:
-            return JsonResponse({'message': 'You are not authorized to update this product'})
+            return JsonResponse(
+                {'message': 'You are not authorized to update this product'}
+            )
 
         if request.method == 'PUT':
 
             # update the product using the serializer
-            serializer = ProductCatalogSerializer(product, data=request.data, partial=True)
+            serializer = ProductCatalogSerializer(
+                product, data=request.data, partial=True
+            )
             if serializer.is_valid():
                 serializer.save()
 
@@ -181,7 +194,8 @@ def view_catalog_products(request):
 
         product_data = {
             'product_id': product_serialized.data['product_id'],
-            'product_img': os.environ['BASE_URL'] + product_serialized.data['product_img'],
+            'product_img': os.environ['BASE_URL']
+            + product_serialized.data['product_img'],
             'product_name': product_serialized.data['product_name'],
             'category': product_serialized.data['category'],
             'brand': product_serialized.data['brand'],
