@@ -17,7 +17,7 @@ const CartContextProvider = ({children}) => {
       setCart((cart) => data);
       setLoading(false);
     } catch (error) {
-      console.error(error);
+      console.error(error.response.data.message);
     }
   };
 
