@@ -84,7 +84,6 @@ def charge_wallet(request):
 
 
 @csrf_protect
-# @csrf_exempt
 @api_view(['PUT'])
 @permission_classes([AllowAny])
 def pay_by_wallet(request):
@@ -93,7 +92,6 @@ def pay_by_wallet(request):
         return JsonResponse(
             {
                 'message': 'You are not authenticated, log in then try again',
-                'success': False,
             }
         )
 
@@ -106,7 +104,6 @@ def pay_by_wallet(request):
         return JsonResponse(
             {
                 'message': 'You are not authorized to pay using the payment wallet',
-                'success': False,
             }
         )
 
@@ -119,7 +116,6 @@ def pay_by_wallet(request):
         return JsonResponse(
             {
                 'message': 'please send a valid request',
-                'success': False,
             }
         )
 
@@ -127,7 +123,6 @@ def pay_by_wallet(request):
         return JsonResponse(
             {
                 'message': 'please send a valid request',
-                'success': False,
             }
         )
 
@@ -138,7 +133,6 @@ def pay_by_wallet(request):
         return JsonResponse(
             {
                 'message': 'You do not have a cart',
-                'success': False,
             }
         )
 
@@ -149,7 +143,6 @@ def pay_by_wallet(request):
         return JsonResponse(
             {
                 'message': 'You do not have items in your cart',
-                'success': False,
             }
         )
 
