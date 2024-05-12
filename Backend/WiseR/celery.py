@@ -9,16 +9,16 @@ app = Celery('WiseR')
 
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
-CELERY_INCLUDE = ['utils_config', 'product.utils', 'consumers']
+CELERY_INCLUDE = ['utils_config', 'product.utils', 'consumers', 'product.tasks']
 # 'configuration_manager', 'notification_manager',
 
 
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
-    from product.utils import SupermarketProductManager as m
+    from product.tasks import reduce_days_to_expiry
 
     sender.add_periodic_task(
-        crontab(hour=0, minute=0), m.reduce_days_to_expiry.s(), name='reduce_days_to_expiry_every_day'
+        crontab(hour=0, minute=0), reduce_days_to_expiry.s(), name='reduce_days_to_expiry_every_day'
     )
 
 

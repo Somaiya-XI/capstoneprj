@@ -11,7 +11,7 @@ import { API } from "@/backend";
 import { useCsrfContext } from "@/Contexts";
 import { CustomSuccessToast, CustomErrorToast } from "@/Components";
 
-const AutoOrderConfigCard = () => {
+const AutoOrderConfigView = ({ product_id }) => {
   const { ax } = useCsrfContext();
   const [ConfigData, setConfigData] = useState({
     quantity_reach_level: "",
@@ -22,9 +22,10 @@ const AutoOrderConfigCard = () => {
   const loadConfig = async () => {
     try {
       const { data } = await ax.get(
-        `${API}config/auto-order-config/view-default-config/`,
+        `${API}config/auto-order-config/view-product-config/${product_id}/`,
         {}
       );
+      console.log("response: ", data);
       if (data.hasOwnProperty("error")) {
         CustomErrorToast({ msg: data.error, dur: 3000 });
       } else {
@@ -50,13 +51,16 @@ const AutoOrderConfigCard = () => {
   const updateConfig = async () => {
     try {
       const { data } = await ax.put(
-        `${API}config/auto-order-config/update-default-config/`,
+        `${API}config/auto-order-config/update-product-config/`,
         {
+          product_id: product_id,
+          config_type: "special",
           quantity_reach_level: ConfigData.quantity_reach_level,
           ordering_amount: ConfigData.ordering_amount,
           confirmation_status: confirmationStatus,
         }
       );
+      console.log(data);
       if (data.hasOwnProperty("message")) {
         CustomSuccessToast({ msg: data.message, dur: 3000 });
         setConfigData({
@@ -94,10 +98,12 @@ const AutoOrderConfigCard = () => {
 
   const deleteConfig = async () => {
     try {
+      console.log("aa", product_id);
       const { data } = await ax.delete(
-        `${API}config/auto-order-config/delete-default-config/`,
-        {}
+        `${API}config/auto-order-config/delete-product-config/`,
+        { data: { product_id: product_id } }
       );
+      console.log(data);
       if (data.hasOwnProperty("message")) {
         CustomSuccessToast({ msg: data.message, dur: 3000 });
         setConfigData({
@@ -106,38 +112,6 @@ const AutoOrderConfigCard = () => {
           ordering_amount: data.data.ordering_amount,
         });
         setConfirmationStatus(data.data.confirmation_status);
-      } else if (data.hasOwnProperty("error")) {
-        CustomErrorToast({ msg: data.error, dur: 3000 });
-      }
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
-
-  const applyToAll = async () => {
-    try {
-      const { data } = await ax.put(
-        `${API}config/auto-order-config/default-config/apply-to-all/`,
-        {}
-      );
-      if (data.hasOwnProperty("message")) {
-        CustomSuccessToast({ msg: data.message, dur: 3000 });
-      } else if (data.hasOwnProperty("error")) {
-        CustomErrorToast({ msg: data.error, dur: 3000 });
-      }
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
-
-  const deleteFromAll = async () => {
-    try {
-      const { data } = await ax.put(
-        `${API}config/auto-order-config/default-config/delete-from-all/`,
-        {}
-      );
-      if (data.hasOwnProperty("message")) {
-        CustomSuccessToast({ msg: data.message, dur: 3000 });
       } else if (data.hasOwnProperty("error")) {
         CustomErrorToast({ msg: data.error, dur: 3000 });
       }
@@ -155,7 +129,7 @@ const AutoOrderConfigCard = () => {
       <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
         <h4 className="font-bold text-large">Auto-order settings</h4>
         <p className="text-default-500">
-          Tweak your market Auto-order configuration: quantity reach levels,
+          Tweak your product Auto-order configuration: quantity reach levels,
           ordering amount, and whether confirmation is required or not.
         </p>
       </CardHeader>
@@ -195,18 +169,6 @@ const AutoOrderConfigCard = () => {
             >
               Delete
             </Button>
-            <Button
-              className="bg-[#023c07] text-default mt-4 ml-5 size-26 h-10"
-              onClick={applyToAll}
-            >
-              Apply to All Products
-            </Button>
-            <Button
-              className="bg-[#fff] border-1 text-black mt-4 size-26 h-10 shadow-sm"
-              onClick={deleteFromAll}
-            >
-              Delete From All Products
-            </Button>
           </div>
         </div>
       </CardBody>
@@ -214,4 +176,4 @@ const AutoOrderConfigCard = () => {
   );
 };
 
-export default AutoOrderConfigCard;
+export default AutoOrderConfigView;

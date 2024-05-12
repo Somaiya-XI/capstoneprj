@@ -1,12 +1,15 @@
 import {useCallback, useState, useMemo} from 'react';
-import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Avatar, Input} from '@nextui-org/react';
-import {imgURL} from '@/backend';
-import {EyeIcon, SearchIcon} from '@/Components';
+import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Avatar, Input, Button} from '@nextui-org/react';
+import {imgURL, API} from '@/backend';
+import {EyeIcon, SearchIcon, CustomErrorToast, CustomSuccessToast} from '@/Components';
 import {useNavigate} from 'react-router-dom';
 import ManageProduct from './ManageProductView';
 import DeleteProduct from './DeleteProduct';
+import {useCsrfContext} from '@/Contexts';
+
 
 const SuperMarketProducts = ({data, setLoad}) => {
+  const {ax} = useCsrfContext();
   const [filterValue, setFilterValue] = useState('');
   const hasSearchFilter = Boolean(filterValue);
   const navigate = useNavigate();
@@ -19,6 +22,21 @@ const SuperMarketProducts = ({data, setLoad}) => {
     {name: 'Total Bulks', uid: 'bulks'},
     {name: 'Actions', uid: 'actions'},
   ];
+
+  const applyAutoOrder = (product_id) =>  async () => {
+    try {
+        const { data } = await ax.put(`${API}config/auto-order-config/update-product-config/`, {product_id:product_id, config_type:"default"});
+        console.log(data)
+        if (data.hasOwnProperty("message")){
+            CustomSuccessToast({ msg: data.message, dur: 3000 });
+        }
+        else if(data.hasOwnProperty("error")){
+            CustomErrorToast({ msg: data.error, dur: 3000 });
+        }
+    }catch (error) {
+    console.error(error.message);
+  }
+}
 
   const items = useMemo(() => {
     let filteredProducts = [...data];
@@ -85,6 +103,9 @@ const SuperMarketProducts = ({data, setLoad}) => {
             </span>
             <span className='text-lg text-red-600 cursor-pointer active:opacity-50'>
               <DeleteProduct product_id={product.key} setLoad={setLoad} />
+            </span>
+            <span className='text-default cursor-pointer active:opacity-50'>
+              <Button className='bg-[#023c07] text-default' onClick={applyAutoOrder(product.key)}>Apply Auto-order</Button>
             </span>
           </div>
         );

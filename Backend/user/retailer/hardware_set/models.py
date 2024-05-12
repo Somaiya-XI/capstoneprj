@@ -3,7 +3,7 @@ from user.models import Retailer
 
 
 class HardwareSet(models.Model):
-    gateway_id = models.CharField(max_length=10)
+    gateway_id = models.CharField(max_length=10, unique=True)
     retailer = models.ForeignKey(Retailer, on_delete=models.CASCADE)
 
     class Meta:

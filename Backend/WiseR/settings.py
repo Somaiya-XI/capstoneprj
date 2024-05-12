@@ -79,13 +79,19 @@ ROOT_URLCONF = 'WiseR.urls'
 
 CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SAMESITE = 'Lax'
-# CSRF_COOKIE_HTTPONLY = False
-# SESSION_COOKIE_HTTPONLY = False
+## User session will stay only for 1hr after that it will expire!
+SESSION_COOKIE_AGE = 3600
+
 FRONTEND_HOST = os.getenv('FRONTEND_HOST')
 CSRF_TRUSTED_ORIGINS = FRONTEND_HOST.split(',')
 CORS_ALLOWED_ORIGINS = FRONTEND_HOST.split(',')
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = True
+
 CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
+
 CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
@@ -98,9 +104,6 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
     'X-CSRFToken',
 ]
-
-CSRF_COOKIE_HTTPONLY = True
-SESSION_COOKIE_HTTPONLY = True
 
 
 TEMPLATES = [

@@ -8,6 +8,7 @@ import {useEffect, useState} from 'react';
 import axios from 'axios';
 import {API, ESP_URL, WS_API} from '../../backend';
 import RetTable from './SimulationTable';
+import SmartCart from './SimulationCart';
 
 const HardwareSimulation = () => {
   const [data, setData] = useState();
@@ -58,7 +59,8 @@ const HardwareSimulation = () => {
         console.log(error);
       });
   };
-  const reset = <span class='icon-[mdi--loop] text-white ml-2 cursor-pointer' onClick={handleReset}></span>;
+  const reset = <span className='icon-[mdi--loop] text-white ml-2 cursor-pointer' onClick={handleReset}></span>;
+  const cart = <SmartCart cartItems={cartItems}></SmartCart>;
 
   useEffect(() => {
     fetchProducts();

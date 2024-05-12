@@ -11,8 +11,8 @@ const Header = ({children}) => {
             <span className='text-[#eeeeee] hover:text-zinc-300'>About Us</span>
           </Link>
           <span className='text-[#eeeeee] mx-3'>|</span>
-          <Link to='/'>
-            <span className='text-[#eeeeee] hover:text-zinc-300'>Support</span>
+          <Link to='/simulation'>
+            <span className='text-[#eeeeee] hover:text-zinc-300'>Simulation</span>
           </Link>
         </div>
         <div id='s-section'>

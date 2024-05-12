@@ -12,7 +12,6 @@ const RetTable = ({data}) => {
           <TableHeader>
             <TableColumn key='product_name'>Name</TableColumn>
             <TableColumn key='quantity'>Qyt</TableColumn>
-            <TableColumn key='expiry_date'>Exp</TableColumn>
           </TableHeader>
         </TableHeader>
         <TableBody items={data}>

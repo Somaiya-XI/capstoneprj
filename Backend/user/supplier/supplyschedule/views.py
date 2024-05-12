@@ -9,42 +9,42 @@ from rest_framework.permissions import AllowAny
 import json
 
 
-@csrf_exempt
 @api_view(['POST'])
-@permission_classes([AllowAny])
 def add_schedule_entry(request):
-    print('SCHED USER', request.user)
-    if request.user.is_anonymous:
-        return JsonResponse({'message': 'You are not authenticated, log in then try again'})
+    try:
+        if request.user.is_anonymous:
+            return JsonResponse({'message': 'You are not authenticated, log in then try again'})
 
-    data = request.data
+        data = request.data
 
-    if request.user.is_authenticated:
-        data['supplier_id'] = request.user.id
-        print(data)
-    else:
-        return JsonResponse({'error': 'You are not authenticated, log in then try again'})
+        # add the authenticated user as supplier
+        if request.user.is_authenticated:
+            data['supplier_id'] = request.user.id
+        else:
+            return JsonResponse({'error': 'You are not authenticated, log in then try again'})
 
-    serializer = ScheduleSerializer(data=data)
+        # create the schedule using the serializer
+        serializer = ScheduleSerializer(data=data)
 
-    if serializer.is_valid():
-        serializer.save()
-        return JsonResponse({'message': 'Schedule created successfully.'})
-    else:
-        return JsonResponse(serializer.errors)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({'message': 'Schedule created successfully.'})
+        else:
+            return JsonResponse(serializer.errors)
+    except Exception as e:
+        return JsonResponse({'error': f'something went wrong, err: {e}'}, status=400)
 
 
-@csrf_exempt
+@api_view(['POST'])
 def remove_schedule_entry(request):
-    # check if Django server recognizes the
-    # CSRF as authenticated user's token
+
     if request.user.is_anonymous:
         return JsonResponse({'message': 'You are not authenticated, log in then try again'})
 
     # collect data from body
     data = json.loads(request.body)
     id = data.get('id')
-    print('schedule id: ', id)
+
     # check if a schedule with the passed id exists
     try:
         schedule = SupplyingSchedule.objects.get(pk=id)
@@ -60,20 +60,14 @@ def remove_schedule_entry(request):
     return JsonResponse({'message': 'Schedule deleted'})
 
 
-@csrf_exempt
 @api_view(['PUT'])
-@permission_classes([AllowAny])
 def update_schedule_entry(request):
-    # check if Django server recognizes the
-    # CSRF as authenticated user's token
     if request.user.is_anonymous:
         return JsonResponse({'message': 'You are not authenticated, log in then try again'})
 
     # collect data from body
     data = json.loads(request.body)
-    print('request recieved: ', data)
     id = data.get('id')
-    print('id gotted: ', id)
 
     # check if a schedule with the passed id exists
     try:
@@ -94,19 +88,19 @@ def update_schedule_entry(request):
         return JsonResponse(serializer.errors)
 
 
-@csrf_exempt
 @api_view(['GET'])
-@permission_classes([AllowAny])
 def view_supplier_schedule(request, supplier_id):
+    try:
+        schedules = SupplyingSchedule.objects.filter(supplier_id=supplier_id)
+        response_data = []
 
-    schedules = SupplyingSchedule.objects.filter(supplier_id=supplier_id)
-    response_data = []
+        for schedule in schedules:
+            schedule_serializer = ScheduleSerializer(instance=schedule)
+            response_data.append(schedule_serializer.data)
 
-    for schedule in schedules:
-        schedule_serializer = ScheduleSerializer(instance=schedule)
-        response_data.append(schedule_serializer.data)
-
-    return JsonResponse(response_data, safe=False)
+        return JsonResponse(response_data, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': f'something went wrong, err: {e}'}, status=400)
 
 
 # Create your views here.

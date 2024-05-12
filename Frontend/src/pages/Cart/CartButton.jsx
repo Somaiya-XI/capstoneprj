@@ -2,7 +2,7 @@ import {API} from '../../backend';
 import {useCsrfContext, useCartContext, useUserContext} from '../../Contexts';
 import {useEffect, useState} from 'react';
 import {toast} from 'sonner';
-import {CustomSuccessToast, CustomErrorToast} from '../index';
+import {CustomSuccessToast, CustomErrorToast} from '../../Components/index';
 import {Button} from '@nextui-org/react';
 
 function CartButton({id, minAllowed, stock}) {
@@ -38,7 +38,7 @@ function CartButton({id, minAllowed, stock}) {
       if (!isAuthenticated) {
         m = 'Please log in to add to cart';
       } else {
-        m = 'You are not allowed to add to cart';
+        m = 'You can not add to cart!';
       }
       toast.error(m, {
         duration: 2300,

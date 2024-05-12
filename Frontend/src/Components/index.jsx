@@ -3,7 +3,7 @@ import exp from 'constants';
 export {default as AdminRoute} from './Routes/AdminRoute';
 export {default as RetailerRoute} from './Routes/RetailerRoute';
 export {default as SupplierRoute} from './Routes/SupplierRoute';
-export {default as CartButton} from './CartComponents/CartButton.jsx';
+export {default as CartButton} from '../pages/Cart/CartButton.jsx';
 export {default as FormsContainer} from './FormComponents/FormsContainer.jsx';
 export {
   default as CustomErrorAlert,

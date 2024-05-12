@@ -165,7 +165,9 @@ def validate_checkout_session(request):
     return JsonResponse({'message': 'payment process failed'})
 
 
-def make_order(user, order_type, payment_method, shipping_address, payment_session_id):
+def make_order(
+    user, order_type, payment_method, shipping_address, payment_session_id=None
+):
 
     # check the cart existance
     try:
@@ -181,6 +183,17 @@ def make_order(user, order_type, payment_method, shipping_address, payment_sessi
         return JsonResponse(
             {'message': 'Please fill your cart, then proceed to check out'}
         )
+
+    for current_cart_item in current_cart_items:
+        if current_cart_item.quantity > current_cart_item.product.quantity:
+            return JsonResponse(
+                {
+                    'error': 'You can not order more than'
+                    + current_cart_item.product.quantity
+                    + 'of'
+                    + current_cart_item.product.product_name
+                }
+            )
 
     # create new order using serializer
     order_serializer = OrderSerializer(
@@ -208,11 +221,12 @@ def make_order(user, order_type, payment_method, shipping_address, payment_sessi
         item_serializer.is_valid(raise_exception=True)
         item_serializer.save(product_id=item.product)
 
+    for current_cart_item in current_cart_items:
+        current_cart_item.product.quantity -= current_cart_item.quantity
+        current_cart_item.product.save()
+
     # clear all items within the user's cart
-    cart_items = CartItem.objects.filter(cart=cart)
-    cart_items.delete()
-    calculate_cart_total(cart)
-    cart.save()
+    current_cart_items.delete()
 
     return order_serializer.data['order_id']
 

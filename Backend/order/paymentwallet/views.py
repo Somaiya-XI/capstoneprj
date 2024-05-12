@@ -43,7 +43,7 @@ def view_wallet_balance(request):
     return JsonResponse({'payment_wallet': payment_wallet[0].balance}, status=200)
 
 
-#@csrf_protect
+# @csrf_protect
 @csrf_exempt
 @api_view(['PUT'])
 @permission_classes([AllowAny])
@@ -84,15 +84,15 @@ def charge_wallet(request):
 
 
 @csrf_protect
-# @csrf_exempt
 @api_view(['PUT'])
 @permission_classes([AllowAny])
 def pay_by_wallet(request):
 
-    
     if request.user.is_anonymous:
         return JsonResponse(
-            {'message': 'You are not authenticated, log in then try again'}
+            {
+                'message': 'You are not authenticated, log in then try again',
+            }
         )
 
     user_id = request.user.id
@@ -102,7 +102,9 @@ def pay_by_wallet(request):
         retailer = Retailer.objects.get(id=user_id)
     except Retailer.DoesNotExist:
         return JsonResponse(
-            {'message': 'You are not authorized to pay using the payment wallet'}
+            {
+                'message': 'You are not authorized to pay using the payment wallet',
+            }
         )
 
     # collect the data from incoming request
@@ -111,22 +113,38 @@ def pay_by_wallet(request):
 
     # check request data existance
     if not shipping_address:
-        return JsonResponse({'message': 'please send a valid request'})
+        return JsonResponse(
+            {
+                'message': 'please send a valid request',
+            }
+        )
 
     if not order_type:
-        return JsonResponse({'message': 'please send a valid request'})
+        return JsonResponse(
+            {
+                'message': 'please send a valid request',
+            }
+        )
 
     # check user cart existance
     try:
         cart = Cart.objects.get(user=retailer, type=order_type)
     except Retailer.DoesNotExist:
-        return JsonResponse({'message': 'You do not have a cart'})
+        return JsonResponse(
+            {
+                'message': 'You do not have a cart',
+            }
+        )
 
     # get the total price to pay
     amount = cart.total
 
     if amount == 0.00:
-        return JsonResponse({'message': 'You do not have items in your cart'})
+        return JsonResponse(
+            {
+                'message': 'You do not have items in your cart',
+            }
+        )
 
     # get the user payment wallet or create a new one if it doesn't exist
     payment_wallet = PaymentWallet.objects.get_or_create(retailer=retailer)
@@ -144,7 +162,7 @@ def pay_by_wallet(request):
 
     # create new order
     payment_method = 'wallet'
-    order_id = make_order(retailer.pk, order_type, payment_method, shipping_address, payment_session_id=None)
+    order_id = make_order(retailer.pk, order_type, payment_method, shipping_address)
 
     return JsonResponse(
         {

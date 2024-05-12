@@ -5,16 +5,8 @@ import {API} from '../../backend';
 import {useUserContext} from '@/Contexts';
 import {toast} from 'sonner';
 const CsrfTokenContextProvider = ({children}) => {
-  const {setUser} = useUserContext();
-  const [csrf, setCSRF] = useState(() => {
-    const currentCsrf = localStorage.getItem('csrf');
-    try {
-      return currentCsrf ? currentCsrf : {};
-    } catch (error) {
-      console.error('Invalid JSON data:', error);
-      return {};
-    }
-  });
+  const {setUser, user} = useUserContext();
+  const [csrf, setCSRF] = useState();
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     const localAuth = localStorage.getItem('auth');
     try {
@@ -28,20 +20,25 @@ const CsrfTokenContextProvider = ({children}) => {
   useEffect(() => {
     localStorage.setItem('auth', JSON.stringify(isAuthenticated));
   }, [isAuthenticated]);
+
+  // useEffect(() => {
+  //   localStorage.setItem('csrf', csrf);
+  // }, [csrf]);
+
   useEffect(() => {
-    localStorage.setItem('csrf', csrf);
-  }, [csrf]);
+    getCsrfToken();
+    getSession();
+  }, [user]);
+
   async function getCsrfToken() {
     let _csrfToken = null;
 
     const response = await fetch(`${API}user/get-csrf/`, {
       credentials: 'include',
     });
-    const data = await response.json();
-    _csrfToken = data.csrfToken;
-
-    console.log('csrf:', _csrfToken);
+    _csrfToken = response.headers.get('X-Csrftoken');
     setCSRF(_csrfToken);
+    console.log('csrf:', _csrfToken);
     return _csrfToken;
   }
 

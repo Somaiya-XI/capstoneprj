@@ -10,6 +10,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["*.jsx", "*.js", "src/**/*.js", "src/**/*.jsx", "cypress/**/*.js"],
+  "include": ["*.jsx", "*.js", "src/**/*.js", "src/**/*.jsx", "cypress/**/*.js", "cypress.config.cjs"],
   "exclude": ["node_modules"]
 }

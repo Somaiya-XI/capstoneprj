@@ -23,7 +23,6 @@ class User(AbstractUser):
         default='000',
     )
     profile_picture = models.ImageField("profile picture", upload_to='profile_imgs/', blank=True, null=True)
-    session_token = models.CharField(max_length=100, default=0)
     auth_provider = models.CharField(max_length=50, default=AUTH_PROVIDERS.get('email'))
 
     USERNAME_FIELD = 'email'

@@ -35,7 +35,7 @@ const UserContextProvider = ({children}) => {
       // playNotifyAlert();
       NotificationToast({msg: msg});
     });
-  }, [user]);
+  }, [user.id]);
 
   const playNotifyAlert = () => {
     const audio = new Audio('notification_sound.mp3');
