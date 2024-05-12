@@ -15,8 +15,19 @@ class NotificationConsumer(WebsocketConsumer):
             self.close()
             return
 
-        # create user channel based on id
-        self.user_channel = "user_%s" % self.user_connected
+        try:
+            self.connection_type = self.scope["url_route"]["kwargs"]["type"]
+            print('type', self.connection_type)
+            if self.connection_type in ['confirm_auto_order']:
+                self.user_channel = "user_%s_%s" % (self.user_connected, self.connection_type)
+            else:
+                # create user channel based on id
+                self.user_channel = "user_%s" % self.user_connected
+        except:
+            # create user channel based on id
+            self.user_channel = "user_%s" % self.user_connected
+
+        print('channel', self.user_channel)
 
         # add user to his channel group
         async_to_sync(self.channel_layer.group_add)(self.user_channel, self.channel_name)
@@ -37,9 +48,9 @@ class NotificationConsumer(WebsocketConsumer):
             message = text_data
 
         # send back the message for validation
-        # async_to_sync(self.channel_layer.group_send)(
-        #     self.user_channel, {"type": "notify_user", "message": 'sucess!'}
-        # )
+        async_to_sync(self.channel_layer.group_send)(
+            self.user_channel, {"type": "notify_user", "message": text_data}
+        )
 
     def notify_user(self, event):
         message = event["message"]
@@ -55,6 +66,12 @@ class NotificationManager:
         user_channel = "user_%s" % str(user_id)
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(user_channel, {"type": "notify_user", "message": message})
+
+
+def send_confirmation(message, user_id, type):
+    user_channel = "user_%s_%s" % (str(user_id), type)
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(user_channel, {"type": "notify_user", "message": message})
 
 
 class SimulationConsumer(AsyncWebsocketConsumer):

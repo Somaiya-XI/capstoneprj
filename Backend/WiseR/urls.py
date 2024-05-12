@@ -43,5 +43,6 @@ urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 websocket_urlpatterns = [
     path("ws/notifications/<str:user_id>/", NotificationConsumer.as_asgi()),
+    path("ws/notifications/<str:user_id>/<str:type>/", NotificationConsumer.as_asgi()),
     path("ws/updates/", SimulationConsumer.as_asgi()),
 ]

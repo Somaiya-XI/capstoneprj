@@ -21,9 +21,30 @@ const UserContextProvider = ({children}) => {
     // connecting to websocket
     const socket = new WebSocket(`${WS_API}/ws/notifications/${user.id}/`);
 
+    const auto_ord_socket = new WebSocket(`${WS_API}/ws/notifications/${user.id}/confirm_auto_order/`);
+
     // // sending a confirm msg to the backend [For Testing]
     socket.addEventListener('open', (event) => {
       socket.send('Socket Connection established');
+    });
+
+    auto_ord_socket.addEventListener('open', (event) => {
+      socket.send('Socket Connection established');
+    });
+
+    auto_ord_socket.addEventListener('message', (event) => {
+      const data = JSON.parse(event.data);
+      const msg = data.message;
+      console.log('Message from server ', msg);
+      const {message, cart} = msg;
+      if (message === 'confirmation required') {
+        // const {expiry_date, bulk_qyt, days_to_expiry, product} = cart;
+        console.log('Message from server ', message);
+      }
+
+      setUserNotifications((prevMessages) => [...prevMessages, msg]);
+      // playNotifyAlert();
+      NotificationToast({msg: msg});
     });
 
     // Listener to any message coming from the server
