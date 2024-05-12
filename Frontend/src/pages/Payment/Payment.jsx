@@ -99,7 +99,7 @@ const ProductDisplay = () => {
   
       const { data } = await ax.put(
         `${API}payment/pay-by-wallet/`,
-         requestData
+         {shipping_address: address, order_type: "BASIC",},
       );
   
       console.log("Response Data:", data);
@@ -172,14 +172,14 @@ const ProductDisplay = () => {
           <BreadcrumbItem onClick={() => navigate('/cart')} startContent={<CiShoppingCart />}>Cart</BreadcrumbItem>
           <BreadcrumbItem startContent={<IoBagCheckOutline className='text-[#a3e189]' />}>Checkout</BreadcrumbItem>
         </Breadcrumbs>
-        <form
+        {/* <form
             action={`${
               import.meta.env.VITE_API_URL
             }cart/create-checkout-session/`}
             method="POST"
           >
             <Button type="submit">Pay By Credit Card</Button>
-          </form> 
+          </form>  */}
 
         <section className="flex justify-between">
           <div className='container-fluid '>
