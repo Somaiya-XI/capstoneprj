@@ -56,7 +56,9 @@ def create_product(request):
                 },
                 # images=[serializer.data['product_img']],
             )
-            return JsonResponse({'message': 'Product created successfully.'}, status=201)
+            return JsonResponse(
+                {'message': 'Product created successfully.'}, status=201
+            )
         else:
             return JsonResponse(serializer.errors, status=400)
     except Exception as e:
@@ -100,12 +102,16 @@ def update_product(request):
 
         # check if the user updating is the actual supplier
         if product.supplier_id != request.user.id:
-            return JsonResponse({'message': 'You are not authorized to update this product'})
+            return JsonResponse(
+                {'message': 'You are not authorized to update this product'}
+            )
 
         if request.method == 'PUT':
 
             # update the product using the serializer
-            serializer = ProductCatalogSerializer(product, data=request.data, partial=True)
+            serializer = ProductCatalogSerializer(
+                product, data=request.data, partial=True
+            )
             if serializer.is_valid():
                 serializer.save()
 
@@ -130,16 +136,16 @@ def update_product(request):
         elif request.method == 'DELETE':
             # delete the product if the request is delete
             product.delete()
-            return JsonResponse({'message': 'Product deleted'}, status=200)
 
             # delete the product in stripe
+            load_dotenv()
+            stripe.api_key = os.environ['STRIPE_SECRET_KEY']
+            stripe.Product.modify(
+                product.product_id,
+                active=False,
+            )
+            return JsonResponse({'message': 'Product deleted'}, status=200)
 
-            # load_dotenv()
-            # stripe.api_key = os.environ['STRIPE_SECRET_KEY']
-            # stripe.Product.modify(
-            #     product.product_id,
-            #     active=False,
-            # )
     except Exception as e:
         return JsonResponse({'error': f'something went wrong, err: {e}'}, status=400)
 
@@ -187,7 +193,8 @@ def view_catalog_products(request):
 
         product_data = {
             'product_id': product_serialized.data['product_id'],
-            'product_img': os.environ['BASE_URL'] + str(product_serialized.data['product_img']),
+            'product_img': os.environ['BASE_URL']
+            + str(product_serialized.data['product_img']),
             'product_name': product_serialized.data['product_name'],
             'category': product_serialized.data['category'],
             'brand': product_serialized.data['brand'],
