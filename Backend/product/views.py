@@ -54,7 +54,7 @@ def create_product(request):
                     "currency": 'usd',
                     "unit_amount_decimal": serializer.data['new_price'] * 100,
                 },
-                images=[serializer.data['product_img']],
+                # images=[serializer.data['product_img']],
             )
             return JsonResponse({'message': 'Product created successfully.'}, status=201)
         else:
@@ -63,7 +63,7 @@ def create_product(request):
         return JsonResponse({'error': f'something went wrong, err: {e}'})
 
 
-def create_stripe_product(id, name, price, image):
+def create_stripe_product(id, name, price):
 
     load_dotenv()
     stripe.api_key = os.environ['STRIPE_SECRET_KEY']
@@ -74,7 +74,6 @@ def create_stripe_product(id, name, price, image):
             "currency": 'usd',
             "unit_amount_decimal": price * 100,
         },
-        images=image,
     )
     return JsonResponse({'message': 'product created successfully'})
 
