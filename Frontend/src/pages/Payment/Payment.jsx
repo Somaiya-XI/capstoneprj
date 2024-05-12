@@ -36,6 +36,7 @@ import { API, imgURL } from "@/backend";
 
 const ProductDisplay = () => {
   const [address, setAddress] = useState([]);
+  const [Newaddress, setNewAddress] = useState("");
   const navigate = useNavigate();
   const message = "Your payment is done successfully";
   const [isAccordtion, setIsActive] = useState(false);
@@ -60,19 +61,32 @@ const ProductDisplay = () => {
   };
 
 
+  const fetchAddresses = async () => {
+    axios.get(`${API}user/${user.id}`, {
+      withCredentials: true,
+    })
+      .then(response => {
+        const addressString = response.data.address;
+        console.log("hi check this", addressString)
+        setNewAddress(addressString);
+      })
+      .catch(err => console.log(err));
+  };
+
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
+
   const PayByCreditCard = async () => {
     try {
       const requestData = {
         user_id: user.id,
-        shipping_address: address,
+        shipping_address: Newaddress,
         order_type: "BASIC"
       };
-  
       const form = document.createElement('form');
       form.setAttribute('method', 'POST');
       form.setAttribute('action', `${import.meta.env.VITE_API_URL}order/create-checkout-session/`);
-  
-      // Add data as hidden input fields to the form
       Object.keys(requestData).forEach(key => {
         const input = document.createElement('input');
         input.setAttribute('type', 'hidden');
@@ -80,26 +94,24 @@ const ProductDisplay = () => {
         input.setAttribute('value', requestData[key]);
         form.appendChild(input);
       });
-  
-      // Append the form to the document body and submit it
       document.body.appendChild(form);
       form.submit();
     } catch (error) {
       console.error("Error:", error);
-      // Handle error if necessary
     }
   };
   
   const PayByWallet = async () => {
     try {
       const requestData = {
-        shipping_address: address,
+        shipping_address: Newaddress,
         order_type: "BASIC"
       };
+      console.log(requestData);
   
       const { data } = await ax.put(
         `${API}payment/pay-by-wallet/`,
-         {shipping_address: address, order_type: "BASIC",},
+         {shipping_address: Newaddress, order_type: "BASIC",},
       );
   
       console.log("Response Data:", data);
@@ -116,6 +128,8 @@ const ProductDisplay = () => {
       CustomErrorToast({ msg: 'Something went wrong! please try again', duration: 1500 });
     }
   };
+
+  
   const PlaceOrder = () => {
     if (address.length === 0) {
       CustomErrorToast({ msg: 'Shipping Address must be added', duration: 1500 });
@@ -375,5 +389,4 @@ export default function App() {
 
   return message ? <Message message={message} /> : <ProductDisplay />;
 }
-
 
