@@ -54,7 +54,7 @@ const Schedule = () => {
       [name]: e.target.value,
     });
   };
-  const handleonAdd = (event) => {
+  const handleScheduleAdd = (event) => {
     event.preventDefault();
     if (!dataForm.day || !dataForm.time) {
       toast.error("All fields are required.");
@@ -127,7 +127,7 @@ const Schedule = () => {
               <Button color="danger" variant="flat" onClick={handleClose}>
                 Cancel
               </Button>
-              <Button color="primary" onClick={handleonAdd}>
+              <Button color="primary" onClick={handleScheduleAdd}>
                 Submit
               </Button>
             </ModalFooter>

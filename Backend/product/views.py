@@ -39,16 +39,16 @@ def create_product(request):
         serializer.save()
 
         load_dotenv()
-        stripe.api_key = os.environ['STRIPE_SECRET_KEY']
-        stripe.Product.create(
-            id=serializer.data['product_id'],
-            name=serializer.data['product_name'],
-            default_price_data={
-                "currency": 'usd',
-                "unit_amount_decimal": serializer.data['new_price'] * 100,
-            },
-            images=[serializer.data['product_img']],
-        )
+        # stripe.api_key = os.environ['STRIPE_SECRET_KEY']
+        # stripe.Product.create(
+        #     id=serializer.data['product_id'],
+        #     name=serializer.data['product_name'],
+        #     default_price_data={
+        #         "currency": 'usd',
+        #         "unit_amount_decimal": serializer.data['new_price'] * 100,
+        #     },
+        #     images=[serializer.data['product_img']],
+        # )
         return JsonResponse({'message': 'Product created successfully.'}, status=201)
     else:
         return JsonResponse(serializer.errors, status=400)

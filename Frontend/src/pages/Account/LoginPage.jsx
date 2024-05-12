@@ -1,15 +1,15 @@
 import './form.css';
 import loginImg from '../../assets/loginImage.webp';
 
-import {useEffect, useReducer} from 'react';
-import {useUserContext, useCsrfContext} from '../../Contexts/index.jsx';
-import {Navigate} from 'react-router-dom';
+import { useEffect, useReducer } from 'react';
+import { useUserContext, useCsrfContext } from '../../Contexts/index.jsx';
+import { Navigate } from 'react-router-dom';
 
-import {FormsContainer, UiwLogin, EmailFeild, PasswordFeild, FormButton} from '../../Components/index.jsx';
+import { FormsContainer, UiwLogin, EmailFeild, PasswordFeild, FormButton } from '../../Components/index.jsx';
 
 const Login = () => {
-  const {setUser, user} = useUserContext();
-  const {isAuthenticated, getSession, logUserIn, setIsAuthenticated, setCSRF} = useCsrfContext();
+  const { setUser, user } = useUserContext();
+  const { isAuthenticated, getSession, logUserIn, setIsAuthenticated, setCSRF } = useCsrfContext();
 
   const initState = {
     email: '',
@@ -20,11 +20,11 @@ const Login = () => {
   const reducer = (state, action) => {
     switch (action.type) {
       case 'input':
-        return {...state, error: '', [action.field]: action.value};
+        return { ...state, error: '', [action.field]: action.value };
       case 'reset':
         return initState;
       case 'error':
-        return {...state, error: action.value};
+        return { ...state, error: action.value };
       default:
         return state;
     }
@@ -33,8 +33,8 @@ const Login = () => {
   const [state, dispatch] = useReducer(reducer, initState);
 
   const links = [
-    {link: '/register', text: 'Register'},
-    {link: '/forgot-password', text: 'Forgot password?'},
+    { link: '/register', text: 'Register' },
+    { link: '/forgot-password', text: 'Forgot password?' },
   ];
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const Login = () => {
         setCSRF(csrfToken);
         const current_user = response.data.user;
         setUser((oldUser) => {
-          return {...oldUser, ...current_user};
+          return { ...oldUser, ...current_user };
         });
         setIsAuthenticated(true);
         dispatch({
@@ -91,9 +91,9 @@ const Login = () => {
           handleSubmit={handleSubmit}
           formImage={loginImg}
         >
-          <EmailFeild value={state.email} onChange={handleChange('email')} />
-          <PasswordFeild value={state.password} onChange={handleChange('password')} />
-          <FormButton text='Log In' />
+          <EmailFeild value={state.email} onChange={handleChange('email')} data-test='email-test' />
+          <PasswordFeild value={state.password} onChange={handleChange('password')} data-test='pwd-test' />
+          <FormButton text='Log In' data-test='login-confirm-test' />
         </FormsContainer>
       </>
     );

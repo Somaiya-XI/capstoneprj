@@ -6,8 +6,9 @@ import ScheduleCard from '../Schedule/ScheduleCard';
 import { useUserContext, useCsrfContext } from '@/Contexts';
 import { API } from '../../../../backend';
 import { fileToBase64, imgUrlToBase64 } from '../../../../Helpers';
-import { Tooltip } from '@nextui-org/react';
+import { Tooltip, Button } from '@nextui-org/react';
 import { toast } from 'sonner';
+// import { CustomSuccessToast } from '@/Components/FormComponents/CustomAlerts';
 
 const EditProduct = () => {
   const [categories, setCategories] = useState([])
@@ -109,6 +110,7 @@ const EditProduct = () => {
         withCredentials: true,
       })
       .then((response) => {
+        CustomSuccessToast({msg: "Product edited successfully!", dur:5000});
         navigate('/supplier-dashboard/products');
       })
       .catch((err) => {
@@ -321,7 +323,7 @@ const EditProduct = () => {
               />
             </div> */}
             <div className="form-group" style={{ display: 'flex', flexDirection: 'column', marginBottom: '20px' }}>
-              <button type="submit" className="AddButton2" >Submit</button>
+              <Button type="submit" className="bg-[#023c07] text-white mt-4 size-24 h-10" >Submit</Button>
             </div>
           </form>
 

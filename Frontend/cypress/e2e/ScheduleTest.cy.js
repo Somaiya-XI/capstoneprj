@@ -5,22 +5,92 @@
 //   });
 // });
 
-// // Add Schedule
+// Suppl
 
-// GET Request For the Schedule Page
-describe("Get Requests", () => {
-  it("GET Call", () => {
-    cy.request('GET', 'http://127.0.0.1:8000/schedule/view/3/')
-      .then((response) => {
-        response = "Success!"
-      });
+// Cypress.Commands.add('getDataTest', (testSelector) => {
+//   return cy.get(`[data-test="${testSelector}"]`); 
+// });
 
-  })
-  it('Objects on Table Body', () => {
-    cy.visit("http://localhost:5173/supplier-dashboard/schedule/").should('exist').wait(1000);
-  }
-  )
+// describe('', () => {
+//   it('Successful Login', () => {
+//     cy.visit('http://localhost:5173/login');
+//     cy.getDataTest('email-test').type('retailer@wiser.co{enter}');
+//     cy.getDataTest('pwd-test').type('Validpass0');
+//     cy.contains('button', 'Log In').click()
+//   });
+// });
+
+
+describe('Supplier Login', () => {
+  let data; // closure variable
+
+  before(() => {
+    cy.fixture('credentials').then((fData) => {
+      data = fData;
+    });
+  });
+
+  it('Login correct', () => {
+    cy.visit('http://localhost:5173/login');
+
+    cy.get('email-test').type(data.supplier.username); // usage of closure variable to get the values from the fixtures
+    cy.get('pwd-test').type(data.supplier.password);
+    cy.get('form-confirm-test').click();
+
+    // assertion
+    cy.contains('Dashboard').should('be.visible');
+  });
 });
+
+
+
+
+
+
+// describe("GET Request For the Schedule Page", () => {
+//   it("GET Call", () => {
+//     cy.request('GET', 'http://127.0.0.1:8000/schedule/view/3/')
+//       .then((response) => {
+//         response = "Success!"
+//       });
+
+//   })
+//   it('Objects on Table Body', () => {
+//     cy.visit("http://localhost:5173/supplier-dashboard/schedule/").should('exist').wait(1000);
+//   }
+//   )
+// });
+
+
+// describe("Get Requests", () => {
+//   it("GET Call", () => {
+//     cy.request('GET', 'http://127.0.0.1:8000/schedule/view/3/')
+//       .then((response) => {
+//         response = "Success!"
+//       });
+
+//   })
+//   it('Objects on Table Body', () => {
+//     cy.visit("http://localhost:5173/supplier-dashboard/schedule/").should('exist').wait(1000);
+//   }
+//   )
+// });
+
+// describe('POST Request', () => {
+//   it('Schedule Form', () => {
+//     cy.visit("http://localhost:5173/supplier-dashboard/schedule");
+//     cy.get('[id="add-schedule"]').wait(800).click();
+//     cy.get('[id="add-scheduleform"]').should('exist');
+//     cy.get('[id="weekday"]').contains('Sunday');
+//     // cy.request('POST', 'http://127.0.0.1:8000/schedule/create/', {})
+//     //   .then((response) => {
+//     //     response = "Success!"
+//     //   });
+
+
+//   });
+// });
+
 
 // DELETE Request For the Schedule Page
 // describe("DELETE Requests", () => {
@@ -61,19 +131,6 @@ describe("Get Requests", () => {
 
 
 
-
-
-
-
-describe('POST Request', () => {
-  it('Schedule Form', () => {
-    cy.visit("http://localhost:5173/supplier-dashboard/schedule");
-    cy.get('[id="add-schedule"]').wait(800).click();
-    cy.get('[id="add-scheduleform"]').should('exist');
-    cy.get('[id="weekday"]').contains('Sunday')
-
-  });
-});
 
 
 // describe('Schedule Component', () => {

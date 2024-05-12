@@ -14,6 +14,7 @@ import { useCsrfContext } from "../../../../Contexts";
 import { API } from "@/backend";
 import { toast } from "sonner";
 import { Tooltip } from "@nextui-org/react";
+// import { CustomSuccessToast } from "@/Components/FormComponents/CustomAlerts";
 
 const formItemLayout = {
   labelCol: {
@@ -74,7 +75,7 @@ const AddProduct = () => {
       );
 
       console.log(response.data);
-      alert("Data Sent");
+      CustomSuccessToast({msg: "Product created successfully!", dur:5000});
       navigate("/supplier-dashboard/products");
     } catch (err) {
       toast.error('Error occurred while submitting data. Please try again.');
@@ -103,7 +104,7 @@ const AddProduct = () => {
     <SupplierLayout>
       <div className="SupplierDashboard">
         <div className="DashboardContent">
-          <h3 className="HeaderTitle">Add Product</h3>
+          <h3 className='d-block font-bold px-5'>Add Product</h3>
         </div>
         <Form
           className="AddForm"
@@ -132,9 +133,9 @@ const AddProduct = () => {
               }}
             />
           </Form.Item>
-          {inputData.product_img && (
+          {/* {inputData.product_img && (
             <img src={inputData.product_img} alt="Product" />
-          )}
+          )} */}
           <Form.Item
             label="Product Tag ID"
             name="tag_id"
@@ -242,9 +243,10 @@ const AddProduct = () => {
             />
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
-            <Button type="primary" className="AddButton2" htmlType="submit">
+            <Button type="primary" className='bg-[#023c07] text-white mt-4 size-24 h-10' htmlType="submit">
               Submit
             </Button>
+
           </Form.Item>
         </Form>
       </div>

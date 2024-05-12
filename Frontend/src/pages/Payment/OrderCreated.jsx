@@ -7,11 +7,11 @@ import axios from 'axios';
 import {useNavigate} from "react-router-dom";
 
 const OrderCreated = () => {
-    const [formData, setFormData] = useState({});
-    const [showOrderDetails, setShowOrderDetails] = useState(true);
+    const [orderDetails, setOrderDetails] = useState({});
+    const [ViewOrderDetails, setViewOrderDetails] = useState(true);
 
     const toggleOrderDetails = () => {
-        setShowOrderDetails(!showOrderDetails);
+        setViewOrderDetails(!ViewOrderDetails);
     };
 
     const OrderSummary = async () => {
@@ -20,7 +20,7 @@ const OrderCreated = () => {
                 withCredentials: true,
             });
             console.log("Fetched data:", response.data);
-            setFormData(response.data);
+            setOrderDetails(response.data);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -35,7 +35,7 @@ const OrderCreated = () => {
             <BasicNav />
             <div className="flex items-center justify-center h-screen">
                 <div className="flex flex-col items-center justify-center text-center font-bold text-4xl">
-                    {showOrderDetails && (
+                    {ViewOrderDetails && (
                         <Iconify-icon
                             className='inline'
                             icon='line-md:circle-to-confirm-circle-twotone-transition'
@@ -46,24 +46,24 @@ const OrderCreated = () => {
                             style={{ color: '#008040' }}
                         />
                     )}
-                    {showOrderDetails ? (
+                    {ViewOrderDetails ? (
                         <h1 className="text-3xl mt-4">Order has been created Successfully!</h1>
                     ) : (
                         <div>
-                            {formData && (
+                            {orderDetails && (
                                 <div className="text-left text-4xl mt-4">
-                                <p>Order ID: {formData.order_id}</p>
-                                <p>Order Date: {formData.order_date}</p>
-                                <p>Payment Method: {formData.payment_method}</p>
-                                <p>Total Price: {formData.total_price}</p>
-                                <p>Shipping Address: {formData.shipping_address}</p>
+                                <p>Order ID: {orderDetails.order_id}</p>
+                                <p>Order Date: {orderDetails.order_date}</p>
+                                <p>Payment Method: {orderDetails.payment_method}</p>
+                                <p>Total Price: {orderDetails.total_price}</p>
+                                <p>Shipping Address: {orderDetails.shipping_address}</p>
                               </div>
                               
                             )}
                         </div>
                     )}
                     <div className="mt-4">
-                        {showOrderDetails ? (
+                        {ViewOrderDetails ? (
                             <p className="underline cursor-pointer" onClick={toggleOrderDetails}>VIEW ORDER DETAILS</p>
                         ) : null}
                         {/* Add additional content here */}

@@ -45,18 +45,11 @@ export default function Products() {
   const {csrf} = useCsrfContext();
   const [dataSource, setDataSource] = useState([
     {
-      product_img: '',
-      product_id: '',
-      product_name: '',
-      brand: '',
-      description: '',
-      category: '',
-      price: '',
-      new_price: '',
-      discount_percentage: '',
-      quantity: '',
-      min_order_quantity: '',
-      tag_id: '',
+      order_id:'',
+      retailer:'',
+      order_date:'',
+      total_price:'',
+      shipping_address:'',
       key: '',
     },
   ]);
@@ -66,7 +59,6 @@ export default function Products() {
       const response = await axios.get(`${API}order/view-supplier-orders/`, {
         withCredentials: true,
       });
-      console.log('Check it:', csrf);
 
       const productsWithKeys = response.data.map((product) => ({
         ...product,
@@ -80,6 +72,23 @@ export default function Products() {
       console.error(error.data);
     }
   };
+
+  const fetchOrders = () => {
+    ax
+    .get(`${API}order/view-supplier-orders/`, {user_id:user.id})
+      .then((response) => {
+        console.log(response.data);
+        setDataSource(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    fetchProducts();
+    fetchOrders();
+  }, []);
   
 
   useEffect(() => {
@@ -161,6 +170,8 @@ export default function Products() {
         },
         withCredentials: true,
       });
+
+      // UpdateOrderItemStatus
 
       console.log('Product deleted successfully:', id);
 

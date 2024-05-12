@@ -33,7 +33,7 @@ export default function Shipment({address, setAddress}) {
   const { user } = useUserContext();
   const [loading, setLoading] = useState(true);
   const [editIndex, setEditIndex] = useState(null);
-  const [formData, setFormData] = useState({
+  const [AddressData, setAddressData] = useState({
     state: "",
     city: "",
     district: "",
@@ -43,7 +43,7 @@ export default function Shipment({address, setAddress}) {
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setAddressData({ ...AddressData, [e.target.name]: e.target.value }); 
   };
 
   const fetchAddresses = async () => {
@@ -70,8 +70,8 @@ export default function Shipment({address, setAddress}) {
   }, [loadState]);
   
 
-  const handleSubmit = async () => {
-    const { state, city, district, street } = formData;
+  const UpdateAddress = async () => {
+    const { state, city, district, street } = AddressData;
     if (!state || !city || !district || !street) {
       setError("This field is required");
     } else {
@@ -97,7 +97,7 @@ export default function Shipment({address, setAddress}) {
   };
 
 
-  const handleDelete = (index) => {
+  const handleAddressDelete = (index) => {
     axios.put(
       `${import.meta.env.VITE_API_URL}user/update/${user.id}/`,
       { address: null }
@@ -113,7 +113,7 @@ export default function Shipment({address, setAddress}) {
 
   const handleEdit = (index) => {
     const editedAddress = address[index];
-    setFormData({
+    setAddressData({
       state: editedAddress.state,
       city: editedAddress.city,
       district: editedAddress.district,
@@ -153,7 +153,7 @@ export default function Shipment({address, setAddress}) {
                   <CardHeader className="justify-between p-1">
                     <p className="text-md text-black">Shipping</p>
                     <div className="flex gap-3 mb-3 mx-2">
-                        <Popconfirm title='Sure to delete?' onConfirm={() => handleDelete(index)}>
+                        <Popconfirm title='Sure to delete?' onConfirm={() => handleAddressDelete(index)}>
                           <DeleteOutlined className="text-rose-500 size-3 cursor-pointer"/>
                         </Popconfirm>
                       
@@ -181,9 +181,9 @@ export default function Shipment({address, setAddress}) {
                 label="State"
                 placeholder="Enter your state"
                 variant="bordered"
-                value={formData.state}
+                value={AddressData.state}
                 onChange={handleChange}
-                errorMessage={!formData.state && error}
+                errorMessage={!AddressData.state && error}
               />
               <Input
                 name="city"
@@ -191,9 +191,9 @@ export default function Shipment({address, setAddress}) {
                 label="City"
                 placeholder="Enter your city"
                 variant="bordered"
-                value={formData.city}
+                value={AddressData.city}
                 onChange={handleChange}
-                errorMessage={!formData.city && error}
+                errorMessage={!AddressData.city && error}
               />
               <Input
                 name="district"
@@ -201,9 +201,9 @@ export default function Shipment({address, setAddress}) {
                 label="District"
                 placeholder="Enter your district"
                 variant="bordered"
-                value={formData.district}
+                value={AddressData.district}
                 onChange={handleChange}
-                errorMessage={!formData.district && error}
+                errorMessage={!AddressData.district && error}
               />
               <Input
                 name="street"
@@ -211,16 +211,16 @@ export default function Shipment({address, setAddress}) {
                 label="Street"
                 placeholder="Enter your street"
                 variant="bordered"
-                value={formData.street}
+                value={AddressData.street}
                 onChange={handleChange}
-                errorMessage={!formData.street && error}
+                errorMessage={!AddressData.street && error}
               />
             </ModalBody>
             <ModalFooter>
               <Button color="danger" variant="flat" onClick={onClose}>
                 Cancel
               </Button>
-              <Button color="primary" onClick={handleSubmit}>
+              <Button color="primary" onClick={UpdateAddress}>
                 Submit
               </Button>
             </ModalFooter>

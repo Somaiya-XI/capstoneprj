@@ -75,7 +75,7 @@ const ScheduleCard = () => {
     fetchSchedules();
   }, []);
 
-  const onDeleteProduct = (key, selectedKey) => {
+  const handleScheduleDelete = (key, selectedKey) => {
     const newData = {...dataForm};
     delete newData[key];
     setFormData(newData);
@@ -98,7 +98,7 @@ const ScheduleCard = () => {
     fetchSchedules();
   };
 
-  const handleEdit = (key) => {
+  const handleScheduleEdit = (key) => {
     setSelectedKey(key);
     setEditedData(dataForm[key]);
     onOpen();
@@ -145,14 +145,14 @@ const ScheduleCard = () => {
                   <div className='relative flex items-center gap-3'>
                     <span
                       className='text-lg text-default-400 cursor-pointer active:opacity-50'
-                      onClick={() => handleEdit(key)}
+                      onClick={() => handleScheduleEdit(key)}
                     >
                       <EditIcon />
                     </span>
 
                     <Popconfirm
                       title='Sure to delete?'
-                      onConfirm={() => onDeleteProduct(dataForm[key].id, selectedKey)}
+                      onConfirm={() => handleScheduleDelete(dataForm[key].id, selectedKey)}
                     >
                       <span className='text-lg text-danger cursor-pointer active:opacity-50'>
                         <DeleteIcon />
