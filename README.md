@@ -1,59 +1,35 @@
 # Capstone Project - WiseR
 
+## Pre-Requiset
+
+- You shall have access to .env varibles of the frontend and backend
+- Replace the .env files in each directory with the correct env content
+
 ## Installation
 
-- Make sure you have Python 3.11 installed on your system
+- Make sure you have Docker installed on your system, and it is running
 - Clone the repository to your local machine
 
-### Navigate to the project directory (the one containing Pipfile, Pipfile.lock)
+### Navigate to the project directory (the one containing docker-compose)
 
 ```bash
 cd capstoneprj
 ```
 
-### Install the virtual environment
-
 ```bash
-pip install pipenv
+docker-compose up --build
 ```
+
 ## Usage
 
-### Activate the virtual environment
+### When build is done, run the container using
 
 ```bash
-pipenv shell
+docker-compose up
 ```
 
-### Run the following command to installl the required packages/dependencies
+Open your web browser and visit http://localhost:5173 to access the website
 
-```bash
-pipenv sync
-```
+You can preview different users if you have access to Admin, Retailer, Supplier accounts
 
-### Start the Django server
-
-```bash
-cd Backend
-```
-```bash
-python manage.py runserver
-```
-
-### To run the frontend app, navigate to the Frontend directory that is in the main project directory 
-
-```bash
-cd Frontend
-```
-### Install Node Package Manager
-
-```bash
-npm install 
-```
-### Intiate the development mode
-
-```bash
-npm run dev 
-```
-
-Open your web browser and visit http://localhost:8000 and create a new superuser or login using the admin credentials
-
+To access the server admin panel and database visit http://127.0.0.1:8000 and login with given superuser credintials
