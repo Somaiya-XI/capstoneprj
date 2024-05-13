@@ -15,9 +15,8 @@ import {
 } from './url.jsx';
 import {Toaster} from 'sonner';
 import {AdminRoute, SupplierRoute, RetailerRoute} from "@/Components"
-import {Register, Login, UserActivation, ForgotPassword, ResetPassword, Cart, HardwareSimulation, FourOhFour, RetDashboard, BulkView, ProductView, SmartDashboard} from '@/pages';
+import {Register, Login, UserActivation, ForgotPassword, ResetPassword, Cart, HardwareSimulation, FourOhFour, RetDashboard, BulkView, ProductView, SmartCart, DeviceRegister} from '@/pages';
 import {UserContextProvider,CsrfTokenContextProvider,CartContextProvider} from '@/Contexts'
-import NotificationComponent from './pages/NotificationTest.jsx';
 
 function App() {
   return (
@@ -48,13 +47,13 @@ function App() {
                 <Route path='/payment' element={<RetailerRoute><Payment /></RetailerRoute>} />
                 <Route path='/order-created' element={<RetailerRoute><OrderCreated/></RetailerRoute>}/>
                 <Route path='/simulation' element={<HardwareSimulation />} />
-                <Route path='/retailer-dashboard/smart-dashboard' element={<RetailerRoute><SmartDashboard /></RetailerRoute>} />
+                <Route path='/retailer-dashboard/smart-dashboard' element={<RetailerRoute><SmartCart /></RetailerRoute>} />
                 <Route path='/retailer-dashboard' element={<RetailerRoute><RetDashboard /></RetailerRoute>} />
                 <Route path='/retailer-dashboard/settings' element={<RetailerRoute><SettingsLayout/></RetailerRoute>}></Route>
                 <Route path='/retailer-dashboard/my-products' element={<RetailerRoute><ProductView/></RetailerRoute>}></Route>
                 <Route path='/retailer-dashboard/my-products/view/:product_id' element={<RetailerRoute><BulkView/></RetailerRoute>}></Route>
                 <Route path='/retailer-dashboard/orders' element={<RetailerRoute><OrdersLayout/></RetailerRoute>}></Route>
-                <Route path='/notify' element={<NotificationComponent/>}></Route>
+                <Route path='/retailer-dashboard/device-register/' element={<RetailerRoute><DeviceRegister/></RetailerRoute>}></Route>
                 <Route path='/*' element={<FourOhFour></FourOhFour>}></Route>
               </Routes>
             </CartContextProvider>

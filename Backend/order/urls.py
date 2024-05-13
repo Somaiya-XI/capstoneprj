@@ -30,12 +30,10 @@ urlpatterns = [
         name='view_order_summary',
     ),
     path('view-orders-history/', views.view_orders_history, name='view_orders_history'),
-    path(
-        'view-supplier-orders/', views.view_supplier_orders, name='view_supplier_orders'
-    ),
+    path('view-supplier-orders/', views.view_supplier_orders, name='view_supplier_orders'),
     path(
         'make-auto-order/',
-        views_auto_order.make_auto_order,
+        views_auto_order.confirm_auto_order,
         name='make_auto_order',
     ),
     path("", include(router.urls)),

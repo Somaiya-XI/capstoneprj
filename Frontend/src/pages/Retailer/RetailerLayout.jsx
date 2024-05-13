@@ -54,7 +54,7 @@ const RetailerLayout = ({children}) => {
                   isInvisible={confirmationAlert == 0 ? true : false}
                   shape='circle'
                 >
-                  <Tooltip content={`you have ${confirmationAlert} orders to confirm`}>
+                  <Tooltip disableAnimation content={`you have ${confirmationAlert} orders to confirm`}>
                     <MessageCircleWarning
                       className='cursor-pointer'
                       onClick={() => navigate('/retailer-dashboard/smart-dashboard')}

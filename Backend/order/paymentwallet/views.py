@@ -21,21 +21,17 @@ from order.views import make_order
 def view_wallet_balance(request):
 
     # access the authenticated user
-    # if request.user.is_anonymous:
-    #     return JsonResponse(
-    #         {'message': 'You are not authenticated, log in then try again'}
-    #     )
+    if request.user.is_anonymous:
+        return JsonResponse({'message': 'You are not authenticated, log in then try again'})
 
-    # user_id = request.user.id
-    user_id = 17
+    user_id = request.user.id
+    # user_id = 17
 
     # get the user object
     try:
         retailer = Retailer.objects.get(id=user_id)
     except Retailer.DoesNotExist:
-        return JsonResponse(
-            {'message': 'You are not authorized to view the wallet balance'}
-        )
+        return JsonResponse({'message': 'You are not authorized to view the wallet balance'})
 
     # get the user payment wallet or create a new one if it doesn't exist
     payment_wallet = PaymentWallet.objects.get_or_create(retailer=retailer)
@@ -62,9 +58,7 @@ def charge_wallet(request):
     try:
         retailer = Retailer.objects.get(id=user_id)
     except Retailer.DoesNotExist:
-        return JsonResponse(
-            {'message': 'You are not authorized to charge the payment wallet'}
-        )
+        return JsonResponse({'message': 'You are not authorized to charge the payment wallet'})
 
     # collect the data from incoming request
     amount = request.data.get('amount')

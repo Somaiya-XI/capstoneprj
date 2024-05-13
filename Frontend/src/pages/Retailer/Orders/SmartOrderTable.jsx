@@ -47,7 +47,7 @@ const SmartOrder = ({data, total, setLoad}) => {
             value={filterValue}
             onValueChange={onSearchChange}
           />
-          <AutoOrderModal></AutoOrderModal>
+          <AutoOrderModal total={total}></AutoOrderModal>
         </div>
       </div>
     );

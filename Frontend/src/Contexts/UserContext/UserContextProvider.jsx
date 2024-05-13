@@ -43,7 +43,7 @@ const UserContextProvider = ({children}) => {
     const auto_ord_socket = new WebSocket(`${WS_API}/ws/notifications/${user.id}/confirm_auto_order/`);
 
     auto_ord_socket.addEventListener('open', (event) => {
-      socket.send('Socket Connection established');
+      socket.send('Confirmation established');
     });
 
     auto_ord_socket.addEventListener('message', (event) => {
@@ -53,6 +53,7 @@ const UserContextProvider = ({children}) => {
 
       if (msg === 'confirmation required') {
         setConfirmationAlert((x) => x + 1);
+        NotificationToast({msg: msg});
       }
     });
   }, [user.id]);
@@ -72,7 +73,8 @@ const UserContextProvider = ({children}) => {
         })
         .catch((err) => console.log(err));
     }
-  }, [user.id]);
+  }, [user]);
+
   const userValues = {
     user,
     setUser,

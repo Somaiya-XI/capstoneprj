@@ -7,18 +7,17 @@ from django.views.decorators.csrf import csrf_protect
 from django.http import JsonResponse
 from user.models import Retailer, Supplier
 import json
+from .paymentwallet.models import PaymentWallet
 
 
 @csrf_protect
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def make_auto_order(request):
+def confirm_auto_order(request):
 
     # access the authenticated user
     if request.user.is_anonymous:
-        return JsonResponse(
-            {'error': 'You are not authenticated, log in then try again'}
-        )
+        return JsonResponse({'error': 'You are not authenticated, log in then try again'})
 
     user_id = request.user.id
 
@@ -34,11 +33,22 @@ def make_auto_order(request):
     except Cart.DoesNotExist:
         return JsonResponse({'message': 'The items does not exist'})
 
-    # serialize the cart object
-    cart_serialized = CartSerializer(cart)
-    cart_serialized = json.dumps(cart_serialized.data)
+    try:
+        payment_wallet = PaymentWallet.objects.get(retailer=user_id)
+    except PaymentWallet.DoesNotExist:
+        return JsonResponse({'error': 'you have no payment wallet! '}, status=404)
 
-    confirmation = True
-    confirmation = json.dumps(confirmation)
+    if payment_wallet.balance >= cart.total:
 
-    make_auto_order.delay(cart_serialized, confirmation)
+        # serialize the cart object
+        cart_serialized = CartSerializer(cart)
+        cart_serialized = cart_serialized.data
+
+        confirmation = True
+        confirmation = json.dumps(confirmation)
+
+        make_auto_order.delay(cart_serialized, confirmation=confirmation)
+
+        return JsonResponse({'message': 'order under processing'}, status=200)
+
+    return JsonResponse({'error': 'Balance is Insuffecient !'}, status=400)

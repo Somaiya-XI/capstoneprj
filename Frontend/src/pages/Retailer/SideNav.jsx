@@ -1,8 +1,7 @@
 /** @format */
 
-import {Sparkles, Package, Store, Settings} from 'lucide-react';
+import {Sparkles, Package, Store, Settings, ShoppingBag} from 'lucide-react';
 import {useCsrfContext} from '@/Contexts';
-
 import Nav from '@/Components/ui/shadcnnav';
 
 export default function SideNavbar({collabsed}) {
@@ -30,8 +29,14 @@ export default function SideNavbar({collabsed}) {
             variant: 'ghost',
           },
           {
-            title: 'Go Smart!',
+            title: 'Smart Cart',
             href: '/retailer-dashboard/smart-dashboard',
+            icon: ShoppingBag,
+            variant: 'ghost',
+          },
+          {
+            title: 'Go Smart!',
+            href: '/retailer-dashboard/device-register',
             icon: Sparkles,
             variant: 'ghost',
           },

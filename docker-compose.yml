@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine3.19
+  django:
+    container_name: django
+    build:
+      context: ./Backend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./Backend:/usr/src/app/backend/
+    ports:
+      - 8000:8000
+    depends_on:
+      - redis
+  celery:
+    container_name: celery
+    build:
+      context: ./Backend
+    command: celery -A WiseR worker -l debug --pool=solo
+    volumes:
+      - ./Backend:/usr/src/app/backend/
+    depends_on:
+      - redis
+      - django
+  celery-beat:
+    container_name: celery-beat
+    build:
+      context: ./Backend
+    command: celery -A WiseR beat --scheduler django --loglevel=info
+    volumes:
+      - ./Backend:/usr/src/app/backend/
+    depends_on:
+      - redis
+      - django

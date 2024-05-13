@@ -13,7 +13,7 @@ import json
 def make_auto_order(cart, **kwargs):
 
     # access data
-    cart_id = json.loads(cart)['cart_id']
+    cart_id = cart.get('cart_id')
 
     # get the retailer's smart cart
     cart_data = Cart.objects.get(cart_id=cart_id)
@@ -40,8 +40,7 @@ def make_auto_order(cart, **kwargs):
                 pass
 
         # create the auto order only if the user confirmed
-        if confirmation == True or kwargs['confirmation'] == True:
-
+        if confirmation == True or json.loads(kwargs['confirmation']) == True:
             try:
                 # get payment wallet object
                 payment_wallet = PaymentWallet.objects.get(retailer=cart_data.user)
@@ -52,30 +51,27 @@ def make_auto_order(cart, **kwargs):
             if payment_wallet.balance >= cart_data.total:
 
                 # create the order
+                total_cost = cart_data.total
                 order_type = 'SMART'
                 payment_method = 'wallet'
                 payment_session_id = None
                 shipping_address = cart_data.user.address if any else " "
                 result = make_order(
-                    (
-                        cart_data.user.pk,
-                        order_type,
-                        payment_method,
-                        shipping_address,
-                        payment_session_id,
-                    )
+                    cart_data.user.pk,
+                    order_type,
+                    payment_method,
+                    shipping_address,
+                    payment_session_id,
                 )
                 if result == 'success':
                     # update the payment wallet balance after order created successfuly
-                    payment_wallet.balance -= cart_data.total
+                    payment_wallet.balance -= total_cost
                     payment_wallet.save()
 
                     return 'auto order created successfuly'
 
         # ask the user for confirmation
-        send_confirmation(
-            'confirmation required', cart_data.user.pk, 'confirm_auto_order'
-        )
+        send_confirmation('confirmation required', cart_data.user.pk, 'confirm_auto_order')
 
 
 @shared_task

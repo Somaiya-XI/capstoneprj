@@ -68,6 +68,10 @@ class NotificationManager:
         async_to_sync(channel_layer.group_send)(user_channel, {"type": "notify_user", "message": message})
 
 
+from celery import shared_task
+
+
+@shared_task
 def send_confirmation(message, user_id, type):
     user_channel = "user_%s_%s" % (str(user_id), type)
     channel_layer = get_channel_layer()

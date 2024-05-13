@@ -238,7 +238,7 @@ def view_smart_cart(request):
         cart_items = CartItem.objects.filter(cart=cart)
 
         itemsList = []
-        response_data = {"cart": str(cart.pk), 'products': itemsList, "total": cart.total}
+        response_data = {"cart": str(cart.pk), 'products': itemsList, "total": int(cart.total)}
 
         # add all cart items data
         for cart_item in cart_items:
