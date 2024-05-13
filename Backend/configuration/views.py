@@ -525,7 +525,6 @@ def update_product_order_config(request):
     config_type = request.data.get('config_type')
     quantity_reach_level = request.data.get('quantity_reach_level')
     ordering_amount = request.data.get('ordering_amount')
-    confirmation_status = request.data.get('confirmation_status')
 
     # check request data existance
     if not product_id:
@@ -546,9 +545,6 @@ def update_product_order_config(request):
             return JsonResponse(
                 {'error': 'ordering amount: please enter a value greater than 0'}
             )
-
-        if confirmation_status == None:
-            return JsonResponse({'error': 'please enter a valid input'})
 
     # get the supermarket product object
     try:
@@ -593,7 +589,7 @@ def update_product_order_config(request):
                 'type': 'SPECIAL',
                 'qunt_reach_level': quantity_reach_level,
                 'ordering_amount': ordering_amount,
-                'confirmation_status': confirmation_status,
+                'confirmation_status': False,
             },
         )
 
@@ -621,9 +617,6 @@ def update_product_order_config(request):
                     'qunt_reach_level'
                 ],
                 'ordering_amount': order_config_serialized.data['ordering_amount'],
-                'confirmation_status': order_config_serialized.data[
-                    'confirmation_status'
-                ],
             }
 
             return JsonResponse(
@@ -648,7 +641,6 @@ def update_product_order_config(request):
         data={
             'qunt_reach_level': quantity_reach_level,
             'ordering_amount': ordering_amount,
-            'confirmation_status': confirmation_status,
         },
         partial=True,
     )
@@ -660,7 +652,6 @@ def update_product_order_config(request):
         data = {
             'quantity_reach_level': config_serialized.data['qunt_reach_level'],
             'ordering_amount': config_serialized.data['ordering_amount'],
-            'confirmation_status': config_serialized.data['confirmation_status'],
         }
 
         return JsonResponse(
@@ -714,7 +705,6 @@ def view_product_order_config(request, product_id):
         response_data = {
             'quantity_reach_level': '',
             'ordering_amount': '',
-            'confirmation_status': False,
         }
 
         return JsonResponse(response_data, status=200)
@@ -732,7 +722,6 @@ def view_product_order_config(request, product_id):
     response_data = {
         'quantity_reach_level': order_config_serialized['qunt_reach_level'],
         'ordering_amount': order_config_serialized['ordering_amount'],
-        'confirmation_status': order_config_serialized['confirmation_status'],
     }
 
     return JsonResponse(response_data, status=200)
@@ -805,7 +794,6 @@ def delete_product_order_config(request):
     data = {
         'quantity_reach_level': '',
         'ordering_amount': '',
-        'confirmation_status': False,
     }
 
     return JsonResponse(

@@ -2,15 +2,16 @@ import Dropdown from "../Form/Dropdown/Dropdown";
 import "./navbar.css";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { API } from "@/backend";
+
 
 const NavbarMega = () => {
   const [categories, setCategories] = useState([]);
 
   const loadCategories = async () => {
     const { data } = await axios.get(
-      `${import.meta.env.VITE_API_URL}product/catalog-product/get-categories/`
+      `${API}product/catalog-product/get-categories/`
     );
-    console.log(data);
     setCategories(data);
   };
 

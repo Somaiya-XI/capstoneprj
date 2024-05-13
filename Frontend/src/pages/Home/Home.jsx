@@ -24,19 +24,16 @@ const Home = () => {
   const [searchInput, setSearchInput] = useState("");
 
   const handleChange = (e) => {
-    setSearchInput(  e.target.value );
-    console.log(e.target.value)
+    setSearchInput(e.target.value);
 };
 
   const loadCategories = async () => {
     const {data} = await axios.get(`${API}product/catalog-product/get-categories/`);
-    console.log(data);
     setCategories(data);
   };
 
   const loadProducts = async () => {
     const {data} = await axios.get(`${API}product/catalog-product/get-products/`);
-    console.log(data);
     setProducts(data);
   };
 

@@ -6,6 +6,8 @@ import { API, imgURL } from "../../backend";
 import { BasicNav } from "@/Components";
 import { Card, CardBody, Image, Button, Spacer } from "@nextui-org/react";
 import { CustomErrorToast } from "@/Components";
+import {CartButton} from '@/Components';
+
 
 const ProductDetail = () => {
   const [ProductData, setProductData] = useState([]);
@@ -58,14 +60,12 @@ const ProductDetail = () => {
         setQuantity(ProductData.min_order_quantity);
       }
     }
-    console.log(quantity);
   };
 
   const loadDetails = async () => {
     const { data } = await axios.get(
       `${API}product/catalog-product/get-product/${id}/`
     );
-    console.log(data);
     setProductData(data);
     setQuantity(data.min_order_quantity);
   };
@@ -181,6 +181,7 @@ const ProductDetail = () => {
                 </div>
               </div>
             </div>
+            <CartButton id={id} minAllowed={ProductData.min_order_quantity} stock={ProductData.quantity} />
           </CardBody>
         </Card>
       </div>

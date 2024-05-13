@@ -16,9 +16,18 @@ CELERY_INCLUDE = ['utils_config', 'product.utils', 'consumers', 'product.tasks']
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
     from product.tasks import reduce_days_to_expiry
+    from order.tasks import execute_make_auto_order
 
     sender.add_periodic_task(
-        crontab(hour=0, minute=0), reduce_days_to_expiry.s(), name='reduce_days_to_expiry_every_day'
+        crontab(hour=0, minute=0),
+        reduce_days_to_expiry.s(),
+        name='reduce_days_to_expiry_every_day',
+    )
+
+    sender.add_periodic_task(
+        crontab(hour=9, minute=0),
+        execute_make_auto_order.s(),
+        name='execute_make_auto_order_at9_every_day',
     )
 
 

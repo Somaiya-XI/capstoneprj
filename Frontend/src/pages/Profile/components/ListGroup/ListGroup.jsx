@@ -43,7 +43,6 @@ const ListGroup = () => {
     const { data } = await axios.get(
       `${API}user/${id}/`
     );
-    console.log(data);
     setValues({
       ...values,
       profile_picture: data.profile_picture,
@@ -103,8 +102,6 @@ const ListGroup = () => {
     setValues({ ...values, error: [] });
     update(user)
       .then((data) => {
-        console.log("Data", data);
-        console.log(Object.keys(data.data).length);
         if (Object.keys(data.data).length === 1) {
           if (data.data.hasOwnProperty("company_name")) {
             setValues({ ...values, error: data.data.company_name });

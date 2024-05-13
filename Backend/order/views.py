@@ -173,27 +173,36 @@ def make_order(
     try:
         cart = Cart.objects.get(user=user, type=order_type)
     except Cart.DoesNotExist:
-        return JsonResponse({'message': 'You do not have a cart'})
+        if order_type == 'BASIC':
+            return JsonResponse({'message': 'You do not have a cart'})
+        else:
+            return 'You do not have a cart'
 
     # get the current items within the cart
     current_cart_items = CartItem.objects.filter(cart=cart)
 
     # check the items existance
     if not current_cart_items:
-        return JsonResponse(
-            {'message': 'Please fill your cart, then proceed to check out'}
-        )
+        if order_type == 'BASIC':
+            return JsonResponse(
+                {'message': 'Please fill your cart, then proceed to check out'}
+            )
+        else:
+            return 'Please fill your cart, then proceed to check out'
 
     for current_cart_item in current_cart_items:
         if current_cart_item.quantity > current_cart_item.product.quantity:
-            return JsonResponse(
-                {
-                    'error': 'You can not order more than'
-                    + current_cart_item.product.quantity
-                    + 'of'
-                    + current_cart_item.product.product_name
-                }
-            )
+            if order_type == 'BASIC':
+                return JsonResponse(
+                    {
+                        'error': 'You can not order more than'
+                        + current_cart_item.product.quantity
+                        + 'of'
+                        + current_cart_item.product.product_name
+                    }
+                )
+            else:
+                return 'You can not order more than the available stock'
 
     # create new order using serializer
     order_serializer = OrderSerializer(
@@ -228,7 +237,10 @@ def make_order(
     # clear all items within the user's cart
     current_cart_items.delete()
 
-    return order_serializer.data['order_id']
+    if order_type == 'Basic':
+        return order_serializer.data['order_id']
+    else:
+        return 'success'
 
 
 @csrf_protect
