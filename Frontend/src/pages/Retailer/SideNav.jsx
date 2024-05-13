@@ -1,8 +1,7 @@
 /** @format */
 
 import {Sparkles, Package, Store, Settings} from 'lucide-react';
-import { useCsrfContext } from '@/Contexts';
-
+import {useCsrfContext} from '@/Contexts';
 
 import Nav from '@/Components/ui/shadcnnav';
 
@@ -32,7 +31,7 @@ export default function SideNavbar({collabsed}) {
           },
           {
             title: 'Go Smart!',
-            href: '/retailer-dashboard/device-register',
+            href: '/retailer-dashboard/smart-dashboard',
             icon: Sparkles,
             variant: 'ghost',
           },

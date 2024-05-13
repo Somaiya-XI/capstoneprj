@@ -1,10 +1,14 @@
 import UserContext from './UserContext';
 import {useState, useContext, useEffect} from 'react';
-import {WS_API} from '@/backend';
+import {WS_API, API} from '@/backend';
 import {toast} from 'sonner';
+import axios from 'axios';
 
 const UserContextProvider = ({children}) => {
   const [userNotifications, setUserNotifications] = useState([]);
+  const [confirmationAlert, setConfirmationAlert] = useState(0);
+  const [deviceId, setDeviceId] = useState();
+
   const [user, setUser] = useState(() => {
     const localUser = localStorage.getItem('user');
     try {
@@ -21,30 +25,9 @@ const UserContextProvider = ({children}) => {
     // connecting to websocket
     const socket = new WebSocket(`${WS_API}/ws/notifications/${user.id}/`);
 
-    const auto_ord_socket = new WebSocket(`${WS_API}/ws/notifications/${user.id}/confirm_auto_order/`);
-
     // // sending a confirm msg to the backend [For Testing]
     socket.addEventListener('open', (event) => {
       socket.send('Socket Connection established');
-    });
-
-    auto_ord_socket.addEventListener('open', (event) => {
-      socket.send('Socket Connection established');
-    });
-
-    auto_ord_socket.addEventListener('message', (event) => {
-      const data = JSON.parse(event.data);
-      const msg = data.message;
-      console.log('Message from server ', msg);
-      const {message, cart} = msg;
-      if (message === 'confirmation required') {
-        // const {expiry_date, bulk_qyt, days_to_expiry, product} = cart;
-        console.log('Message from server ', message);
-      }
-
-      setUserNotifications((prevMessages) => [...prevMessages, msg]);
-      // playNotifyAlert();
-      NotificationToast({msg: msg});
     });
 
     // Listener to any message coming from the server
@@ -56,6 +39,22 @@ const UserContextProvider = ({children}) => {
       // playNotifyAlert();
       NotificationToast({msg: msg});
     });
+
+    const auto_ord_socket = new WebSocket(`${WS_API}/ws/notifications/${user.id}/confirm_auto_order/`);
+
+    auto_ord_socket.addEventListener('open', (event) => {
+      socket.send('Socket Connection established');
+    });
+
+    auto_ord_socket.addEventListener('message', (event) => {
+      const data = JSON.parse(event.data);
+      const msg = data.message;
+      console.log('Message from server ', msg);
+
+      if (msg === 'confirmation required') {
+        setConfirmationAlert((x) => x + 1);
+      }
+    });
   }, [user.id]);
 
   const playNotifyAlert = () => {
@@ -63,11 +62,26 @@ const UserContextProvider = ({children}) => {
     audio.play();
   };
 
+  useEffect(() => {
+    if (user?.role === 'RETAILER') {
+      axios
+        .get(`${API}device/get-user-device/`, {withCredentials: true})
+        .then((resp) => {
+          console.log(resp.data);
+          setDeviceId(resp.data.id);
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [user.id]);
   const userValues = {
     user,
     setUser,
     userNotifications,
     setUserNotifications,
+    confirmationAlert,
+    setConfirmationAlert,
+    deviceId,
+    setDeviceId,
   };
 
   return <UserContext.Provider value={userValues}>{children}</UserContext.Provider>;

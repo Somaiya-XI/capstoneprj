@@ -6,6 +6,7 @@ export {default as UserActivation} from './Admin/ActivateUsers';
 export {default as Cart} from './Cart/Cart';
 export {default as HardwareSimulation} from './HardwareSet/HDsimulation';
 export {default as DeviceRegister} from './HardwareSet/DeviceRegister';
+export {default as SmartDashboard} from './Retailer/SmartDashboard';
 export {default as RetDashboard} from './Retailer/Dashboard';
 export {default as BulkView} from './Retailer/Products/BulkView';
 export {default as ProductView} from './Retailer/Products/ProductView';

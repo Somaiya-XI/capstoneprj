@@ -237,6 +237,8 @@ class SupermarketProductManager:
 
     # decrement bulk quantity
     def remove_from_bulk(self, bulk):
+        if bulk.bulk_qyt == 0:
+            return
         bulk.bulk_qyt = bulk.bulk_qyt - 1
         bulk.save()
 

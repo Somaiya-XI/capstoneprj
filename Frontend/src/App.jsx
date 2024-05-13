@@ -15,7 +15,7 @@ import {
 } from './url.jsx';
 import {Toaster} from 'sonner';
 import {AdminRoute, SupplierRoute, RetailerRoute} from "@/Components"
-import {Register, Login, UserActivation, ForgotPassword, ResetPassword, Cart, HardwareSimulation, DeviceRegister, FourOhFour, RetDashboard, BulkView, ProductView} from '@/pages';
+import {Register, Login, UserActivation, ForgotPassword, ResetPassword, Cart, HardwareSimulation, FourOhFour, RetDashboard, BulkView, ProductView, SmartDashboard} from '@/pages';
 import {UserContextProvider,CsrfTokenContextProvider,CartContextProvider} from '@/Contexts'
 import NotificationComponent from './pages/NotificationTest.jsx';
 
@@ -29,31 +29,31 @@ function App() {
             <CartContextProvider>
               <Routes>
                 <Route path='/' element={<Home />} />
-                <Route path='/cart' element={<Cart />} />
+                <Route path='/cart' element={<RetailerRoute><Cart /></RetailerRoute>} />
                 <Route path='/product/:id' element={<ProductDetail />} />
                 <Route path='/login' element={<Login />} />
                 <Route path='/user-activation'element={  <AdminRoute> <UserActivation /></AdminRoute>} />
                 <Route>
                   {/* <Route path='/SupplierDashboard' element={<SupplierRoute><SupplierDashboard /> </SupplierRoute>} /> */}
                   <Route path='/supplier-dashboard/products' element={<SupplierRoute><Products /></SupplierRoute>} />
-                  <Route path='/supplier-dashboard/products/edit/:id' element={<EditProduct />} />
-                  <Route path='/supplier-dashboard/products/add' element={<AddProduct />} />
-                  <Route path='/supplier-dashboard/schedule' element={<Schedule />} />
-                  <Route path='/supplier-dashboard/orders' element={<Orders />} />
+                  <Route path='/supplier-dashboard/products/edit/:id' element={<SupplierRoute><EditProduct /></SupplierRoute>} />
+                  <Route path='/supplier-dashboard/products/add' element={<SupplierRoute><AddProduct /></SupplierRoute>} />
+                  <Route path='/supplier-dashboard/schedule' element={<SupplierRoute><Schedule /></SupplierRoute>} />
+                  <Route path='/supplier-dashboard/orders' element={<SupplierRoute><Orders /></SupplierRoute>} />
                 </Route>
                 <Route path='/profile' element={<Profile />} />
                 <Route path='/register' element={<Register />} />
                 <Route path='/forgot-password' element={<ForgotPassword />} />
                 <Route path='/reset-password/form/:uidb64/:token' element={<ResetPassword />} />
                 <Route path='/payment' element={<RetailerRoute><Payment /></RetailerRoute>} />
-                <Route path='/order-created' element={<OrderCreated/>}/>
+                <Route path='/order-created' element={<RetailerRoute><OrderCreated/></RetailerRoute>}/>
                 <Route path='/simulation' element={<HardwareSimulation />} />
-                <Route path='/retailer-dashboard/device-register' element={<DeviceRegister />} />
-                <Route path='/retailer-dashboard' element={<RetDashboard />} />
-                <Route path='/retailer-dashboard/settings' element={<SettingsLayout/>}></Route>
-                <Route path='/retailer-dashboard/my-products' element={<ProductView/>}></Route>
-                <Route path='/retailer-dashboard/my-products/view/:product_id' element={<BulkView/>}></Route>
-                <Route path='/retailer-dashboard/orders' element={<OrdersLayout/>}></Route>
+                <Route path='/retailer-dashboard/smart-dashboard' element={<RetailerRoute><SmartDashboard /></RetailerRoute>} />
+                <Route path='/retailer-dashboard' element={<RetailerRoute><RetDashboard /></RetailerRoute>} />
+                <Route path='/retailer-dashboard/settings' element={<RetailerRoute><SettingsLayout/></RetailerRoute>}></Route>
+                <Route path='/retailer-dashboard/my-products' element={<RetailerRoute><ProductView/></RetailerRoute>}></Route>
+                <Route path='/retailer-dashboard/my-products/view/:product_id' element={<RetailerRoute><BulkView/></RetailerRoute>}></Route>
+                <Route path='/retailer-dashboard/orders' element={<RetailerRoute><OrdersLayout/></RetailerRoute>}></Route>
                 <Route path='/notify' element={<NotificationComponent/>}></Route>
                 <Route path='/*' element={<FourOhFour></FourOhFour>}></Route>
               </Routes>

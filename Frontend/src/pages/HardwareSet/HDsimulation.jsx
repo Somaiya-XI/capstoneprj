@@ -60,7 +60,7 @@ const HardwareSimulation = () => {
       });
   };
   const reset = <span className='icon-[mdi--loop] text-white ml-2 cursor-pointer' onClick={handleReset}></span>;
-  const cart = <SmartCart cartItems={cartItems}></SmartCart>;
+  const cart = <SmartCart></SmartCart>;
 
   useEffect(() => {
     fetchProducts();
@@ -135,7 +135,7 @@ const HardwareSimulation = () => {
                       <Button className='bg-[#617F62] text-white' onClick={() => handleUpdateQuantity('new', 1)}>
                         Add new product
                       </Button>
-                      {reset}
+                      {reset} {cart}
                     </div>
                   </Tab>
                   <Tab key='2' title='Add' className=' px-2 text-center'>
@@ -144,7 +144,7 @@ const HardwareSimulation = () => {
                       <Button className='bg-[#617F62] text-white' onClick={() => handleUpdateQuantity('add', 1)}>
                         Add more to shelf
                       </Button>
-                      {reset}
+                      {reset} {cart}
                     </div>
                   </Tab>
                   <Tab key='3' title='Remove' className=' px-2 text-center'>
@@ -159,7 +159,7 @@ const HardwareSimulation = () => {
                       >
                         Reach 0
                       </Button>
-                      {reset}
+                      {reset} {cart}
                     </div>
                   </Tab>
                 </Tabs>

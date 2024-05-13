@@ -1,6 +1,16 @@
 import {useState} from 'react';
 import {Layout, Button} from 'antd';
-import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, NextUIProvider, User, Spacer} from '@nextui-org/react';
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  NextUIProvider,
+  User,
+  Spacer,
+  Badge,
+  Tooltip,
+} from '@nextui-org/react';
 
 import {WiserLogo as Logo, WLogo} from '../Supplier/Components/Layout/Logo';
 import SideNavbar from './SideNav';
@@ -9,13 +19,14 @@ import {useUserContext} from '@/Contexts';
 import {useNavigate} from 'react-router-dom';
 import {imgURL} from '@/backend';
 const {Header, Sider} = Layout;
-import { useCsrfContext } from '@/Contexts';
+import {useCsrfContext} from '@/Contexts';
+import {MessageCircleWarning} from 'lucide-react';
 
 const RetailerLayout = ({children}) => {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const {logUserOut} = useCsrfContext();
-  const {user} = useUserContext();
+  const {user, confirmationAlert} = useUserContext();
   return (
     <NextUIProvider>
       <Layout className='h-100vh '>
@@ -37,6 +48,22 @@ const RetailerLayout = ({children}) => {
 
             <div className='mr-12 mt-3 flex justify-center align-center'>
               <div className='inline-flex justify-content-center align-items-center'>
+                <Badge
+                  color='danger'
+                  content={confirmationAlert}
+                  isInvisible={confirmationAlert == 0 ? true : false}
+                  shape='circle'
+                >
+                  <Tooltip content={`you have ${confirmationAlert} orders to confirm`}>
+                    <MessageCircleWarning
+                      className='cursor-pointer'
+                      onClick={() => navigate('/retailer-dashboard/smart-dashboard')}
+                    />
+                  </Tooltip>
+                </Badge>
+                <Spacer x={6}></Spacer>
+              </div>
+              <div className='inline-flex justify-content-center align-items-center'>
                 <Bell />
                 <Spacer x={6}></Spacer>
               </div>
@@ -57,7 +84,11 @@ const RetailerLayout = ({children}) => {
                   <DropdownItem key='new' href='/Profile'>
                     Profile
                   </DropdownItem>
-                  <DropdownItem key='logout' className='data-[hover=true]:bg-rose-50 data-[pressed=true]:opacity-70'>
+                  <DropdownItem
+                    key='logout'
+                    className='data-[hover=true]:bg-rose-50 data-[pressed=true]:opacity-70'
+                    onClick={logUserOut}
+                  >
                     Log Out
                   </DropdownItem>
                 </DropdownMenu>

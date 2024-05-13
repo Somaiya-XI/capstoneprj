@@ -26,7 +26,7 @@ const SmartCart = () => {
       const response = await axios.get(`${API}cart/view-smart-cart/`, {
         withCredentials: true,
       });
-      const Items = response.data;
+      const Items = response.data.products;
       setCartItems(Items);
       console.log(response.data);
     } catch (error) {
@@ -55,6 +55,13 @@ const SmartCart = () => {
             <>
               <ModalHeader className='flex flex-col'>Currently in smart cart</ModalHeader>
               <ModalBody>
+                <div className='justify-between py-0 px-2 align-middle my-0'>
+                  <div className='flex gap-14'>
+                    <p className='my-3'>Name</p>
+                    <p className='my-3'>Quantity</p>
+                    <p className='my-3'>Price</p>
+                  </div>
+                </div>
                 {cartItems.map((item, index) => (
                   <Card key={index} className='max-w-[500px] shadow-sm' isBlurred data-test='cartitem-cards'>
                     <CardHeader className='justify-between py-0 align-middle my-0'>
