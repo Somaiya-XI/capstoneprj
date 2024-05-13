@@ -118,7 +118,7 @@ const ProductDisplay = () => {
   
       if (data.success === true) {
         setBalance(data.payment_wallet);
-        toast.success("Payment successful");
+        CustomSuccessToast({msg:"Successful payment!, redirecting .. "});
          
       } else {
         setError(data.error);
