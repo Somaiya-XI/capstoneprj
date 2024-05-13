@@ -2,13 +2,13 @@ from rest_framework import viewsets
 from .serializers import OrderSerializer, OrderItemSerializer
 from .models import Order, OrderItem
 from .cart.models import Cart, CartItem
+from .cart.serializers import CartSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.http import JsonResponse
-from .cart.views import calculate_cart_total
 from user.models import Retailer, Supplier
-import stripe, os
+import stripe, os, json
 from dotenv import load_dotenv
 from django.shortcuts import redirect
 from urllib.parse import urlencode

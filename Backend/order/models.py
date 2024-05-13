@@ -44,14 +44,3 @@ class OrderItem(models.Model):
     class Meta:
         db_table = "Order Item"
         unique_together = ('order_id', 'product_id')
-
-
-# class OrderedItem(models.Model):
-#     # product_id = models.ManyToManyField(CatalogProduct.id, verbose_name="Product ID")
-#     order_id = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name="Order ID")
-#     ordered_quant = models.IntegerField("Quantity")
-#     item_status = models.CharField(max_length=20)
-
-#     class Meta:
-#         db_table = "Ordered Item"
-#         # unique_together = (('order_id', 'product_id'))

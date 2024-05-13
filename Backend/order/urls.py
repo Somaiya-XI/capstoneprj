@@ -1,6 +1,7 @@
 from rest_framework import routers
 from django.urls import path, include
 from . import views
+from . import views_auto_order
 
 
 router = routers.DefaultRouter()
@@ -31,6 +32,11 @@ urlpatterns = [
     path('view-orders-history/', views.view_orders_history, name='view_orders_history'),
     path(
         'view-supplier-orders/', views.view_supplier_orders, name='view_supplier_orders'
+    ),
+    path(
+        'make-auto-order/',
+        views_auto_order.make_auto_order,
+        name='make_auto_order',
     ),
     path("", include(router.urls)),
 ]
