@@ -81,7 +81,9 @@ def create_checkout_session(request):
     checkout_session = stripe.checkout.Session.create(
         line_items=items_details,
         mode='payment',
-        success_url=os.environ['SUCCESS_URL'] + '?session_id={CHECKOUT_SESSION_ID}&' + encoded_params,
+        success_url=os.environ['SUCCESS_URL']
+        + '?session_id={CHECKOUT_SESSION_ID}&'
+        + encoded_params,
         cancel_url=os.environ['CANCEL_URL'] + '?canceled=true',
     )
 
@@ -136,7 +138,9 @@ def validate_checkout_session(request):
         # check payment process status
         if checkout_session.payment_status == 'paid':
 
-            if (Decimal(checkout_session.amount_total) / Decimal(100)) == Decimal(cart.total):
+            if (Decimal(checkout_session.amount_total) / Decimal(100)) == Decimal(
+                cart.total
+            ):
 
                 # create new order
                 order_type = 'BASIC'
@@ -162,7 +166,9 @@ def validate_checkout_session(request):
     return JsonResponse({'message': 'payment process failed'})
 
 
-def make_order(user, order_type, payment_method, shipping_address, payment_session_id=None):
+def make_order(
+    user, order_type, payment_method, shipping_address, payment_session_id=None
+):
     # check the cart existance
     try:
         cart = Cart.objects.get(user=user, type=order_type)
@@ -231,7 +237,7 @@ def make_order(user, order_type, payment_method, shipping_address, payment_sessi
     # clear all items within the user's cart
     current_cart_items.delete()
 
-    if order_type == 'Basic':
+    if order_type == 'BASIC':
         return order_serializer.data['order_id']
     else:
         return 'success'
@@ -244,7 +250,9 @@ def cancel_ordered_item(request):
 
     # access the authenticated user
     if request.user.is_anonymous:
-        return JsonResponse({'message': 'You are not authenticated, log in then try again'})
+        return JsonResponse(
+            {'message': 'You are not authenticated, log in then try again'}
+        )
 
     user_id = request.user.id
 
@@ -273,7 +281,9 @@ def cancel_ordered_item(request):
 
     # authorize the user
     if order.retailer != retailer:
-        return JsonResponse({'message': 'You are not authorized to cancel this item from the order'})
+        return JsonResponse(
+            {'message': 'You are not authorized to cancel this item from the order'}
+        )
 
     # get the item needed to be cancelled in the order
     try:
@@ -299,7 +309,9 @@ def update_ordered_item_status(request):
 
     # access the authenticated user
     if request.user.is_anonymous:
-        return JsonResponse({'message': 'You are not authenticated, log in then try again'})
+        return JsonResponse(
+            {'message': 'You are not authenticated, log in then try again'}
+        )
 
     user_id = request.user.id
 
@@ -307,7 +319,9 @@ def update_ordered_item_status(request):
     try:
         supplier = Supplier.objects.get(id=user_id)
     except Supplier.DoesNotExist:
-        return JsonResponse({'message': 'You are not authorized to update the item status'})
+        return JsonResponse(
+            {'message': 'You are not authorized to update the item status'}
+        )
 
     # collect the data from incoming request
     order_id = request.data.get('order_id')
@@ -343,9 +357,13 @@ def update_ordered_item_status(request):
 
     # authorize the user
     if len(supplier_items) == 0:
-        return JsonResponse({'message': 'You are not authorized to update items status of this order'})
+        return JsonResponse(
+            {'message': 'You are not authorized to update items status of this order'}
+        )
 
-    return JsonResponse({'message': 'items status of this order updated successfully'}, status=200)
+    return JsonResponse(
+        {'message': 'items status of this order updated successfully'}, status=200
+    )
 
 
 @csrf_protect
@@ -355,7 +373,9 @@ def view_order_summary(request, order_id):
 
     # access the authenticated user
     if request.user.is_anonymous:
-        return JsonResponse({'message': 'You are not authenticated, log in then try again'})
+        return JsonResponse(
+            {'message': 'You are not authenticated, log in then try again'}
+        )
 
     user_id = request.user.id
 
@@ -363,7 +383,9 @@ def view_order_summary(request, order_id):
     try:
         retailer = Retailer.objects.get(id=user_id)
     except Retailer.DoesNotExist:
-        return JsonResponse({'message': 'You are not authorized to view the order summary'})
+        return JsonResponse(
+            {'message': 'You are not authorized to view the order summary'}
+        )
 
     # check the order existance
     try:
@@ -373,7 +395,9 @@ def view_order_summary(request, order_id):
 
     # authorize the user
     if order.retailer.pk != retailer.pk:
-        return JsonResponse({'message': 'You are not authorized to view this order summary'})
+        return JsonResponse(
+            {'message': 'You are not authorized to view this order summary'}
+        )
 
     # serialize the order object
     order_serialized = OrderSerializer(order).data
@@ -409,7 +433,9 @@ def view_orders_history(request):
 
     # access the authenticated user
     if request.user.is_anonymous:
-        return JsonResponse({'message': 'You are not authenticated, log in then try again'})
+        return JsonResponse(
+            {'message': 'You are not authenticated, log in then try again'}
+        )
 
     user_id = request.user.id
 
@@ -417,7 +443,9 @@ def view_orders_history(request):
     try:
         retailer = Retailer.objects.get(id=user_id)
     except Retailer.DoesNotExist:
-        return JsonResponse({'message': 'You are not authorized to view orders history'})
+        return JsonResponse(
+            {'message': 'You are not authorized to view orders history'}
+        )
 
     # get all the orders associated with the user
     orders = Order.objects.filter(retailer=retailer)
@@ -437,7 +465,9 @@ def view_orders_history(request):
 
         # check the items existance
         if not ordered_items:
-            return JsonResponse({'message': 'order ' + order.order_id + ' does not have items'})
+            return JsonResponse(
+                {'message': 'order ' + order.order_id + ' does not have items'}
+            )
 
         # serialize each item in the order
         ordered_items_serialized = []
@@ -463,7 +493,9 @@ def view_supplier_orders(request):
 
     # access the authenticated user
     if request.user.is_anonymous:
-        return JsonResponse({'message': 'You are not authenticated, log in then try again'})
+        return JsonResponse(
+            {'message': 'You are not authenticated, log in then try again'}
+        )
 
     user_id = request.user.id
 
