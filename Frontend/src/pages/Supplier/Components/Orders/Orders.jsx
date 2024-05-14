@@ -137,34 +137,7 @@ export default function orders() {
       dataIndex: 'actions',
     },
   ];
-  const onDeleteorder = async (id) => {
-    try {
-      console.log('Attempting to delete order with ID:', id);
-
-      await axios.delete(`${API}order/catalog/update/`, {
-        data: { id: id },
-        headers: {
-          'X-CSRFToken': csrf,
-        },
-        withCredentials: true,
-      });
-
-      // UpdateOrderItemStatus
-
-      console.log('order deleted successfully:', id);
-
-      const updatedData = dataSource.filter((item) => item.key !== id);
-      setDataSource(updatedData);
-    } catch (error) {
-      if (error.response) {
-        console.error('Error deleting order:', error.response.data);
-      } else if (error.request) {
-        console.error('Error deleting order: No response received');
-      } else {
-        console.error('Error deleting order:', error.message);
-      }
-    }
-  };
+  
   const renderCell = useCallback((order, columnKey) => {
     const cellValue = order[columnKey];
     switch (columnKey) {
