@@ -23,7 +23,6 @@ const GoogleButton = () => {
           let csrfToken = response.headers['x-csrftoken'];
           setCSRF(csrfToken);
           const current_user = response.data.user;
-          console.log('user: ', current_user);
           setUser((oldUser) => {
             return {...oldUser, ...current_user};
           });

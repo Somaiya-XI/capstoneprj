@@ -38,7 +38,6 @@ const CsrfTokenContextProvider = ({children}) => {
     });
     _csrfToken = response.headers.get('X-Csrftoken');
     setCSRF(_csrfToken);
-    console.log('csrf:', _csrfToken);
     return _csrfToken;
   }
 

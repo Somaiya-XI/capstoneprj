@@ -27,8 +27,6 @@ class NotificationConsumer(WebsocketConsumer):
             # create user channel based on id
             self.user_channel = "user_%s" % self.user_connected
 
-        print('channel', self.user_channel)
-
         # add user to his channel group
         async_to_sync(self.channel_layer.group_add)(self.user_channel, self.channel_name)
 
@@ -47,10 +45,12 @@ class NotificationConsumer(WebsocketConsumer):
         except Exception as e:
             message = text_data
 
-        # send back the message for validation
-        async_to_sync(self.channel_layer.group_send)(
-            self.user_channel, {"type": "notify_user", "message": text_data}
-        )
+        print(text_data)
+
+        # # send back the message for validation
+        # async_to_sync(self.channel_layer.group_send)(
+        #     self.user_channel, {"type": "notify_user", "message": text_data}
+        # )
 
     def notify_user(self, event):
         message = event["message"]
