@@ -34,3 +34,12 @@ services:
     depends_on:
       - redis
       - django
+  react:
+    container_name: react
+    build:
+      context: ./Frontend
+    command: npm run dev -- --host
+    volumes:
+      - ./Frontend:/usr/src/app/frontend/
+    ports:
+      - 5173:5173
