@@ -48,7 +48,7 @@ export default function NotificationCard() {
             if (err.message === "You should specify days starting from 1") {
                 CustomErrorToast({ msg: err.message, dur: 3000 });
             } else {
-                CustomErrorToast({ msg: 'Invalid input field(s).', dur: 3000 });
+                CustomErrorToast({ msg: 'Already setting a notification configuration.', dur: 3000 });
                 console.log(err.response.data);
             }
         }
