@@ -1,5 +1,5 @@
-import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import {Link} from 'react-router-dom';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Table,
   TableHeader,
@@ -18,67 +18,49 @@ import {
   Select,
   SelectItem,
 } from '@nextui-org/react';
-import {Popconfirm} from 'antd';
-import {EditOutlined, DeleteOutlined} from '@ant-design/icons'; // Assuming these are icons from Ant Design
-import {useUserContext} from '@/Contexts';
-import {useCsrfContext} from '@/Contexts';
-import {API} from '@/backend';
-import {useParams} from 'react-router-dom';
+import { Popconfirm } from 'antd';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons'; // Assuming these are icons from Ant Design
+import { useUserContext } from '@/Contexts';
+import { useCsrfContext } from '@/Contexts';
+import { API } from '@/backend';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import {imgURL} from '@/backend';
+import { imgURL } from '@/backend';
 import SupplierLayout from '../Layout/SupplierLayout';
-import {useNavigate} from 'react-router-dom';
-import {useDisclosure} from '@nextui-org/react';
-import {fileToBase64} from '@/Helpers';
-import {SearchIcon, EyeIcon} from '@/Components/Icons';
+import { useNavigate } from 'react-router-dom';
+import { useDisclosure } from '@nextui-org/react';
+import { fileToBase64 } from '@/Helpers';
+import { SearchIcon, EyeIcon } from '@/Components/Icons';
 
-export default function Products() {
+export default function orders() {
   const navigate = useNavigate();
-  const {id} = useParams();
+  const { id } = useParams();
   const [categories, setCategories] = useState([]);
   const [filterValue, setFilterValue] = useState('');
-  const {isOpen, onOpen, onClose} = useDisclosure();
-  const {ax} = useCsrfContext();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { ax } = useCsrfContext();
   const hasSearchFilter = Boolean(filterValue);
-  const {user} = useUserContext();
+  const { user } = useUserContext();
   const [img, setImg] = useState();
-  const {csrf} = useCsrfContext();
+  const { csrf } = useCsrfContext();
   const [dataSource, setDataSource] = useState([
     {
-      order_id:'',
-      retailer:'',
-      order_date:'',
-      total_price:'',
-      shipping_address:'',
-      key: '',
+      order_id: '',
+      retailer: '',
+      order_date: '',
+      total_price: '',
+      shipping_address: '',
+      key: ''
     },
   ]);
 
-  const fetchProducts = async () => {
-    try {
-      const response = await axios.get(`${API}order/view-supplier-orders/`, {
-        withCredentials: true,
-      });
-
-      const productsWithKeys = response.data.map((product) => ({
-        ...product,
-        key: product.product_id,
-      }));
-      
-      setDataSource(productsWithKeys);
-  
-      console.log(productsWithKeys);
-    } catch (error) {
-      console.error(error.data);
-    }
-  };
-
   const fetchOrders = () => {
     ax
-    .get(`${API}order/view-supplier-orders/`, {user_id:user.id})
+      .get(`${API}order/view-supplier-orders/`, { user_id: user.id })
       .then((response) => {
         console.log(response.data);
-        setDataSource(response.data);
+        const ordersWithKeys = response.data
+        setDataSource(ordersWithKeys);
       })
       .catch((error) => {
         console.log(error);
@@ -86,14 +68,10 @@ export default function Products() {
   };
 
   useEffect(() => {
-    fetchProducts();
     fetchOrders();
   }, []);
-  
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+
 
   const fetchCategories = () => {
     axios
@@ -108,20 +86,20 @@ export default function Products() {
   };
 
   useEffect(() => {
-    fetchProducts();
+    fetchOrders();
     fetchCategories();
   }, []);
 
   const columns = [
     // {
-    //   title: 'Product Image',
-    //   dataIndex: 'product_img',
+    //   title: 'order Image',
+    //   dataIndex: 'order_img',
     //   editable: true,
     //   render: (text, record) => {
     //     return (
     //       <img
-    //         src={`http://127.0.0.1:8000${record.product_img}`}
-    //         alt="Product"
+    //         src={`http://127.0.0.1:8000${record.order_img}`}
+    //         alt="order"
     //         onError={(e) => {
     //           e.target.src;
     //           console.error('Error loading image:', e.target.src);
@@ -159,12 +137,12 @@ export default function Products() {
       dataIndex: 'actions',
     },
   ];
-  const onDeleteProduct = async (id) => {
+  const onDeleteorder = async (id) => {
     try {
-      console.log('Attempting to delete product with ID:', id);
+      console.log('Attempting to delete order with ID:', id);
 
-      await axios.delete(`${API}product/catalog/update/`, {
-        data: {id: id},
+      await axios.delete(`${API}order/catalog/update/`, {
+        data: { id: id },
         headers: {
           'X-CSRFToken': csrf,
         },
@@ -173,44 +151,44 @@ export default function Products() {
 
       // UpdateOrderItemStatus
 
-      console.log('Product deleted successfully:', id);
+      console.log('order deleted successfully:', id);
 
       const updatedData = dataSource.filter((item) => item.key !== id);
       setDataSource(updatedData);
     } catch (error) {
       if (error.response) {
-        console.error('Error deleting product:', error.response.data);
+        console.error('Error deleting order:', error.response.data);
       } else if (error.request) {
-        console.error('Error deleting product: No response received');
+        console.error('Error deleting order: No response received');
       } else {
-        console.error('Error deleting product:', error.message);
+        console.error('Error deleting order:', error.message);
       }
     }
   };
-  const renderCell = useCallback((product, columnKey) => {
-    const cellValue = product[columnKey];
+  const renderCell = useCallback((order, columnKey) => {
+    const cellValue = order[columnKey];
     switch (columnKey) {
-      case 'product_img':
+      case 'order_img':
         return (
           <Avatar
             radius='lg'
             size='lg'
-            name={product['product_name']}
+            name={order['order_name']}
             showFallback
             src={`${imgURL}${cellValue}`}
-            classNames={{img: cellValue ? 'opacity-1' : 'opacity-0'}}
+            classNames={{ img: cellValue ? 'opacity-1' : 'opacity-0' }}
           ></Avatar>
         );
       case 'actions':
         return (
           <div className='relative flex items-center gap-3'>
             <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
-              <EyeIcon onClick={() => navigate(`/product/${product.key}`)} />
+              <EyeIcon onClick={() => navigate(`/order/${order.key}`)} />
             </span>
             {/* <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
-              <EditIcon onClick={() => navigate(`/product/${product.key}`)} />
+              <EditIcon onClick={() => navigate(`/order/${order.key}`)} />
             </span> */}
-            {/* <Popconfirm title='Sure to delete?' onConfirm={() => onDeleteProduct(product.key)}>
+            {/* <Popconfirm title='Sure to delete?' onConfirm={() => onDeleteorder(order.key)}>
               <DeleteIcon className="text-lg text-danger cursor-pointer active:opacity-50" />
             </Popconfirm> */}
           </div>
@@ -221,15 +199,15 @@ export default function Products() {
   }, []);
 
   const items = useMemo(() => {
-    let filteredProducts = [...dataSource];
+    let filteredorders = [...dataSource];
 
     if (hasSearchFilter) {
-      filteredProducts = filteredProducts.filter(
+      filteredorders = filteredorders.filter(
         (prod) =>
-          prod.product_name.toLowerCase().includes(filterValue.toLowerCase()) || prod.tag_id.includes(filterValue)
+          prod.order_name.toLowerCase().includes(filterValue.toLowerCase()) || prod.tag_id.includes(filterValue)
       );
     }
-    return filteredProducts;
+    return filteredorders;
   }, [dataSource, filterValue]);
 
   const onSearchChange = useCallback((value) => {
@@ -242,7 +220,7 @@ export default function Products() {
 
   const handleChange = (name) => async (e) => {
     e.preventDefault();
-    if (name === 'product_img') {
+    if (name === 'order_img') {
       const file = e.target.files[0];
       if (file) {
         const file64 = await fileToBase64(file);
@@ -259,11 +237,11 @@ export default function Products() {
 
   const handleSubmit = async () => {
     try {
-      const response = await ax.post(`${API}product/catalog/create/`, dataSource);
+      const response = await ax.post(`${API}order/catalog/create/`, dataSource);
 
       console.log(response.data);
       alert('Data Sent');
-      navigate('/supplier-dashboard/products');
+      navigate('/supplier-dashboard/orders');
     } catch (err) {
       toast.error('Error occurred while submitting data. Please try again.');
       // alert("Error occurred while submitting data. Please try again.");
@@ -278,7 +256,7 @@ export default function Products() {
           <Input
             isClearable
             className='w-full sm:max-w-[30%]'
-            placeholder='Search by product name or id...'
+            placeholder='Search by order name or id...'
             startContent={<SearchIcon />}
             value={filterValue}
             onValueChange={onSearchChange}
@@ -296,7 +274,7 @@ export default function Products() {
       <SupplierLayout>
         <div className='mx-4'>
           <div className='retailer-dashboard-cont'>
-            <h3 className='d-block font-bold' aria-label='Product-Details'>
+            <h3 className='d-block font-bold' aria-label='order-Details'>
               Incoming Orders
             </h3>
           </div>
@@ -304,127 +282,40 @@ export default function Products() {
             <Table topContent={topContent}>
               <TableHeader columns={columns}>
                 {(column) => (
-                  <TableColumn key={column.dataIndex} align={column.dataIndex === 'product_name' ? 'start' : 'center'}>
+                  <TableColumn key={column.dataIndex} align={column.dataIndex === 'order_name' ? 'start' : 'center'}>
                     {column.title}
                   </TableColumn>
                 )}
               </TableHeader>
-              <TableBody items={items}>
-                {(item) => (
-                  <TableRow key={item.key}>
-                    {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+              <TableBody>
+                {dataSource.map((order) => (
+                  <TableRow key={order.key}>
+                    <TableCell>{order.order_id}</TableCell>
+                    <TableCell>{order.retailer}</TableCell>
+                    <TableCell>{order.order_date}</TableCell>
+                    <TableCell>{order.total_price}</TableCell>
+                    <TableCell>{order.shipping_address}</TableCell>
+                    {/* Add additional columns as needed */}
+                    <TableCell>
+                      <div>
+                        <p>Product ID: {order.product_id}</p>
+                        <p>Product Name: {order.product_name}</p>
+                        <p>New Price: {order.new_price}</p>
+                      </div>
+                    </TableCell>
+
+
+
                   </TableRow>
-                )}
+                ))}
               </TableBody>
+
+
             </Table>
           </div>
         </div>
       </SupplierLayout>
-      <Modal isOpen={isOpen} onOpenChange={onClose} placement='top-center'>
-        <ModalContent>
-          <>
-            <ModalHeader className='flex flex-col gap-1'>Add New Product</ModalHeader>
-            <ModalBody>
-              <Input
-                label='Tag ID'
-                className='w-full'
-                placeholder='xxxxxxxxxxxxx'
-                value={dataSource.tag_id}
-                onChange={handleChange('tag_id')}
-                isRequired
-              />
-              <Input
-                label='Product Name'
-                className='w-full'
-                placeholder='milk 200g'
-                value={dataSource.product_name}
-                onChange={handleChange('product_name')}
-                isRequired
-              />
-              <Input
-                label='Brand'
-                className='w-full'
-                placeholder='almarai'
-                value={dataSource.brand}
-                onChange={handleChange('brand')}
-                isRequired
-              />
-              <Input
-                type='file'
-                label='Product Image'
-                placeholder='   '
-                className='w-full mb-3'
-                labelPlacement='inside'
-                value={dataSource.product_img}
-                onChange={handleChange('product_img')}
-              />
-              <Input
-                label='description'
-                className='w-full'
-                value={dataSource.description}
-                onChange={handleChange('description')}
-                placeholder='Fresh Product that consist of various vitamins'
-                labelPlacement='inside'
-              />
-              <Input
-                type='number'
-                label='Price'
-                className='w-full'
-                placeholder='00.00'
-                labelPlacement='inside'
-                value={dataSource.price}
-                onChange={handleChange('price')}
-                isRequired
-                endContent={
-                  <div className='pointer-events-none flex items-center'>
-                    <span className='text-default-400 text-small'>SAR</span>
-                  </div>
-                }
-              />
-              <Select label='Select Category' className='bg-default-100' isRequired>
-                {categories.map((categor) => (
-                  <SelectItem key={categor} value={categor}>
-                    {categor}
-                  </SelectItem>
-                ))}
-              </Select>
-              <Input
-                type='number'
-                label='Discount'
-                className='w-full'
-                placeholder='15.00'
-                labelPlacement='inside'
-                value={dataSource.discount_percentage}
-                onChange={handleChange('discount_percentage')}
-                isRequired
-                endContent={
-                  <div className='pointer-events-none flex items-center'>
-                    <span className='text-default-400 text-small'>%</span>
-                  </div>
-                }
-              />
-              <Input
-                type='number'
-                label='Minumum Order quantity'
-                className='w-full'
-                placeholder='5'
-                labelPlacement='inside'
-                value={dataSource.min_order_quantity}
-                onChange={handleChange('min_order_quantity')}
-                isRequired
-              />
-            </ModalBody>
-            <ModalFooter>
-              <Button color='danger' variant='flat' onClick={onClose}>
-                Cancel
-              </Button>
-              <Button color='primary' onClick={handleSubmit}>
-                Submit
-              </Button>
-            </ModalFooter>
-          </>
-        </ModalContent>
-      </Modal>
+      
     </>
   );
 }

@@ -5,36 +5,42 @@ import { useEffect } from 'react';
 import { API } from '@/backend';
 import axios from 'axios';
 import {useNavigate} from "react-router-dom";
+import { Payment } from '@/url';
+import { useCartContext } from '@/Contexts';
 
 const OrderCreated = () => {
     const [orderDetails, setOrderDetails] = useState({});
+    const {orderId, setOrderId } = useCartContext();
     const [ViewOrderDetails, setViewOrderDetails] = useState(true);
 
     const toggleOrderDetails = () => {
         setViewOrderDetails(!ViewOrderDetails);
     };
 
-    const OrderSummary = async () => {
-        try {
-            const response = await axios.get(`${API}order/d5aaf539-6860-4a2e-a68b-384cdd7ee40d/`, {
-                withCredentials: true,
-            });
-            console.log("Fetched data:", response.data);
-            setOrderDetails(response.data);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
+    // const OrderSummary = async () => {
+    //     try {
+    //         const response = await axios.get(`${API}order/-/`, {
+    //             withCredentials: true,
+    //         });
+    //         console.log("Fetched data:", response.data);
+    //         setOrderDetails(response.data);
+    //     } catch (error) {
+    //         console.error("Error fetching data:", error);
+    //     }
+    // };
 
-    useEffect(() => {
-        OrderSummary();
-    }, []);
+    // useEffect(() => {
+    //     OrderSummary();
+    // }, []);
 
+    
     return (
         <>
             <BasicNav />
             <div className="flex items-center justify-center h-screen">
                 <div className="flex flex-col items-center justify-center text-center font-bold text-4xl">
+                    
+
                     {ViewOrderDetails && (
                         <Iconify-icon
                             className='inline'
@@ -50,16 +56,16 @@ const OrderCreated = () => {
                         <h1 className="text-3xl mt-4">Order has been created Successfully!</h1>
                     ) : (
                         <div>
-                            {orderDetails && (
+                           
                                 <div className="text-left text-4xl mt-4">
-                                <p>Order ID: {orderDetails.order_id}</p>
-                                <p>Order Date: {orderDetails.order_date}</p>
+                                <p>Order ID: {orderId.order_id}</p>
+                                {/* <p>Order Date: {orderDetails.order_date}</p>
                                 <p>Payment Method: {orderDetails.payment_method}</p>
                                 <p>Total Price: {orderDetails.total_price}</p>
-                                <p>Shipping Address: {orderDetails.shipping_address}</p>
+                                <p>Shipping Address: {orderDetails.shipping_address}</p> */}
                               </div>
                               
-                            )}
+                            
                         </div>
                     )}
                     <div className="mt-4">

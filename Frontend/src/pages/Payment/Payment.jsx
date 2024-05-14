@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from "../Home/Components/Header/Header";
 import Navbar from "../Home/Components/Navbar/Navbar";
+
 import "./Payment.css";
 import axios from "axios";
 import CustomErrorAlert from "@/Components/FormComponents/CustomAlerts";
@@ -34,12 +35,14 @@ import { API, imgURL } from "@/backend";
 
 
 
+
 const ProductDisplay = () => {
   const [address, setAddress] = useState([]);
   const [Newaddress, setNewAddress] = useState("");
   const navigate = useNavigate();
   const message = "Your payment is done successfully";
   const [isAccordtion, setIsActive] = useState(false);
+  const {orderId, setOrderId } = useCartContext()
   const { user } = useUserContext();
   const { cart } = useCartContext();
   const [balance, setBalance] = useState("");
@@ -113,12 +116,18 @@ const ProductDisplay = () => {
         `${API}payment/pay-by-wallet/`,
          {shipping_address: Newaddress, order_type: "BASIC",},
       );
-  
-      console.log("Response Data:", data);
-  
+      console.log("HELLO!", data.success)
+      
+      // const order_id = data
+      
       if (data.success === true) {
+        
         setBalance(data.payment_wallet);
+        setOrderId(data.order_id)
+        console.log("hama?", orderId)
         CustomSuccessToast({msg:"Successful payment!, redirecting .. "});
+        navigate('/order-created');
+
          
       } else {
         setError(data.error);
