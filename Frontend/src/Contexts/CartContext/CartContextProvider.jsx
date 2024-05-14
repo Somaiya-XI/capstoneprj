@@ -7,6 +7,7 @@ const CartContextProvider = ({children}) => {
   const {ax, isAuthenticated} = useCsrfContext();
   const {user} = useUserContext();
   const [cart, setCart] = useState(null);
+  const [orderId, setOrderId] = useState("") 
   const [loading, setLoading] = useState(true);
 
   const fetchCart = async () => {
@@ -60,6 +61,8 @@ const CartContextProvider = ({children}) => {
     loading,
     UpdateCartContent,
     reloadCart,
+    orderId,
+    setOrderId
   };
 
   return <CartContext.Provider value={cartValues}>{children}</CartContext.Provider>;
