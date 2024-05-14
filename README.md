@@ -2,6 +2,8 @@
 
 ## Prerequisite
 
+Ensure the following are done first to avoid issues:
+
 - Access to `.env` variables of the frontend and backend is required.
 - Replace the `.env` files in each directory with the correct environment content.
 
