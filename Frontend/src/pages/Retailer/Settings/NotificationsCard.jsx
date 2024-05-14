@@ -4,8 +4,10 @@ import axios from "axios";
 import { API } from "@/backend";
 import { useUserContext } from "@/Contexts";
 import { CustomSuccessToast, CustomErrorToast } from "@/Components";
+import { useCsrfContext } from "@/Contexts";
 
 export default function NotificationCard() {
+    const { ax } = useCsrfContext();
     const { user } = useUserContext();
     const [inputData, setInputData] = useState({
         low_quantity_threshold: null,
@@ -13,21 +15,11 @@ export default function NotificationCard() {
     });
     const [formSubmitted, setFormSubmitted] = useState(false);
 
+    
     const fetchNotification = async () => {
-        try {
-            const response = axios.get(`${API}config/notification-config/view_default_notification_config/`, 
-            {
-                user_id: user.id,
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error fetching notification: ${response.statusText}`);
-            }
-            const data = await response.json();
-            setInputData(data); 
-        } catch (error) {
-            console.error('Error fetching notification:', error);
-        }
+        axios.get(`${API}config/notification-config/view_default_notification_config/`, {
+            data: { user_id: user.id }
+        })
     };
 
     useEffect(() => {
@@ -56,15 +48,25 @@ export default function NotificationCard() {
             if (err.message === "You should specify days starting from 1") {
                 CustomErrorToast({ msg: err.message, dur: 3000 });
             } else {
-                CustomErrorToast({ msg: 'Invalid input field(s).', dur: 3000 });
+                CustomErrorToast({ msg: 'Already setting a notification configuration.', dur: 3000 });
                 console.log(err.response.data);
             }
         }
     };
 
-    const handleEdit = () => {
-        setFormSubmitted(false);
-    }
+
+    const handleEdit = async () => {
+        setFormSubmitted(false)
+        const { data } = axios.delete(`${API}config/notification-config/delete-default-notification-config/`, {
+            data: { user_id: user.id }
+        })
+        CustomSuccessToast({ msg: "Notification has deleted successfuly!", dur: 3000 });
+    };
+
+
+
+
+
 
 
     const handleChange = (e, fieldName) => {
@@ -103,7 +105,7 @@ export default function NotificationCard() {
                     />
                     <div className="flex gap-3">
                         <Button className="bg-[#023c07] text-default mt-4 size-24 h-10" onClick={handleSubmit}>Save</Button>
-                        <Button className="bg-[#fff] border-1 text-black mt-4 size-24 h-10 shadow-sm" onClick={handleEdit}>Edit</Button>
+                        <Button className="bg-[#fff] border-1 text-black mt-4 size-24 h-10 shadow-sm" onClick={handleEdit}>Delete</Button>
                     </div>
 
                 </div>

@@ -39,6 +39,9 @@ const AutoOrderConfigCard = () => {
       console.error(error.message);
     }
   };
+  
+  
+
 
   const handleChange = (name) => (event) => {
     setConfigData({

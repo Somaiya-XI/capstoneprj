@@ -35,24 +35,6 @@ def add_default_notification_config(request):
         return JsonResponse(serializer.errors, status=400)
 
 
-# def receive_notification_of_near_expiry(request):
-#     expiry = ProductBulk.objects.all()
-#     products = SupermarketProduct.objects.all()
-#     notifications = []
-#     notification_configs = NotificationConfig.objects.all()
-#     retailer_configs = {config.retailer: config for config in notification_configs}
-#     for expires in expiry:
-#         retailer_id = product.retailer
-
-
-#     if hasattr(product, 'productbulk'):
-#         days_to_expiry = ProductBulk.days_to_expiry
-#         if days_to_expiry == near_expiry_days:
-#             notification_message = f'Product "{product.product_name}" is near expiry. Expires in {near_expiry_days} days.'
-#             notifications.append(notification_message)
-
-#     return notifications
-
 
 @csrf_exempt
 @api_view(['GET'])
@@ -93,7 +75,7 @@ def receive_notification_of_low_quantity_feature(request):
 
 @csrf_exempt
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([AllowAny]) 
 def view_default_notification_config(request: Request):
     try:
         retailer_id = request.data.get('user_id')
