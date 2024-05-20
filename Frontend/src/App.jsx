@@ -45,7 +45,7 @@ function App() {
                 <Route path='/forgot-password' element={<ForgotPassword />} />
                 <Route path='/reset-password/form/:uidb64/:token' element={<ResetPassword />} />
                 <Route path='/payment' element={<RetailerRoute><Payment /></RetailerRoute>} />
-                <Route path='/order-created' element={<RetailerRoute><OrderCreated/></RetailerRoute>}/>
+                <Route path='/order-created/:id' element={<RetailerRoute><OrderCreated/></RetailerRoute>}/>
                 <Route path='/simulation' element={<HardwareSimulation />} />
                 <Route path='/retailer-dashboard/smart-dashboard' element={<RetailerRoute><SmartCart /></RetailerRoute>} />
                 <Route path='/retailer-dashboard' element={<RetailerRoute><RetDashboard /></RetailerRoute>} />

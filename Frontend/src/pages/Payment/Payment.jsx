@@ -118,7 +118,7 @@ const ProductDisplay = () => {
       );
       console.log("HELLO!", data.success)
       
-      // const order_id = data
+      const order_id = data
       
       if (data.success === true) {
         
@@ -126,7 +126,9 @@ const ProductDisplay = () => {
         setOrderId(data.order_id)
         console.log("hama?", orderId)
         CustomSuccessToast({msg:"Successful payment!, redirecting .. "});
-        navigate('/order-created');
+        // <Link to={`/order-created/${order_id.order_id}`}/> 
+        // navigate('/order-created');
+        navigate(`/order-created/${order_id.order_id}`);
 
          
       } else {
