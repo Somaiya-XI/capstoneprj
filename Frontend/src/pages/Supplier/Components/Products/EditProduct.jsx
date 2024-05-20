@@ -35,7 +35,6 @@ const EditProduct = () => {
   const fetchProducts = async () => {
     try {
       const response = await axios.get(`${API}product/catalog-product/${id}/`);
-      console.log('Check it:', csrf);
       const prod = response.data;
       const {supplier, product_img, ...product} = prod;
 
