@@ -1,422 +1,308 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { Link } from "react-router-dom";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Input, Avatar, Button, Modal, ModalContent, ModalHeader, ModalFooter, ModalBody, Select, SelectItem } from "@nextui-org/react";
-import { SearchIcon, EditIcon, DeleteIcon, EyeIcon } from "@/Components";
-import { Popconfirm } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons"; // Assuming these are icons from Ant Design
+import React, { useState, useEffect } from "react";
+import {
+  Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button,
+  Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Chip, Popover,
+  PopoverTrigger, PopoverContent, useDisclosure, Input
+} from "@nextui-org/react";
+import { EyeIcon, ConfirmIcon, CustomSuccessToast, CustomErrorToast, SearchIcon } from "@/Components";
 import { useUserContext } from "@/Contexts";
 import { useCsrfContext } from "@/Contexts";
 import { API } from "@/backend";
-import { useParams } from "react-router-dom";
-import axios from "axios";
-import { imgURL } from "@/backend";
-import { useNavigate } from 'react-router-dom';
-import { useDisclosure } from "@nextui-org/react";
-import { fileToBase64 } from "@/Helpers";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import RetailerLayout from "../RetailerLayout";
 
-export default function OrdersLayout() {
+const statusColorMap = {
+  processing: "warning",
+  cancelled: "danger",
+  shipped: "success",
+};
 
+export default function OrdersLayout() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [categories, setCategories] = useState([])
-  const [filterValue, setFilterValue] = useState("");
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const {ax} = useCsrfContext();
-  const hasSearchFilter = Boolean(filterValue);
+  const { ax } = useCsrfContext();
   const { user } = useUserContext();
-  const [img, setImg] = useState();
   const { csrf } = useCsrfContext();
-  const [dataSource, setDataSource] = useState([{
-    product_img: '',
-    product_id: '',
-    product_name: '',
-    brand: '',
-    description: '',
-    category: '',
-    price: '',
-    new_price: '',
-    discount_percentage: '',
-    quantity: '',
-    min_order_quantity: '',
-    tag_id: '',
-    key: ''
-  }]);
+  const [dataSource, setDataSource] = useState([]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [load, setLoad] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc"); // Added state for sorting order
 
-  const fetchProducts = async () => {
+  const fetchOrders = async () => {
     try {
-      const response = await axios.get(`${API}product/get-user-products/${user.id}/`, {
-        withCredentials: true,
-      });
-      console.log("Check it:", csrf);
-
-      const productsWithKeys = response.data.map((product) => ({
-        ...product,
-        key: product.product_id,
-      }));
-      setDataSource(productsWithKeys);
-
-      console.log(productsWithKeys);
+      const response = await ax.get(`${API}order/view-orders-history/`);
+      setDataSource(response.data);
+      console.log(response);
     } catch (error) {
-      console.error(error.data);
+      console.error(error);
     }
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    fetchOrders();
+  }, [load]);
 
-  const fetchCategories = () => {
-    axios.get(`${API}category/get`)
-      .then(response => {
-        console.log(response.data)
-        setCategories(response.data)
-      })
-      .catch(error => {
-        console.log(error)
-      })
-  }
+  const handleDelete = async (order_id, product_id) => {
+    // Update the local data source state to remove the item from the ordered items list
+    setDataSource(pre => {
+      return pre.map(order => 
+        order.order_data.order_id === order_id 
+          ? { ...order, ordered_items: order.ordered_items.filter(item => item.product_id.product_id !== product_id) }
+          : order
+      );
+    });
 
-  useEffect(() => {
-    fetchProducts();
-    fetchCategories();
-  }, []);
+    try {
+      const user_id = user.id;
+
+      const payload = {
+        user_id,
+        order_id,
+        product_id
+      };
+
+      // Send a PUT request to the API endpoint to cancel the ordered item
+      const response = await ax.put(`${API}order/cancel-ordered-item/`, payload);
+
+      // Log the response for debugging
+      console.log('response: ', response);
+
+      // Get the message from the response data
+      const msg = response.data.message;
+
+      // Update the load state (assumed to be used elsewhere in the component)
+      setLoad((l) => l + 1);
+
+      // Show a success toast notification with the response message or a default message
+      CustomSuccessToast({ msg: msg ? msg : 'Deleted!', position: 'top-right', shiftStart: 'ms-0' });
+    } catch (error) {
+      // Log the error for debugging
+      console.error(error);
+
+      // Get the error message from the response data
+      const msg = error.response.data.error;
+
+      // Show an error toast notification with the error message or a default message
+      CustomErrorToast({ msg: msg ? msg : 'Please enter valid data!', position: 'top-right', shiftStart: 'ms-0' });
+    }
+  };
 
   const columns = [
-    {
-      title: 'Product Image',
-      dataIndex: 'product_img',
-      editable: true,
-      render: (text, record) => {
-        return (
-          <img
-            src={`http://127.0.0.1:8000${record.product_img}`}
-            alt="Product"
-            onError={(e) => {
-              e.target.src;
-              console.error('Error loading image:', e.target.src);
-            }}
-          />
-        );
-      }
-    },
-    {
-      title: 'Product Name',
-      dataIndex: 'product_name',
-    },
-    {
-      title: 'Brand Name',
-      dataIndex: 'brand',
-    },
-    {
-      title: 'Category',
-      dataIndex: 'category',
-    },
-    {
-      title: 'Price',
-      dataIndex: 'price',
-    },
-    {
-      title: 'Discount',
-      dataIndex: 'discount_percentage',
-    },
-    {
-      title: 'Quantity',
-      dataIndex: 'quantity',
-    },
-    {
-      title: 'Min order quantity',
-      dataIndex: 'min_order_quantity',
-    },
-    {
-      title: 'Actions',
-      dataIndex: 'actions'
-    },
-
+    { key: "order_id", title: 'Order id' },
+    { key: "order_date", title: 'Order date' },
+    { key: "payment_method", title: 'Payment method' },
+    { key: "total_price", title: 'Total Price' },
+    { key: "ordered_items", title: 'Ordered items' },
   ];
-  const onDeleteProduct = async (id) => {
-    try {
-      console.log("Attempting to delete product with ID:", id);
 
+  const itemColumns = [
+    { key: "product_name", name: "Product Name" },
+    { key: "new_price", name: "Price" },
+    { key: "ordered_quantity", name: "Quantity" },
+    { key: "item_status", name: "Status" },
+    { key: "cancel_order", name: "Actions" }
+  ];
 
-      await axios.delete(`${API}product/catalog/update/`, {
-        data: { id: id },
-        headers: {
-          "X-CSRFToken": csrf,
-        },
-        withCredentials: true,
-      });
-
-      console.log("Product deleted successfully:", id);
-
-      const updatedData = dataSource.filter(item => item.key !== id);
-      setDataSource(updatedData);
-    } catch (error) {
-      if (error.response) {
-        console.error('Error deleting product:', error.response.data);
-      } else if (error.request) {
-        console.error('Error deleting product: No response received');
-      } else {
-        console.error('Error deleting product:', error.message);
-      }
-    }
-  };
-  const renderCell = useCallback((product, columnKey) => {
-    const cellValue = product[columnKey];
+  const renderItemCell = (item, columnKey, order_id) => {
+    const cellValue = item[columnKey];
     switch (columnKey) {
-      case 'product_img':
+      case "product_name":
+        return item.product_name;
+      case "new_price":
+        return item.new_price;
+      case "item_status":
         return (
-          <Avatar
-            radius='lg'
-            size='lg'
-            name={product['product_name']}
-            showFallback
-            src={`${imgURL}${cellValue}`}
-            classNames={{ img: cellValue ? 'opacity-1' : 'opacity-0' }}
-          ></Avatar>
+          <Chip color={statusColorMap[cellValue]} size="sm" variant="flat">
+            {cellValue}
+          </Chip>
         );
-      case 'actions':
+      case "cancel_order":
         return (
-          <div className='relative flex items-center gap-3'>
-            <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
-              <EyeIcon onClick={() => navigate(`/product/${product.key}`)} />
-            </span>
-            <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
-              <EditIcon onClick={() => navigate(`/product/${product.key}`)} />
-            </span>
-            <Popconfirm title='Sure to delete?' onConfirm={() => onDeleteProduct(product.key)}>
-              <DeleteIcon className="text-lg text-danger cursor-pointer active:opacity-50" />
-            </Popconfirm>
-          </div>
+          <Popover showArrow={true} backdrop='opaque' size='sm'>
+            <PopoverTrigger>
+              <span style={{ color: 'red', cursor: 'pointer' }}>
+                Cancel order
+              </span>
+            </PopoverTrigger>
+            <PopoverContent>
+              <div className='px-1 py-2 flex text-center justify-content-center align-items-center'>
+                <span className='text-red-600'>Confirm cancellation?</span>
+                <Button
+                  isIconOnly
+                  variant='ghost'
+                  aria-label='cancel order'
+                  onClick={() => handleDelete(order_id, item.product_id.product_id)}
+                >
+                  <ConfirmIcon width='18px' height='18px' fill='currentColor' />
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
         );
       default:
         return cellValue;
     }
-  }, []);
+  };
 
-  const items = useMemo(() => {
-    let filteredProducts = [...dataSource];
-
-    if (hasSearchFilter) {
-      filteredProducts = filteredProducts.filter(
-        (prod) =>
-          prod.product_name.toLowerCase().includes(filterValue.toLowerCase()) || prod.tag_id.includes(filterValue)
-      );
-    }
-    return filteredProducts;
-  }, [dataSource, filterValue]);
-
-  const onSearchChange = useCallback((value) => {
-    if (value) {
-      setFilterValue(value);
-    } else {
-      setFilterValue("");
-    }
-  }, []);
-
-
-  const handleChange = (name) => async (e) => {
-    e.preventDefault();
-    if (name === 'product_img') {
-      const file = e.target.files[0];
-      if (file) {
-        const file64 = await fileToBase64(file);
-        console.log('img path', file64);
-        setImg(file64);
-      }
-    } else {
-      const dataIndex = dataSource.findIndex(item => item.key === name);
-      const updatedDataSource = [...dataSource];
-      updatedDataSource[dataIndex] = e.target.value;
-      setDataSource(updatedDataSource);
+  const getKeyValue = (item, key) => {
+    switch (key) {
+      case "order_id":
+        return item.order_data.order_id;
+      case "order_date":
+        return item.order_data.order_date;
+      case "payment_method":
+        return item.order_data.payment_method;
+      case "total_price":
+        return item.order_data.total_price;
+      case "ordered_items":
+        return (
+          <span
+            style={{ color: 'green', cursor: 'pointer' }}
+            onClick={() => {
+              const itemsWithProductId = item.ordered_items.map(orderedItem => ({
+                ...orderedItem,
+                product_id: orderedItem.product_id.product_id,
+                product_name: orderedItem.product_id.product_name,
+                new_price: orderedItem.product_id.new_price,
+                order_id: item.order_data.order_id,
+              }));
+              setSelectedItems(itemsWithProductId);
+              console.log(itemsWithProductId);
+              onOpen();
+            }}
+          >
+            View items
+          </span>
+        );
+      default:
+        return null;
     }
   };
-  
 
-  const handleSubmit = async () => {
-    try {
-      const response = await ax.post(
-        `${API}product/catalog/create/`,
-        dataSource
-      );
-
-      console.log(response.data);
-      alert("Data Sent");
-      navigate("/supplier-dashboard/products");
-    } catch (err) {
-      toast.error('Error occurred while submitting data. Please try again.');
-      // alert("Error occurred while submitting data. Please try again.");
-      console.log(err.response.data);
-    }
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
-  
-  
-  
 
-  const topContent = useMemo(() => {
-    return (
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between gap-3 items-end">
-          <Input
-            isClearable
-            className="w-full sm:max-w-[30%]"
-            placeholder="Search by product name or id..."
-            startContent={<SearchIcon />}
-            value={filterValue}
-            onValueChange={onSearchChange}
-          />
-          {/* <Button className="bg-[#023c07] text-default mt-4 size-24 h-10" type='primary' onClick={onOpen}>
-            + Add
-          </Button> */}
+  const sortedDataSource = dataSource.slice().sort((a, b) => {
+    if (sortOrder === "asc") {
+      return new Date(a.order_data.order_date) - new Date(b.order_data.order_date);
+    } else {
+      return new Date(b.order_data.order_date) - new Date(a.order_data.order_date);
+    }
+  });
+
+  const onSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredDataSource = sortedDataSource.filter(order =>
+    order.order_data.order_id.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  return (
+    <RetailerLayout>
+      <div className='mx-4'>
+        <div className='retailer-dashboard-cont'>
+          <h3 className='d-block font-bold' aria-label="Product-Details">My Orders</h3>
+        </div>
+        <div className='mt-4'>
+          <Table
+            aria-label="Example table with dynamic content"
+            topContent={
+              <div className='flex flex-col gap-4'>
+                <div className='flex justify-between gap-3 items-end'>
+                  <Input
+                    isClearable
+                    className='w-full sm:max-w-[30%]'
+                    placeholder='Search by order id...'
+                    startContent={<SearchIcon />}
+                    value={searchTerm}
+                    onChange={onSearchChange}
+                  />
+                  {/* <Button className='bg-[#023c07] text-white mt-4 size-24 h-10' type='primary' onClick={onOpen}>
+                    <Link to='/supplier-dashboard/products/add' className='text-white'>+ Add </Link>
+                  </Button> */}
+                  <Button className='bg-[#023c07] text-white mt-4 size-26 h-10' type='primary' onClick={toggleSortOrder}>
+                    {`${sortOrder === "asc" ? "Ascending" : "Descending"}`}
+                  </Button>
+                </div>
+              </div>
+            }
+          >
+            <TableHeader columns={columns}>
+              {(column) => <TableColumn key={column.key}>{column.title}</TableColumn>}
+            </TableHeader>
+            <TableBody items={filteredDataSource}>
+              {(item) => (
+                <TableRow key={item.order_data.order_id}>
+                  {(columnKey) => <TableCell>{getKeyValue(item, columnKey)}</TableCell>}
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </div>
       </div>
-    );
-  }, [filterValue, onSearchChange, hasSearchFilter]);
-
-  return (
-    <>
-      <RetailerLayout>
-        <div className='mx-4'>
-          <div className='retailer-dashboard-cont'>
-            <h3 className='d-block font-bold' aria-label="Product-Details">My Orders</h3>
-          </div>
-          <div className='mt-4'>
-            <Table topContent={topContent}>
-              <TableHeader columns={columns}>
-                {(column) => (
-                  <TableColumn key={column.dataIndex} align={column.dataIndex === "product_name" ? "start" : "center"}>
-                    {column.title}
-                  </TableColumn>
-                )}
-              </TableHeader>
-              <TableBody items={items}>
-                {(item) => (
-                  <TableRow key={item.key}>
-                    {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
-
-      </RetailerLayout>
-      <Modal isOpen={isOpen} onOpenChange={onClose} placement="top-center">
-        <ModalContent>
-          <>
-            <ModalHeader className="flex flex-col gap-1">
-              Add New Product
-            </ModalHeader>
-            <ModalBody>
-              <Input
-                label='Tag ID'
-                className='w-full'
-                placeholder='xxxxxxxxxxxxx'
-                value={dataSource.tag_id}
-                onChange={handleChange('tag_id')}
-                isRequired
-              />
-              <Input
-                label='Product Name'
-                className='w-full'
-                placeholder='milk 200g'
-                value={dataSource.product_name}
-                onChange={handleChange('product_name')}
-                isRequired
-              />
-              <Input
-                label='Brand'
-                className='w-full'
-                placeholder='almarai'
-                value={dataSource.brand}
-                onChange={handleChange('brand')}
-                isRequired
-              />
-              <Input
-                  type='file'
-                  label='Product Image'
-                  placeholder='   '
-                  className='w-full mb-3'
-                  labelPlacement='inside'
-                  value={dataSource.product_img}
-                  onChange={handleChange('product_img')}
-                />
-              <Input
-                label='description'
-                className='w-full'
-                value={dataSource.description}
-                onChange={handleChange('description')}
-                placeholder='Fresh Product that consist of various vitamins'
-                labelPlacement='inside'
-              />
-              <Input
-                type='number'
-                label='Price'
-                className='w-full'
-                placeholder='00.00'
-                labelPlacement='inside'
-                value={dataSource.price}
-                onChange={handleChange('price')}
-                isRequired
-                endContent={
-                  <div className='pointer-events-none flex items-center'>
-                    <span className='text-default-400 text-small'>SAR</span>
-                  </div>
-                }
-              />
-              <Select
-                label="Select Category"
-                className="bg-default-100"
-                isRequired
-              >
-                {categories.map((categor) => (
-                  <SelectItem key={categor} value={categor}>
-                    {categor}
-                  </SelectItem>
-                ))}
-              </Select>
-              <Input
-                type='number'
-                label='Discount'
-                className='w-full'
-                placeholder='15.00'
-                labelPlacement='inside'
-                value={dataSource.discount_percentage}
-                onChange={handleChange('discount_percentage')}
-                isRequired
-                endContent={
-                  <div className='pointer-events-none flex items-center'>
-                    <span className='text-default-400 text-small'>%</span>
-                  </div>
-                }
-              />
-              <Input
-                type='number'
-                label='Minumum Order quantity'
-                className='w-full'
-                placeholder='5'
-                labelPlacement='inside'
-                value={dataSource.min_order_quantity}
-                onChange={handleChange('min_order_quantity')}
-                isRequired
-              />
-
-
-            </ModalBody>
-            <ModalFooter>
-              <Button color="danger" variant="flat" onClick={onClose}>
-                Cancel
-              </Button>
-              <Button color="primary" onClick={handleSubmit}>
-                Submit
-              </Button>
-            </ModalFooter>
-          </>
+  
+      <Modal
+        backdrop="opaque"
+        isOpen={isOpen}
+        onOpenChange={onClose}
+        motionProps={{
+          variants: {
+            enter: {
+              y: 0,
+              opacity: 1,
+              transition: {
+                duration: 0.3,
+                ease: "easeOut",
+              },
+            },
+            exit: {
+              y: -20,
+              opacity: 0,
+              transition: {
+                duration: 0.2,
+                ease: "easeIn",
+              },
+            },
+          }
+        }}
+      >
+        <ModalContent style={{ width: '80%', maxWidth: '800px' }}>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Ordered Items</ModalHeader>
+              <ModalBody>
+                <Table aria-label="Ordered items table">
+                  <TableHeader columns={itemColumns}>
+                    {(column) => (
+                      <TableColumn key={column.key}>
+                        {column.name}
+                      </TableColumn>
+                    )}
+                  </TableHeader>
+                  <TableBody items={selectedItems}>
+                    {(item) => (
+                      <TableRow key={item.product_id}>
+                        {(columnKey) => (
+                          <TableCell>{renderItemCell(item, columnKey, item.order_id)}</TableCell>
+                        )}
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+              </ModalFooter>
+            </>
+          )}
         </ModalContent>
       </Modal>
-    </>
+    </RetailerLayout>
   );
-
-}
-
-
+  }
