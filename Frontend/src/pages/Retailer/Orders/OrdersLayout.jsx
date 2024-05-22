@@ -2,14 +2,15 @@ import React, { useState, useEffect } from "react";
 import {
   Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button,
   Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Chip, Popover,
-  PopoverTrigger, PopoverContent, useDisclosure, Input
+  PopoverTrigger, PopoverContent, useDisclosure, Input, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem
 } from "@nextui-org/react";
-import { EyeIcon, ConfirmIcon, CustomSuccessToast, CustomErrorToast, SearchIcon } from "@/Components";
+import { EyeIcon, ConfirmIcon, CustomSuccessToast, CustomErrorToast, SearchIcon, } from "@/Components";
 import { useUserContext } from "@/Contexts";
 import { useCsrfContext } from "@/Contexts";
 import { API } from "@/backend";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import RetailerLayout from "../RetailerLayout";
+import axios from "axios";
 
 const statusColorMap = {
   processing: "warning",
@@ -28,7 +29,7 @@ export default function OrdersLayout() {
   const [selectedItems, setSelectedItems] = useState([]);
   const [load, setLoad] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortOrder, setSortOrder] = useState("asc"); // Added state for sorting order
+  const [sortOrder, setSortOrder] = useState("asc");
 
   const fetchOrders = async () => {
     try {
@@ -43,51 +44,6 @@ export default function OrdersLayout() {
   useEffect(() => {
     fetchOrders();
   }, [load]);
-
-  const handleDelete = async (order_id, product_id) => {
-    // Update the local data source state to remove the item from the ordered items list
-    setDataSource(pre => {
-      return pre.map(order => 
-        order.order_data.order_id === order_id 
-          ? { ...order, ordered_items: order.ordered_items.filter(item => item.product_id.product_id !== product_id) }
-          : order
-      );
-    });
-
-    try {
-      const user_id = user.id;
-
-      const payload = {
-        user_id,
-        order_id,
-        product_id
-      };
-
-      // Send a PUT request to the API endpoint to cancel the ordered item
-      const response = await ax.put(`${API}order/cancel-ordered-item/`, payload);
-
-      // Log the response for debugging
-      console.log('response: ', response);
-
-      // Get the message from the response data
-      const msg = response.data.message;
-
-      // Update the load state (assumed to be used elsewhere in the component)
-      setLoad((l) => l + 1);
-
-      // Show a success toast notification with the response message or a default message
-      CustomSuccessToast({ msg: msg ? msg : 'Deleted!', position: 'top-right', shiftStart: 'ms-0' });
-    } catch (error) {
-      // Log the error for debugging
-      console.error(error);
-
-      // Get the error message from the response data
-      const msg = error.response.data.error;
-
-      // Show an error toast notification with the error message or a default message
-      CustomErrorToast({ msg: msg ? msg : 'Please enter valid data!', position: 'top-right', shiftStart: 'ms-0' });
-    }
-  };
 
   const columns = [
     { key: "order_id", title: 'Order id' },
@@ -122,29 +78,36 @@ export default function OrdersLayout() {
         return (
           <Popover showArrow={true} backdrop='opaque' size='sm'>
             <PopoverTrigger>
-              <span style={{ color: 'red', cursor: 'pointer' }}>
+              <span
+                style={{ color: item.item_status === "cancelled" ? 'gray' : 'red', cursor: item.item_status === "cancelled" ? 'not-allowed' : 'pointer' }}
+              >
                 Cancel order
               </span>
             </PopoverTrigger>
-            <PopoverContent>
-              <div className='px-1 py-2 flex text-center justify-content-center align-items-center'>
-                <span className='text-red-600'>Confirm cancellation?</span>
-                <Button
-                  isIconOnly
-                  variant='ghost'
-                  aria-label='cancel order'
-                  onClick={() => handleDelete(order_id, item.product_id.product_id)}
-                >
-                  <ConfirmIcon width='18px' height='18px' fill='currentColor' />
-                </Button>
-              </div>
-            </PopoverContent>
+            {item.item_status !== "cancelled" && (
+              <PopoverContent>
+                <div className='px-1 py-2 flex text-center justify-content-center align-items-center'>
+                  <span className='text-red-600'>Confirm cancellation?</span>
+                  <Button
+                    isIconOnly
+                    variant='ghost'
+                    aria-label='cancel order'
+                    onClick={() => handleDelete(order_id, item.product_id)}
+                  >
+                    <ConfirmIcon width='18px' height='18px' fill='currentColor' />
+                  </Button>
+                </div>
+              </PopoverContent>
+            )}
           </Popover>
         );
       default:
         return cellValue;
     }
   };
+
+
+
 
   const getKeyValue = (item, key) => {
     switch (key) {
@@ -169,7 +132,7 @@ export default function OrdersLayout() {
                 order_id: item.order_data.order_id,
               }));
               setSelectedItems(itemsWithProductId);
-              console.log(itemsWithProductId);
+              console.log("items with id", itemsWithProductId);
               onOpen();
             }}
           >
@@ -180,6 +143,42 @@ export default function OrdersLayout() {
         return null;
     }
   };
+
+  const handleDelete = async (order_id, product_id) => {
+    console.log("Deleting item with order_id:", order_id, "and product_id:", product_id);
+    if (!order_id || !product_id) {
+      console.error("order_id or product_id is undefined!");
+      return;
+    }
+    try {
+      const payload = {
+        order_id,
+        product_id,
+      };
+      console.log("Payload:", payload);
+
+      // Increment loading state
+      setLoad((load) => load + 1);
+
+      const response = await ax.put(`${API}order/cancel-ordered-item/`, payload);
+
+      console.log('Response:', response);
+
+      const msg = response.data.message;
+
+      CustomSuccessToast({ msg: msg ? msg : 'Deleted!', position: 'top-right', shiftStart: 'ms-0' });
+      onClose(); // This will close the modal
+
+    } catch (error) {
+      console.error(error);
+
+      const msg = error.response.data.error;
+
+      CustomErrorToast({ msg: msg ? msg : 'Please enter valid data!', position: 'top-right', shiftStart: 'ms-0' });
+    }
+  };
+
+
 
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -200,7 +199,7 @@ export default function OrdersLayout() {
   const filteredDataSource = sortedDataSource.filter(order =>
     order.order_data.order_id.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  
+
   return (
     <RetailerLayout>
       <div className='mx-4'>
@@ -221,12 +220,29 @@ export default function OrdersLayout() {
                     value={searchTerm}
                     onChange={onSearchChange}
                   />
-                  {/* <Button className='bg-[#023c07] text-white mt-4 size-24 h-10' type='primary' onClick={onOpen}>
-                    <Link to='/supplier-dashboard/products/add' className='text-white'>+ Add </Link>
-                  </Button> */}
-                  <Button className='bg-[#023c07] text-white mt-4 size-26 h-10' type='primary' onClick={toggleSortOrder}>
+                  {/* <Button className='bg-[#023c07] text-white mt-4 size-26 h-10' type='primary' onClick={toggleSortOrder}>
                     {`${sortOrder === "asc" ? "Ascending" : "Descending"}`}
-                  </Button>
+                  </Button> */}
+                  
+                  <Dropdown align="left">
+                  
+                    <DropdownTrigger>
+                      <Button
+                      className='bg-[#023c07] text-white mt-4 size-24 h-10'
+
+                        
+                      >
+                        Sort
+                      </Button>
+                    </DropdownTrigger>
+                    <DropdownMenu
+                      aria-label="Action event example"
+                      // onAction={(key) => alert(key)}
+                    >
+                      <DropdownItem onClick={toggleSortOrder}>Newest</DropdownItem>
+                    <DropdownItem onClick={toggleSortOrder}>Oldest</DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
                 </div>
               </div>
             }
@@ -234,17 +250,18 @@ export default function OrdersLayout() {
             <TableHeader columns={columns}>
               {(column) => <TableColumn key={column.key}>{column.title}</TableColumn>}
             </TableHeader>
-            <TableBody items={filteredDataSource}>
-              {(item) => (
+            <TableBody items={filteredDataSource} className="mb-2">
+              {(item, index) => (
                 <TableRow key={item.order_data.order_id}>
                   {(columnKey) => <TableCell>{getKeyValue(item, columnKey)}</TableCell>}
                 </TableRow>
               )}
             </TableBody>
+
           </Table>
         </div>
       </div>
-  
+
       <Modal
         backdrop="opaque"
         isOpen={isOpen}
@@ -305,4 +322,5 @@ export default function OrdersLayout() {
       </Modal>
     </RetailerLayout>
   );
-  }
+}
+
