@@ -157,18 +157,12 @@ export default function OrdersLayout() {
         product_id,
       };
       console.log("Payload:", payload);
-
-      // Increment loading state
       setLoad((load) => load + 1);
-
       const response = await ax.put(`${API}order/cancel-ordered-item/`, payload);
-
       console.log('Response:', response);
-
       const msg = response.data.message;
-
       CustomSuccessToast({ msg: msg ? msg : 'Deleted!', position: 'top-right', shiftStart: 'ms-0' });
-      onClose(); // This will close the modal
+      onClose(); 
 
     } catch (error) {
       console.error(error);

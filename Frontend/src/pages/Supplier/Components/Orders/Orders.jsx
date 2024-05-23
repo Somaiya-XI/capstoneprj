@@ -4,7 +4,7 @@ import {
   SearchIcon,
   EyeIcon
 } from "@/Components/Icons";
-import { CustomSuccessToast, CustomErrorToast } from "@/Components/BasicComponents/CustomAlerts"
+// import { CustomSuccessToast, CustomErrorToast } from "@/Components/BasicComponents/CustomAlerts"
 import { useUserContext } from "@/Contexts";
 import { useCsrfContext } from "@/Contexts";
 import { API } from "@/backend";
@@ -36,7 +36,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from '@nextui-org/react';
-
+import { toast } from 'sonner';
 import SupplierLayout from '../Layout/SupplierLayout';
 
 const statusColorMap = {
@@ -45,6 +45,22 @@ const statusColorMap = {
   shipped: "success",
   delivered: "success",
   cancelled: "danger",
+};
+
+const getOverallStatus = (ordered_items) => {
+  if (ordered_items.every(item => item.item_status === 'delivered')) {
+    return 'delivered';
+  }
+  if (ordered_items.some(item => item.item_status === 'cancelled')) {
+    return 'cancelled';
+  }
+  if (ordered_items.some(item => item.item_status === 'shipped')) {
+    return 'shipped';
+  }
+  if (ordered_items.some(item => item.item_status === 'ready_for_delivery')) {
+    return 'ready_for_delivery';
+  }
+  return 'processing';
 };
 
 export default function OrdersLayout() {
@@ -57,7 +73,7 @@ export default function OrdersLayout() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedItems, setSelectedItems] = useState([]);
   const [OrderID, setOrderId] = useState([]);
-  const [load, setLoad] = useState(0);
+  const [load, setLoad] = useState(0);  // State to trigger re-fetching data
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
 
@@ -65,20 +81,23 @@ export default function OrdersLayout() {
     ax.get(`${API}order/view-supplier-orders/`)
       .then((response) => {
         console.log(response.data);
-        const updatedData = response.data.map(order => ({
-          order_id: order.order_data.order_id,
-          order_date: order.order_data.order_date,
-          retailer: order.order_data.retailer,
-          shipping_address: order.order_data.shipping_address,
-          total_price: order.order_data.total_price,
-          ordered_items: order.ordered_items.map(item => ({
-            product_id: item.product_id.product_id,
-            product_name: item.product_id.product_name,
-            new_price: item.product_id.new_price,
-            ordered_quantity: item.ordered_quantity,
-            item_status: item.item_status,
-          }))
-        }));
+        const updatedData = response.data.map(order => {
+          const overallStatus = getOverallStatus(order.ordered_items);
+          return {
+            order_id: order.order_data.order_id,
+            order_date: order.order_data.order_date,
+            retailer: order.order_data.retailer,
+            shipping_address: order.order_data.shipping_address,
+            total_price: order.order_data.total_price,
+            ordered_items: order.ordered_items.map(item => ({
+              product_id: item.product_id.product_id,
+              product_name: item.product_id.product_name,
+              new_price: item.product_id.new_price,
+              ordered_quantity: item.ordered_quantity,
+            })),
+            order_status: overallStatus, // Use the overall status
+          };
+        });
         setDataSource(updatedData);
       })
       .catch((error) => {
@@ -88,15 +107,17 @@ export default function OrdersLayout() {
 
   useEffect(() => {
     fetchOrders();
-  }, [load]);
+  }, [load]);  // Re-fetch orders when load state changes
 
   const columns = [
-    { key: "order_id", title: 'Order id' },
+    { key: "order_id", title: 'Order ID' },
     { key: "retailer", title: 'Retailer' },
-    { key: "order_date", title: 'Order date' },
+    { key: "order_date", title: 'Order Date' },
     { key: "shipping_address", title: 'Shipping Address' },
     { key: "total_price", title: 'Total Price' },
-    { key: "ordered_items", title: 'Ordered items' },
+    { key: "order_status", title: 'Order Status' },
+    { key: "update_Status", title: 'Update Status' },
+    { key: "ordered_items", title: 'Ordered Items' },
   ];
 
   const itemColumns = [
@@ -104,18 +125,17 @@ export default function OrdersLayout() {
     { key: "product_name", name: "Product Name" },
     { key: "new_price", name: "Price" },
     { key: "ordered_quantity", name: "Quantity" },
-    { key: "item_status", name: "Status" },
-    { key: "update_Status", name: "Update status" }
   ];
 
   const onSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
 
-  const renderItemCell = (item, columnKey, order_id) => {
+  const renderItemCell = (item, columnKey) => {
     const cellValue = item[columnKey];
+
     switch (columnKey) {
-      case "item_status":
+      case "order_status":
         return (
           <Chip color={statusColorMap[cellValue]} size="sm" variant="flat">
             {cellValue}
@@ -146,6 +166,7 @@ export default function OrdersLayout() {
   };
 
 
+
   const getKeyValue = (item, key) => {
     switch (key) {
       case "ordered_items":
@@ -154,11 +175,8 @@ export default function OrdersLayout() {
             <EyeIcon onClick={() => {
               setSelectedItems(item.ordered_items);
               setOrderId(item.ordered_items);
-              console.log("items with id", item.ordered_items);
-              console.log("items order id", item.order_id);
               onOpen();
             }} />
-
           </span>
         );
       default:
@@ -166,41 +184,32 @@ export default function OrdersLayout() {
     }
   };
 
-  const handleStatusUpdate = (item, item_status) => {
-    const order_id = item.order_id
-    console.log("Updating item with order_id:", item.order_id, "and status:", item_status);
-    if (!item.order_id || !item_status) {
-      console.error("order_id, item_status, or product_id is undefined!");
+  const handleStatusUpdate = async (item, item_status) => {
+    const order_id = item.order_id;
+    console.log("Updating item with order_id:", order_id, "and status:", item_status);
+    if (!order_id || !item_status) {
+      CustomErrorToast({ msg: 'order_id, item_status, or product_id is undefined!', position: 'top-right', shiftStart: 'ms-0' });
       return;
     }
     try {
-
       const payload = {
         order_id,
         item_status,
       };
       console.log("Payload:", payload);
 
-      setLoad((load) => load + 1);
-
-      const response = ax.put(`${API}order/update-order-item-status/`, payload);
-
+      const response = await ax.put(`${API}order/update-order-item-status/`, payload);
       console.log('Response:', response);
-
-      const msg = response.data.message;
-
-      CustomSuccessToast({ msg: msg ? msg : 'Order status updated successfuly!', position: 'top-right', shiftStart: 'ms-0' });
+      CustomSuccessToast({ msg: 'Order status updated successfully!', position: 'top-left', shiftStart: 'ms-0' });
       onClose();
+      setLoad((load) => load + 1);  // Trigger re-fetching of data
 
     } catch (error) {
       console.error(error);
-
       const msg = error.response.data.error;
-
       CustomErrorToast({ msg: msg ? msg : 'Please enter valid data!', position: 'top-right', shiftStart: 'ms-0' });
     }
   };
-
 
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -217,6 +226,55 @@ export default function OrdersLayout() {
   const filteredDataSource = sortedDataSource.filter(order =>
     order.order_id && order.order_id.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  function CustomSuccessToast({
+    msg,
+    dur = 3000,
+    colorClass = 'bg-green-50',
+    shiftStart = 'ms-16',
+    position = 'top-left',
+  }) {
+    toast(msg, {
+      unstyled: true,
+      duration: dur,
+      icon: (
+        <Iconify-icon
+          className='inline'
+          icon='line-md:circle-to-confirm-circle-twotone-transition'
+          width='24'
+          height='24'
+          begin='0.8s'
+          dur='0.6'
+          style={{ color: ' #008040' }}
+        />
+      ),
+      position: position,
+      classNames: {
+        toast: `rounded-lg p-2.5 flex items-center w-full ${colorClass} ${shiftStart}`,
+        title: 'text-muted text-sm ml-2',
+      },
+    });
+  }
+
+  function CustomErrorToast({ msg, dur = 3000, colorClass = 'bg-red-50', shiftStart = 'ms-16' }) {
+    toast(msg, {
+      unstyled: true,
+      duration: dur,
+      icon: (
+        <Iconify-icon
+          className='inline'
+          icon='line-md:close-circle-outline-transition'
+          width='24'
+          height='24'
+          begin='0.8s'
+          dur='0.6'
+          style={{ color: ' #e11d48' }}
+        />
+      ),
+      position: 'top-right',
+      className: `cursor-pointer shadow-xl border border-red-400 text-gray-700 w-[360px] ${colorClass} ${shiftStart} rounded-md`,
+    });
+  }
 
   return (
     <SupplierLayout>
@@ -261,14 +319,12 @@ export default function OrdersLayout() {
                 <TableRow key={item.order_id}>
                   {columns.map((column) => (
                     <TableCell key={column.key}>
-                      {column.key === "update_Status" ? renderItemCell(item, column.key, item.order_data.order_id) : getKeyValue(item, column.key)}
+                      {column.key === "update_Status" ? renderItemCell(item, column.key) : getKeyValue(item, column.key)}
                     </TableCell>
                   ))}
                 </TableRow>
               )}
             </TableBody>
-
-
           </Table>
         </div>
       </div>
@@ -298,7 +354,6 @@ export default function OrdersLayout() {
           }
         }}
       >
-
         <ModalContent style={{ width: '100%', maxWidth: '60%' }}>
           {(onClose) => (
             <>
@@ -316,12 +371,11 @@ export default function OrdersLayout() {
                     {(item) => (
                       <TableRow key={item.product_id}>
                         {(columnKey) => (
-                          <TableCell>{renderItemCell(item, columnKey, item.order_id)}</TableCell>
+                          <TableCell>{renderItemCell(item, columnKey)}</TableCell>
                         )}
                       </TableRow>
                     )}
                   </TableBody>
-
                 </Table>
               </ModalBody>
               <ModalFooter>
@@ -336,3 +390,4 @@ export default function OrdersLayout() {
     </SupplierLayout>
   );
 }
+
