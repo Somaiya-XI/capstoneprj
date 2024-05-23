@@ -78,23 +78,22 @@ export default function Shipment({address, setAddress}) {
       try {
         const compiledAddress = `${state};${city};${district};${street};`;
         console.log('Compiled Address:', compiledAddress);
-        axios.put(
+        await axios.put(
           `${API}user/update/${user.id}/`,
           { address: compiledAddress }
         );
-
-        onClose();
+  
+        setAddress([{ state, city, district, street }]);
         CustomSuccessToast({ msg: 'Your address has been updated!', dur: 3000 });
-
-      
-
-
+  
+        onClose();
         setError("");
       } catch (error) {
         console.error("Error updating address:", error);
       }
     }
   };
+  
 
 
   const handleAddressDelete = (index) => {

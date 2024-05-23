@@ -13,9 +13,11 @@ import RetailerLayout from "../RetailerLayout";
 import axios from "axios";
 
 const statusColorMap = {
-  processing: "warning",
-  cancelled: "danger",
+  processing: "default",
+  ready_for_delivery:"warning",
   shipped: "success",
+  delivered:"success",
+  cancelled: "danger",
 };
 
 export default function OrdersLayout() {
@@ -105,7 +107,6 @@ export default function OrdersLayout() {
         return cellValue;
     }
   };
-
 
 
 
@@ -224,14 +225,10 @@ export default function OrdersLayout() {
                     {`${sortOrder === "asc" ? "Ascending" : "Descending"}`}
                   </Button> */}
                   
-                  <Dropdown align="left">
-                  
+                  <Dropdown align="left"> 
                     <DropdownTrigger>
                       <Button
-                      className='bg-[#023c07] text-white mt-4 size-24 h-10'
-
-                        
-                      >
+                        className='bg-[#023c07] text-white mt-4 size-24 h-10'>
                         Sort
                       </Button>
                     </DropdownTrigger>
