@@ -11,7 +11,8 @@ import {
   Payment,
   OrderCreated,
   SettingsLayout,
-  OrdersLayout
+  OrdersLayout,
+  ProductDetail2
 } from './url.jsx';
 import {Toaster} from 'sonner';
 import {AdminRoute, SupplierRoute, RetailerRoute} from "@/Components"
@@ -30,6 +31,7 @@ function App() {
                 <Route path='/' element={<Home />} />
                 <Route path='/cart' element={<RetailerRoute><Cart /></RetailerRoute>} />
                 <Route path='/product/:id' element={<ProductDetail />} />
+                <Route path='/supplier_product/:id' element={<ProductDetail2 />} />
                 <Route path='/login' element={<Login />} />
                 <Route path='/user-activation'element={  <AdminRoute> <UserActivation /></AdminRoute>} />
                 <Route>

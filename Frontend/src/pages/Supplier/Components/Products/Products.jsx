@@ -380,7 +380,7 @@ export default function Products() {
         return (
           <div className='relative flex items-center gap-3'>
             <span className='text-lg text-default-400 cursor-pointer active:opacity-50'>
-              <EyeIcon onClick={() => navigate(`/product/${product.key}`)} />
+              <EyeIcon onClick={() => navigate(`/supplier_product/${product.key}`)} />
             </span>
             <span className='text-lg text-grey-100 cursor-pointer active:opacity-50'>
               <Link to={`/supplier-dashboard/products/edit/${product.key}`}> 

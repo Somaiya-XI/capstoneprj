@@ -31,14 +31,15 @@ function MenuList() {
                     Products
                     <Link to="/supplier-dashboard/products" />
                 </Menu.Item>
-                <Menu.Item key="Schedule" icon={<CalendarOutlined />}>
-                    Schedule
-                    <Link to="/supplier-dashboard/schedule"/>
-                </Menu.Item>
                 <Menu.Item key="Incoming Orders" icon={<PoundCircleOutlined />}>
                     Orders
                     <Link to="/supplier-dashboard/orders"/>
                 </Menu.Item>
+                <Menu.Item key="Schedule" icon={<CalendarOutlined />}>
+                    Schedule
+                    <Link to="/supplier-dashboard/schedule"/>
+                </Menu.Item>
+                
                 <Menu.Item key="Settings" icon={<SettingOutlined />}>
                     Settings
                     <Link to="/profile"/>
